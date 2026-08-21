@@ -9,6 +9,7 @@
  * Run: npm run test:admin
  */
 import { chromium } from "playwright";
+import { login, relaxTimeouts, settle, visibleText } from "./lib/e2e.mjs";
 import { mkdirSync } from "node:fs";
 
 const BASE = process.env.E2E_BASE_URL ?? "http://localhost:3001";
@@ -80,20 +81,13 @@ for (const [email, first, role] of [[A1, "Alpha", "super_admin"], [A2, "Beta", "
 }
 
 const browser = await chromium.launch();
-const visibleText = (page) => page.innerText("body");
-async function settle(page, expected, timeout = 25000) {
-  try { await page.waitForURL((u) => u.pathname === expected, { timeout }); } catch {}
-  return page.url();
-}
+
+relaxTimeouts(browser);
 
 const ctx = await browser.newContext({ viewport: { width: 1280, height: 1000 } });
 const page = await ctx.newPage();
 
-await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
-await page.fill('input[name="email"]', A1);
-await page.fill('input[name="password"]', PW);
-await page.click('button[type="submit"]');
-await settle(page, "/feed");
+await login(page, BASE, A1, PW);
 
 // --- settings ------------------------------------------------------------
 console.log("\n--- settings ---");
@@ -186,11 +180,7 @@ console.log("\n--- club memberships ---");
 await ctx.close();
 const ctx2 = await browser.newContext({ viewport: { width: 1280, height: 1000 } });
 const page2 = await ctx2.newPage();
-await page2.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
-await page2.fill('input[name="email"]', A2);
-await page2.fill('input[name="password"]', PW);
-await page2.click('button[type="submit"]');
-await settle(page2, "/feed");
+await login(page2, BASE, A2, PW);
 
 await page2.goto(`${BASE}/admin/members/${ids[M1]}`, { waitUntil: "domcontentloaded" });
 await page2.waitForTimeout(1500);

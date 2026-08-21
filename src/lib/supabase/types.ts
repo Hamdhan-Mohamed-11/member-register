@@ -523,6 +523,154 @@ export type Database = {
           },
         ]
       }
+      payment_events: {
+        Row: {
+          applied: boolean
+          id: string
+          outcome: string | null
+          payload: Json
+          payment_id: string | null
+          provider_order_ref: string | null
+          received_at: string
+          signature_ok: boolean
+          status_code: number | null
+        }
+        Insert: {
+          applied: boolean
+          id?: string
+          outcome?: string | null
+          payload: Json
+          payment_id?: string | null
+          provider_order_ref?: string | null
+          received_at?: string
+          signature_ok: boolean
+          status_code?: number | null
+        }
+        Update: {
+          applied?: boolean
+          id?: string
+          outcome?: string | null
+          payload?: Json
+          payment_id?: string | null
+          provider_order_ref?: string | null
+          received_at?: string
+          signature_ok?: boolean
+          status_code?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_events_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount_lkr: number
+          booking_id: string | null
+          club_id: string | null
+          club_name: string | null
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          member_email: string | null
+          member_id: string | null
+          member_name: string | null
+          note: string | null
+          order_id: string | null
+          paid_at: string | null
+          provider: string
+          provider_order_ref: string
+          provider_payment_id: string | null
+          purpose: string
+          raw_notification: Json | null
+          status: string
+          status_code: number | null
+          term_months: number | null
+        }
+        Insert: {
+          amount_lkr: number
+          booking_id?: string | null
+          club_id?: string | null
+          club_name?: string | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          member_email?: string | null
+          member_id?: string | null
+          member_name?: string | null
+          note?: string | null
+          order_id?: string | null
+          paid_at?: string | null
+          provider?: string
+          provider_order_ref: string
+          provider_payment_id?: string | null
+          purpose: string
+          raw_notification?: Json | null
+          status?: string
+          status_code?: number | null
+          term_months?: number | null
+        }
+        Update: {
+          amount_lkr?: number
+          booking_id?: string | null
+          club_id?: string | null
+          club_name?: string | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          member_email?: string | null
+          member_id?: string | null
+          member_name?: string | null
+          note?: string | null
+          order_id?: string | null
+          paid_at?: string | null
+          provider?: string
+          provider_order_ref?: string
+          provider_payment_id?: string | null
+          purpose?: string
+          raw_notification?: Json | null
+          status?: string
+          status_code?: number | null
+          term_months?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "session_bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       points_rules: {
         Row: {
           code: string
@@ -838,6 +986,10 @@ export type Database = {
         Args: { p_club_id: string; p_member_id: string; p_months?: number }
         Returns: string
       }
+      admin_mark_payment_paid: {
+        Args: { p_payment_id: string; p_reason: string }
+        Returns: string
+      }
       admin_set_membership: {
         Args: {
           p_membership_id: string
@@ -845,6 +997,18 @@ export type Database = {
           p_status?: string
         }
         Returns: undefined
+      }
+      apply_payhere_notification: {
+        Args: {
+          p_amount: number
+          p_currency: string
+          p_order_ref: string
+          p_payload: Json
+          p_payment_id: string
+          p_signature_ok: boolean
+          p_status_code: number
+        }
+        Returns: string
       }
       approve_join_request: { Args: { p_request_id: string }; Returns: string }
       book_session: { Args: { p_session_id: string }; Returns: string }
@@ -891,6 +1055,7 @@ export type Database = {
         Args: { p_expiring_soon_days?: number; p_renewal: string }
         Returns: string
       }
+      new_payment_ref: { Args: { p_prefix: string }; Returns: string }
       recompute_all_points: { Args: never; Returns: number }
       recompute_member_points: {
         Args: { p_member_id: string }
@@ -930,6 +1095,25 @@ export type Database = {
       }
       shares_active_club: { Args: { p_member_id: string }; Returns: boolean }
       slugify: { Args: { p_text: string }; Returns: string }
+      start_club_membership_payment: {
+        Args: { p_club_id: string }
+        Returns: {
+          amount: number
+          club_name: string
+          is_renewal: boolean
+          order_ref: string
+          payment_id: string
+        }[]
+      }
+      start_session_booking_payment: {
+        Args: { p_booking_id: string }
+        Returns: {
+          amount: number
+          order_ref: string
+          payment_id: string
+          session_title: string
+        }[]
+      }
       unique_club_slug: { Args: { p_base: string }; Returns: string }
       update_app_settings: {
         Args: {

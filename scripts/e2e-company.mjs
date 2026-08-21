@@ -12,6 +12,7 @@
  * Run: npm run test:company
  */
 import { chromium } from "playwright";
+import { login, relaxTimeouts, settle, visibleText } from "./lib/e2e.mjs";
 import { mkdirSync } from "node:fs";
 
 const BASE = process.env.E2E_BASE_URL ?? "http://localhost:3001";
@@ -78,20 +79,13 @@ await admin("/rest/v1/club_memberships", {
 
 const browser = await chromium.launch();
 
-async function visibleText(page) { return page.innerText("body"); }
-async function settle(page, expected, timeout = 25000) {
-  try { await page.waitForURL((u) => u.pathname === expected, { timeout }); } catch {}
-  return page.url();
-}
+relaxTimeouts(browser);
+
 
 const ctx = await browser.newContext({ viewport: { width: 1280, height: 1000 } });
 const page = await ctx.newPage();
 
-await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
-await page.fill('input[name="email"]', ADMIN);
-await page.fill('input[name="password"]', PW);
-await page.click('button[type="submit"]');
-await settle(page, "/feed");
+await login(page, BASE, ADMIN, PW);
 
 await page.goto(`${BASE}/admin/companies`, { waitUntil: "domcontentloaded" });
 await settle(page, "/admin/companies");

@@ -11,6 +11,7 @@
  * Run: npm run test:directory
  */
 import { chromium } from "playwright";
+import { login, relaxTimeouts, visibleText } from "./lib/e2e.mjs";
 import { mkdirSync } from "node:fs";
 
 const BASE = process.env.E2E_BASE_URL ?? "http://localhost:3001";
@@ -46,6 +47,13 @@ for (const e of need) {
   }
 }
 
+// Setup must be IDEMPOTENT: a previous run that crashed part-way leaves its
+// reading items behind, and the counts this suite asserts on ("Currently
+// reading (1)") then fail for reasons that have nothing to do with the app.
+for (const e of need) {
+  await admin(`/rest/v1/reading_items?member_id=eq.${byEmail[e]}`, { method: "DELETE" });
+}
+
 // Give the public members something to show, so "currently reading" on the
 // directory card is exercised rather than always empty.
 await admin("/rest/v1/reading_items", {
@@ -57,22 +65,19 @@ await admin("/rest/v1/reading_items", {
 });
 
 const browser = await chromium.launch();
-const visibleText = (page) => page.innerText("body");
 
-async function login(ctx, email) {
+relaxTimeouts(browser);
+
+async function openAs(ctx, email) {
   const page = await ctx.newPage();
-  await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
-  await page.fill('input[name="email"]', email);
-  await page.fill('input[name="password"]', PW);
-  await page.click('button[type="submit"]');
-  try { await page.waitForURL((u) => u.pathname === "/feed", { timeout: 25000 }); } catch {}
+  await login(page, BASE, email, PW);
   return page;
 }
 
 // --- public member's view ------------------------------------------------
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 900 } });
-  const page = await login(ctx, "puba@rlstest.local");
+  const page = await openAs(ctx, "puba@rlstest.local");
 
   await page.goto(`${BASE}/directory`, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(1500);
@@ -118,7 +123,7 @@ async function login(ctx, email) {
 // --- company member's view -----------------------------------------------
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 900 } });
-  const page = await login(ctx, "coc@rlstest.local");
+  const page = await openAs(ctx, "coc@rlstest.local");
 
   await page.goto(`${BASE}/directory`, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(1500);
@@ -138,7 +143,7 @@ async function login(ctx, email) {
 // --- own reading list ----------------------------------------------------
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 900 } });
-  const page = await login(ctx, "puba@rlstest.local");
+  const page = await openAs(ctx, "puba@rlstest.local");
 
   await page.goto(`${BASE}/me/reading`, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(1200);

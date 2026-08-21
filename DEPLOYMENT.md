@@ -3,6 +3,31 @@
 Things that are **deliberately wrong for production** while developing, plus
 the ones that are easy to forget. Work top to bottom when moving to the VPS.
 
+## TODO on the VPS — the two that are not code
+
+Both of these are built and waiting on configuration. Neither can be finished
+on the current free-tier setup, and neither is blocked by code.
+
+- [ ] **Email (custom SMTP).** Everything that sends mail — signup
+      confirmation, invite links, password reset — is written and works
+      against the API, but the built-in mailer caps at ~2 sends/hour, so those
+      paths have never been exercised end to end. Configure SMTP, turn
+      **Confirm email back ON**, then run `npm run test:onboarding` — it stops
+      skipping the browser signup and that is the moment signup is genuinely
+      tested. See §1.
+- [ ] **PayHere webhook.** The notify endpoint, signature check and
+      idempotency are built and tested against synthetic notifications, but
+      **PayHere has never actually called it** — a webhook cannot reach
+      `localhost`. On the VPS: point `notify_url` at
+      `https://<origin>/api/payhere/notify`, whitelist the domain in the
+      merchant portal, switch `PAYHERE_MODE` to `live`, and run one real
+      sandbox payment end to end. See §5.
+
+Until both are done, treat signup-by-email and automatic payment settlement as
+**unverified against the real services**, however green the test suites look.
+The manual "record as paid" action in `/admin/payments` exists to cover the
+gap, not to replace the webhook.
+
 ## 1. Supabase Auth — settings that MUST change
 
 Dashboard → Authentication.

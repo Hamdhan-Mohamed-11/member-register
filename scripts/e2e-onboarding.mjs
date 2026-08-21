@@ -11,6 +11,7 @@
  * Run: npm run test:onboarding
  */
 import { chromium } from "playwright";
+import { login, relaxTimeouts, settle, visibleText } from "./lib/e2e.mjs";
 import { mkdirSync } from "node:fs";
 
 const BASE = process.env.E2E_BASE_URL ?? "http://localhost:3001";
@@ -73,23 +74,10 @@ await admin("/rest/v1/club_memberships", {
 
 const browser = await chromium.launch();
 
-/**
- * innerText, not textContent.
- *
- * textContent walks EVERY node including <script>, and Next inlines its RSC
- * payload as script content -- so a row the page has already removed is still
- * findable in textContent long after it stopped rendering. That silently turns
- * "did this disappear?" assertions into permanent false negatives.
- */
-async function visibleText(page) {
-  return page.innerText("body");
-}
+relaxTimeouts(browser);
 
 
-async function settle(page, expected, timeout = 25000) {
-  try { await page.waitForURL((u) => u.pathname === expected, { timeout }); } catch {}
-  return page.url();
-}
+
 
 // --- 1. applicant signs up via /join ------------------------------------
 //
@@ -171,11 +159,7 @@ check("applicant profile is a plain member", profile?.role === "member", JSON.st
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await ctx.newPage();
-  await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
-  await page.fill('input[name="email"]', APPLICANT);
-  await page.fill('input[name="password"]', PW);
-  await page.click('button[type="submit"]');
-  await settle(page, "/pending");
+  await login(page, BASE, APPLICANT, PW, "/pending");
   check("applicant is held on /pending", page.url().includes("/pending"), page.url());
 
   // If the confirmation path meant the application never went in, /pending
@@ -200,11 +184,7 @@ check("applicant profile is a plain member", profile?.role === "member", JSON.st
 {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();
-  await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
-  await page.fill('input[name="email"]', ADMIN);
-  await page.fill('input[name="password"]', PW);
-  await page.click('button[type="submit"]');
-  await settle(page, "/feed");
+  await login(page, BASE, ADMIN, PW);
 
   await page.goto(`${BASE}/admin/join-requests`, { waitUntil: "domcontentloaded" });
   await settle(page, "/admin/join-requests");
@@ -237,11 +217,7 @@ check("applicant profile is a plain member", profile?.role === "member", JSON.st
 
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await ctx.newPage();
-  await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
-  await page.fill('input[name="email"]', APPLICANT);
-  await page.fill('input[name="password"]', PW);
-  await page.click('button[type="submit"]');
-  await settle(page, "/feed");
+  await login(page, BASE, APPLICANT, PW);
   check("the new member now reaches /feed", page.url().includes("/feed"), page.url());
 
   const body = await visibleText(page);

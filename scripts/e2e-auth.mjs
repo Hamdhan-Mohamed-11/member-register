@@ -10,6 +10,7 @@
  * Run:      npm run test:e2e
  */
 import { chromium } from "playwright";
+import { login, relaxTimeouts, settle, visibleText } from "./lib/e2e.mjs";
 import { mkdirSync } from "node:fs";
 
 const BASE = process.env.E2E_BASE_URL ?? "http://localhost:3001";
@@ -25,46 +26,11 @@ function check(name, cond, detail = "") {
 
 const browser = await chromium.launch();
 
-/**
- * innerText, not textContent.
- *
- * textContent walks EVERY node including <script>, and Next inlines its RSC
- * payload as script content -- so a row the page has already removed is still
- * findable in textContent long after it stopped rendering. That silently turns
- * "did this disappear?" assertions into permanent false negatives.
- */
-async function visibleText(page) {
-  return page.innerText("body");
-}
+relaxTimeouts(browser);
 
 
-/**
- * Navigation here is a REDIRECT CHAIN, not a single hop: the login form always
- * aims at /feed, and the server then bounces anyone who isn't active on to
- * /pending.
- *
- * So wait for the EXPECTED destination rather than for the URL to "stop
- * moving". Stability-polling is flaky against a dev server, which compiles each
- * route lazily on first visit -- an unlucky 700ms compile of /pending looks
- * exactly like "we've arrived at /feed".
- */
-async function settle(page, expected, timeout = 25000) {
-  try {
-    await page.waitForURL((u) => u.pathname === expected, { timeout });
-  } catch {
-    // Swallow: the check() that follows reports the actual URL, which is a far
-    // more useful failure message than a Playwright timeout stack.
-  }
-  return page.url();
-}
 
-async function login(page, email, expected = "/feed") {
-  await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
-  await page.fill('input[name="email"]', email);
-  await page.fill('input[name="password"]', PW);
-  await page.click('button[type="submit"]');
-  await settle(page, expected);
-}
+
 
 // --- 1. anon gating ------------------------------------------------------
 {
@@ -88,7 +54,7 @@ async function login(page, email, expected = "/feed") {
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await ctx.newPage();
-  await login(page, "puba@rlstest.local");
+  await login(page, BASE, "puba@rlstest.local", PW);
   check("member lands on /feed after login", page.url().includes("/feed"), page.url());
 
   const body = await visibleText(page);
@@ -115,7 +81,7 @@ async function login(page, email, expected = "/feed") {
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await ctx.newPage();
-  await login(page, "coboth@rlstest.local");
+  await login(page, BASE, "coboth@rlstest.local", PW);
   const body = await visibleText(page);
   // Belongs to the company club AND has paid to join the public club, so the
   // header must list both rather than silently showing only the primary one.
@@ -131,7 +97,7 @@ async function login(page, email, expected = "/feed") {
 {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();
-  await login(page, "admin@rlstest.local");
+  await login(page, BASE, "admin@rlstest.local", PW);
   check("admin lands on /feed after login", page.url().includes("/feed"), page.url());
 
   const feedBody = await visibleText(page);
@@ -152,7 +118,7 @@ async function login(page, email, expected = "/feed") {
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await ctx.newPage();
-  await login(page, "pending@rlstest.local", "/pending");
+  await login(page, BASE, "pending@rlstest.local", PW, "/pending");
   check("pending applicant is sent to /pending", page.url().includes("/pending"), page.url());
 
   const body = await visibleText(page);
@@ -175,7 +141,7 @@ async function login(page, email, expected = "/feed") {
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await ctx.newPage();
-  await login(page, "puba@rlstest.local");
+  await login(page, BASE, "puba@rlstest.local", PW);
   await page.goto(`${BASE}/pending`, { waitUntil: "domcontentloaded" });
   // active member gets redirected off /pending, so sign out from feed instead
   await page.goto(`${BASE}/feed`, { waitUntil: "domcontentloaded" });

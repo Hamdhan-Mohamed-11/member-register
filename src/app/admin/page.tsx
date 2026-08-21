@@ -22,6 +22,7 @@ const AREAS = [
   { href: "/admin/library", label: "Borrow requests", desc: "Issue and return library books.", superOnly: false, ready: false },
   { href: "/admin/members", label: "Members", desc: "Roles, membership dates, suspensions.", superOnly: true, ready: true },
   { href: "/admin/invites", label: "Invites", desc: "Invite members and secretaries.", superOnly: true, ready: false },
+  { href: "/admin/payments", label: "Payments", desc: "Membership and booking payments.", superOnly: true, ready: true },
   { href: "/admin/settings", label: "Settings", desc: "Fees, terms, discount, points rules.", superOnly: true, ready: true },
 ];
 
