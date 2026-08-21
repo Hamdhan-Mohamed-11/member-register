@@ -439,8 +439,31 @@ export type Database = {
     Functions: {
       approve_join_request: { Args: { p_request_id: string }; Returns: string }
       can_view_member: { Args: { p_member_id: string }; Returns: boolean }
+      create_company_with_club: {
+        Args: {
+          p_club_name?: string
+          p_contact_email?: string
+          p_contact_phone?: string
+          p_fee_lkr?: number
+          p_name: string
+          p_term_months?: number
+        }
+        Returns: {
+          club_id: string
+          company_id: string
+        }[]
+      }
       create_invite: {
         Args: { p_club_id: string; p_email: string; p_role?: string }
+        Returns: string
+      }
+      create_public_club: {
+        Args: {
+          p_description?: string
+          p_fee_lkr?: number
+          p_name: string
+          p_term_months?: number
+        }
         Returns: string
       }
       current_club_ids: { Args: never; Returns: string[] }
@@ -479,6 +502,19 @@ export type Database = {
         Returns: undefined
       }
       shares_active_club: { Args: { p_member_id: string }; Returns: boolean }
+      slugify: { Args: { p_text: string }; Returns: string }
+      unique_club_slug: { Args: { p_base: string }; Returns: string }
+      update_club: {
+        Args: {
+          p_club_id: string
+          p_description?: string
+          p_fee_lkr?: number
+          p_is_active?: boolean
+          p_name?: string
+          p_term_months?: number
+        }
+        Returns: undefined
+      }
       write_audit: {
         Args: {
           p_action: string
