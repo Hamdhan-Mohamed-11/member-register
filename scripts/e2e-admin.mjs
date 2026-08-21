@@ -34,14 +34,17 @@ function check(name, cond, detail = "") {
   else { fail++; console.log(`  FAIL  ${name} ${detail}`); }
 }
 
-const A1 = "adm1@rlstest.local";
-const A2 = "adm2@rlstest.local";
-const M1 = "mem1@rlstest.local";
+const A1 = "adm1@adm.test";
+const A2 = "adm2@adm.test";
+const M1 = "mem1@adm.test";
 
+// Wipes only THIS suite's namespace. Every suite used to share
+// @rlstest.local, so each one's cleanup deleted the others' fixtures and the
+// whole set only passed when run in isolation.
 async function wipe() {
   const { users = [] } = await j(await admin("/auth/v1/admin/users?per_page=200"));
   for (const u of users) {
-    if (u.email?.endsWith("@rlstest.local")) {
+    if (u.email?.endsWith("@adm.test")) {
       await admin(`/auth/v1/admin/users/${u.id}`, { method: "DELETE" });
     }
   }

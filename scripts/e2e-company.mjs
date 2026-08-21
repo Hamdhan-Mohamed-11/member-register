@@ -38,18 +38,21 @@ function check(name, cond, detail = "") {
   else { fail++; console.log(`  FAIL  ${name} ${detail}`); }
 }
 
-const ADMIN = "coadmin@rlstest.local";
+const ADMIN = "coadmin@comp.test";
 const COMPANY = "Zephyr Testing Ltd";
-const EMPLOYEES = ["ada@rlstest.local", "grace@rlstest.local", "alan@rlstest.local"];
+const EMPLOYEES = ["ada@comp.test", "grace@comp.test", "alan@comp.test"];
 
+// Wipes only THIS suite's namespace. Every suite used to share
+// @rlstest.local, so each one's cleanup deleted the others' fixtures and the
+// whole set only passed when run in isolation.
 async function wipe() {
   const { users = [] } = await j(await admin("/auth/v1/admin/users?per_page=200"));
   for (const u of users) {
-    if (u.email?.endsWith("@rlstest.local")) {
+    if (u.email?.endsWith("@comp.test")) {
       await admin(`/auth/v1/admin/users/${u.id}`, { method: "DELETE" });
     }
   }
-  await admin("/rest/v1/invites?email=like.*%40rlstest.local", { method: "DELETE" });
+  await admin("/rest/v1/invites?email=like.*%40comp.test", { method: "DELETE" });
   const cos = await j(await admin(`/rest/v1/companies?name=eq.${encodeURIComponent(COMPANY)}&select=id`));
   for (const c of Array.isArray(cos) ? cos : []) {
     await admin(`/rest/v1/clubs?company_id=eq.${c.id}`, { method: "DELETE" });

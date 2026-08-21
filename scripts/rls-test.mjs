@@ -36,6 +36,10 @@ async function admin(path, opts = {}) {
 }
 
 // --- cleanup -------------------------------------------------------------
+// This suite OWNS the @rlstest.local namespace: scripts/e2e-auth.mjs and
+// scripts/e2e-directory.mjs run against the fixtures it leaves behind under
+// KEEP=1, so they share it and never wipe. Every other suite has its own
+// domain, so nothing here can delete another suite's data.
 async function wipeTestUsers() {
   const r = await admin("/auth/v1/admin/users?per_page=200");
   const { users = [] } = await j(r);

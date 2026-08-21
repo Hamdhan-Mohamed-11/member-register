@@ -5,6 +5,20 @@ export type VideoEmbed = {
 };
 
 /**
+ * Builds the iframe src from a provider and an already-validated id.
+ *
+ * The ONLY place an embed URL is constructed. Everything that renders a video
+ * goes through here, so there is exactly one line to audit for "could this ever
+ * be attacker-controlled" -- and the answer stays no, because the id has been
+ * matched against a strict charset before it gets here.
+ */
+export function buildEmbedUrl(provider: "youtube" | "vimeo", externalId: string): string {
+  return provider === "youtube"
+    ? `https://www.youtube-nocookie.com/embed/${externalId}`
+    : `https://player.vimeo.com/video/${externalId}`;
+}
+
+/**
  * Parses a pasted YouTube/Vimeo link into a provider and an id, and builds the
  * iframe src OURSELVES.
  *
@@ -41,7 +55,7 @@ export function parseVideoUrl(raw: string | null | undefined): VideoEmbed | null
       return {
         provider: "youtube",
         externalId: v,
-        embedUrl: `https://www.youtube-nocookie.com/embed/${v}`,
+        embedUrl: buildEmbedUrl("youtube", v),
       };
     }
     // /embed/<id> and /shorts/<id>
@@ -50,7 +64,7 @@ export function parseVideoUrl(raw: string | null | undefined): VideoEmbed | null
       return {
         provider: "youtube",
         externalId: seg[1],
-        embedUrl: `https://www.youtube-nocookie.com/embed/${seg[1]}`,
+        embedUrl: buildEmbedUrl("youtube", seg[1]),
       };
     }
     return null;
@@ -62,7 +76,7 @@ export function parseVideoUrl(raw: string | null | undefined): VideoEmbed | null
       return {
         provider: "youtube",
         externalId: id,
-        embedUrl: `https://www.youtube-nocookie.com/embed/${id}`,
+        embedUrl: buildEmbedUrl("youtube", id),
       };
     }
     return null;
@@ -74,7 +88,7 @@ export function parseVideoUrl(raw: string | null | undefined): VideoEmbed | null
       return {
         provider: "vimeo",
         externalId: id,
-        embedUrl: `https://player.vimeo.com/video/${id}`,
+        embedUrl: buildEmbedUrl("vimeo", id),
       };
     }
     return null;

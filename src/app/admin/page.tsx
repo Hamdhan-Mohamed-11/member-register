@@ -17,7 +17,7 @@ const AREAS = [
   { href: "/admin/join-requests", label: "Join requests", desc: "Approve public club applications.", superOnly: false, ready: true },
   { href: "/admin/companies", label: "Companies", desc: "Company clubs and employee onboarding.", superOnly: true, ready: true },
   { href: "/admin/sessions", label: "Sessions", desc: "Create sessions and record attendance.", superOnly: false, ready: true },
-  { href: "/admin/videos", label: "Videos", desc: "Approve member-submitted recordings.", superOnly: false, ready: false },
+  { href: "/admin/videos", label: "Videos", desc: "Approve member-submitted recordings.", superOnly: false, ready: true },
   { href: "/admin/orders", label: "Book orders", desc: "Fulfil member purchases.", superOnly: false, ready: false },
   { href: "/admin/library", label: "Borrow requests", desc: "Issue and return library books.", superOnly: false, ready: false },
   { href: "/admin/members", label: "Members", desc: "Roles, membership dates, suspensions.", superOnly: true, ready: true },

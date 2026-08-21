@@ -62,16 +62,19 @@ async function balanceOf(id) {
 
 // --- fixtures -------------------------------------------------------------
 const EMAILS = {
-  admin: "ptadmin@rlstest.local",
-  hostA: "pthosta@rlstest.local",
-  hostB: "pthostb@rlstest.local",
-  guest: "ptguest@rlstest.local",
+  admin: "ptadmin@points.test",
+  hostA: "pthosta@points.test",
+  hostB: "pthostb@points.test",
+  guest: "ptguest@points.test",
 };
 
+// Wipes only THIS suite's namespace. Every suite used to share
+// @rlstest.local, so each one's cleanup deleted the others' fixtures and the
+// whole set only passed when run in isolation.
 async function wipe() {
   const { users = [] } = await j(await admin("/auth/v1/admin/users?per_page=200"));
   for (const u of users) {
-    if (u.email?.endsWith("@rlstest.local")) {
+    if (u.email?.endsWith("@points.test")) {
       await admin(`/auth/v1/admin/users/${u.id}`, { method: "DELETE" });
     }
   }

@@ -963,6 +963,90 @@ export type Database = {
           },
         ]
       }
+      videos: {
+        Row: {
+          created_at: string
+          description: string | null
+          external_id: string
+          id: string
+          provider: string
+          review_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          session_id: string | null
+          source_url: string
+          status: string
+          submitted_by: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          external_id: string
+          id?: string
+          provider: string
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          session_id?: string | null
+          source_url: string
+          status?: string
+          submitted_by?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          external_id?: string
+          id?: string
+          provider?: string
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          session_id?: string | null
+          source_url?: string
+          status?: string
+          submitted_by?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "videos_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "videos_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "videos_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "videos_submitted_by_fkey"
+            columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "videos_submitted_by_fkey"
+            columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       admin_members: {
@@ -1048,12 +1132,17 @@ export type Database = {
       current_member_has_active_club: { Args: never; Returns: boolean }
       current_member_is_active: { Args: never; Returns: boolean }
       current_member_role: { Args: never; Returns: string }
+      delete_video: { Args: { p_video_id: string }; Returns: undefined }
       is_admin: { Args: never; Returns: boolean }
       is_public_club: { Args: { p_club_id: string }; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }
       membership_state: {
         Args: { p_expiring_soon_days?: number; p_renewal: string }
         Returns: string
+      }
+      moderate_video: {
+        Args: { p_note?: string; p_status: string; p_video_id: string }
+        Returns: undefined
       }
       new_payment_ref: { Args: { p_prefix: string }; Returns: string }
       recompute_all_points: { Args: never; Returns: number }
@@ -1113,6 +1202,17 @@ export type Database = {
           payment_id: string
           session_title: string
         }[]
+      }
+      submit_video: {
+        Args: {
+          p_description?: string
+          p_external_id: string
+          p_provider: string
+          p_session_id?: string
+          p_source_url: string
+          p_title: string
+        }
+        Returns: string
       }
       unique_club_slug: { Args: { p_base: string }; Returns: string }
       update_app_settings: {
