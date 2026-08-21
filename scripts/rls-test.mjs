@@ -268,6 +268,82 @@ const otherBody = await j(otherRow);
 check("member CANNOT edit another member's row",
   !Array.isArray(otherBody) || otherBody.length === 0, JSON.stringify(otherBody));
 
+console.log("\n--- onboarding RPCs ---");
+
+async function rpc(token, name, args) {
+  const res = await asUser(token, `/rest/v1/rpc/${name}`, {
+    method: "POST", body: JSON.stringify(args ?? {}),
+  });
+  return { status: res.status, body: await j(res) };
+}
+
+// The single most important check in this file: company clubs are invite-only,
+// and request_club_join is the only path a member has into a club.
+const joinCompany = await rpc(tokPend, "request_club_join", { p_club_id: coClub.id });
+check("member CANNOT apply to a company club",
+  joinCompany.status >= 400 && /invite only/i.test(JSON.stringify(joinCompany.body)),
+  JSON.stringify(joinCompany));
+
+const joinPublic = await rpc(tokPend, "request_club_join", { p_club_id: pubClub.id });
+check("member CAN apply to a public club", joinPublic.status < 300, JSON.stringify(joinPublic));
+
+const joinTwice = await rpc(tokPend, "request_club_join", { p_club_id: pubClub.id });
+check("a second application while one is pending is refused",
+  joinTwice.status >= 400, JSON.stringify(joinTwice));
+
+const reqId = joinPublic.body;
+const selfApprove = await rpc(tokPend, "approve_join_request", { p_request_id: reqId });
+check("applicant CANNOT approve their own request",
+  selfApprove.status >= 400, JSON.stringify(selfApprove));
+
+const memberApprove = await rpc(tokA, "approve_join_request", { p_request_id: reqId });
+check("a plain member CANNOT approve a request",
+  memberApprove.status >= 400, JSON.stringify(memberApprove));
+
+const adminApprove = await rpc(tokAdmin, "approve_join_request", { p_request_id: reqId });
+check("admin CAN approve a request", adminApprove.status < 300, JSON.stringify(adminApprove));
+
+const approved = (await j(await admin(`/rest/v1/profiles?id=eq.${ids.pend}&select=status`)))[0];
+check("approval activates the account", approved.status === "active", JSON.stringify(approved));
+
+const newMembership = (await j(await admin(
+  `/rest/v1/club_memberships?member_id=eq.${ids.pend}&select=*`)))[0];
+check("approval creates an active membership",
+  newMembership?.status === "active", JSON.stringify(newMembership));
+check("their first club is marked primary",
+  newMembership?.is_primary === true, JSON.stringify(newMembership));
+check("approval sets a renewal date",
+  Boolean(newMembership?.renewal_date), JSON.stringify(newMembership));
+
+// Privilege boundaries on the admin RPCs
+const memberInvite = await rpc(tokA, "create_invite",
+  { p_email: "sneaky@rlstest.local", p_club_id: pubClub.id, p_role: "super_admin" });
+check("a plain member CANNOT create an invite",
+  memberInvite.status >= 400, JSON.stringify(memberInvite));
+
+const memberPromote = await rpc(tokA, "set_member_role",
+  { p_member_id: ids.pubA, p_role: "super_admin" });
+check("a plain member CANNOT promote themselves via RPC",
+  memberPromote.status >= 400, JSON.stringify(memberPromote));
+
+const dupInvite = await rpc(tokAdmin, "create_invite",
+  { p_email: emails.pubA, p_club_id: pubClub.id, p_role: "member" });
+check("inviting an address that already has an account is refused",
+  dupInvite.status >= 400, JSON.stringify(dupInvite));
+
+const goodInvite = await rpc(tokAdmin, "create_invite",
+  { p_email: "invited@rlstest.local", p_club_id: coClub.id, p_role: "member" });
+check("admin CAN invite someone to a company club",
+  goodInvite.status < 300, JSON.stringify(goodInvite));
+
+// Locking yourself out of your own admin area is a one-click mistake.
+const demoteLast = await rpc(tokAdmin, "set_member_role",
+  { p_member_id: ids.admin, p_role: "member" });
+check("the last super admin CANNOT be demoted",
+  demoteLast.status >= 400 && /last super admin/i.test(JSON.stringify(demoteLast.body)),
+  JSON.stringify(demoteLast));
+
+
 console.log("\n--- anon exposure ---");
 const anonProfiles = await fetch(`${URL}/rest/v1/profiles?select=*`, {
   headers: { apikey: ANON, Authorization: `Bearer ${ANON}` },
