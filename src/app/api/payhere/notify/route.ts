@@ -1,10 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServiceSupabaseClient } from "@/lib/supabase/serverClient";
 import { verifyNotification } from "@/lib/payments/payhere";
+import { clientKey, rateLimit } from "@/lib/security/rateLimit";
 
 // MD5 needs node:crypto. Without this the route may be bundled for an
 // environment that has no such module.
 export const runtime = "nodejs";
+
+// Generous: PayHere legitimately retries, and several members can be paying at
+// once. This is here to stop a flood filling payment_events, not to police
+// normal traffic.
+const NOTIFY_LIMIT = 60;
+const NOTIFY_WINDOW_MS = 60_000;
 
 /**
  * PayHere server-to-server notification.
@@ -27,6 +34,14 @@ export const runtime = "nodejs";
  *  3. The body is application/x-www-form-urlencoded, NOT JSON.
  */
 export async function POST(request: NextRequest) {
+  // Answer 200 even when limiting. A 429 would make PayHere retry harder, and
+  // the retry is the thing being limited.
+  const limit = rateLimit(clientKey(request, "payhere-notify"), NOTIFY_LIMIT, NOTIFY_WINDOW_MS);
+  if (!limit.allowed) {
+    console.warn("[payhere:notify] rate limited", limit.retryAfterSeconds);
+    return NextResponse.json({ ok: true });
+  }
+
   let form: FormData;
   try {
     form = await request.formData();

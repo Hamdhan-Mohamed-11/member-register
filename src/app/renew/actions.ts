@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { requireActiveMember, fullName } from "@/lib/auth/session";
+import { requireActiveMember } from "@/lib/auth/session";
 import { getActionSupabase } from "@/lib/supabase/actionClient";
 import { getSiteUrl } from "@/lib/supabase/env";
 import { buildCheckout, isPayHereConfigured } from "@/lib/payments/payhere";
@@ -123,5 +123,3 @@ export async function startBookingPayment(formData: FormData): Promise<ActionRes
     },
   };
 }
-
-export { fullName };

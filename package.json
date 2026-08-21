@@ -19,7 +19,8 @@
     "test:admin": "node --env-file=.env.local scripts/e2e-admin.mjs",
     "test:payments": "node --env-file=.env.local scripts/payments-test.mjs",
     "test:videos": "node --env-file=.env.local scripts/videos-test.mjs",
-    "test:videos:e2e": "node --env-file=.env.local scripts/e2e-videos.mjs"
+    "test:videos:e2e": "node --env-file=.env.local scripts/e2e-videos.mjs",
+    "test:payments:e2e": "node --env-file=.env.local scripts/e2e-payments.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
