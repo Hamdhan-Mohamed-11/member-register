@@ -1,26 +1,93 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  Palette is deliberately small and light-only. The portal should read as a
+  plain, familiar app (think Facebook): a grey canvas, white cards, one brand
+  blue for actions. Brand colours are taken from the existing pickabook.lk site
+  so the two feel related — #293896 buttons, #F9CD59 accent.
+
+  There is no dark mode in v1. Adding one doubles the design QA surface for no
+  stated need; if it is ever wanted, add a `:root[data-theme="dark"]` block
+  rather than a bare `prefers-color-scheme` one, so a toggle can win.
+*/
+@theme {
+  /* Brand */
+  --color-brand-700: #1e2a70;
+  --color-brand-600: #293896;
+  --color-brand-500: #3a4bb8;
+  --color-brand-100: #e6e9f7;
+  --color-brand-50: #f2f4fc;
+
+  --color-accent-500: #f9cd59;
+  --color-accent-100: #fef6e2;
+
+  /* Neutrals — `canvas` is the page, `surface` is a card sitting on it. */
+  --color-canvas: #f0f2f5;
+  --color-surface: #ffffff;
+  --color-ink: #1c1e21;
+  --color-ink-muted: #65676b;
+  --color-ink-faint: #8a8d91;
+  --color-line: #dcdfe4;
+
+  /* Status */
+  --color-success-600: #1a7f37;
+  --color-success-100: #e6f4ea;
+  --color-warning-600: #9a6700;
+  --color-warning-100: #fff4d6;
+  --color-danger-600: #c0392b;
+  --color-danger-100: #fdecea;
+
+  /* One card shadow, used everywhere. */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-raised: 0 2px 8px rgba(0, 0, 0, 0.12);
+
+  --radius-card: 0.5rem;
 }
 
+/*
+  `inline` so the utility resolves to the font stack itself rather than
+  `var(--font-sans)` pointing at another var — next/font defines --font-poppins
+  on <html>, and the indirection breaks if this is emitted as a plain var ref.
+*/
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  /*
+    Must be inside @layer base. Tailwind v4 emits utilities into a cascade
+    layer, and an UNLAYERED rule beats a layered one regardless of specificity —
+    so an unlayered `a { color: ... }` here would silently defeat every
+    `text-*` utility applied to a link.
+  */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Touch targets: never smaller than 44px on interactive controls. */
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+
+  /* Keep long member names and book titles from blowing out narrow cards. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

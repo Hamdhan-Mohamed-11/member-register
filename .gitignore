@@ -32,6 +32,11 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# local Supabase CLI runtime state (keep migrations, ignore everything else)
+supabase/.temp
+supabase/.branches
 
 # vercel
 .vercel
@@ -39,3 +44,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# playwright screenshots from scripts/e2e-auth.mjs
+test-screenshots/
