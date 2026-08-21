@@ -432,6 +432,50 @@ export type Database = {
         }
         Relationships: []
       }
+      reading_items: {
+        Row: {
+          author: string
+          created_at: string
+          date_read: string | null
+          id: string
+          member_id: string
+          notes: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author?: string
+          created_at?: string
+          date_read?: string | null
+          id?: string
+          member_id: string
+          notes?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string
+          created_at?: string
+          date_read?: string | null
+          id?: string
+          member_id?: string
+          notes?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reading_items_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
