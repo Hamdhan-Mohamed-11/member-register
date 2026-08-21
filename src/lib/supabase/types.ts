@@ -813,8 +813,8 @@ export type Database = {
       }
       upsert_session: {
         Args: {
-          p_book_author: string
-          p_book_title: string
+          p_book_author?: string
+          p_book_title?: string
           p_capacity?: number
           p_guest_fee?: number
           p_held_at: string
@@ -823,7 +823,7 @@ export type Database = {
           p_notes?: string
           p_presenter?: string
           p_pricing_kind?: string
-          p_session_id: string
+          p_session_id?: string
           p_status?: string
           p_title: string
           p_video_url?: string

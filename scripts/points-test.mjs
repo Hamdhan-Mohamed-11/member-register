@@ -60,12 +60,6 @@ async function balanceOf(id) {
   return r?.[0]?.points_balance;
 }
 
-/** Must always return zero rows: the standing drift check. */
-async function drift() {
-  const r = await j(await admin("/rest/v1/rpc/points_drift_check", { method: "POST", body: "{}" }));
-  return r;
-}
-
 // --- fixtures -------------------------------------------------------------
 const EMAILS = {
   admin: "ptadmin@rlstest.local",
