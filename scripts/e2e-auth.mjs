@@ -26,6 +26,19 @@ function check(name, cond, detail = "") {
 const browser = await chromium.launch();
 
 /**
+ * innerText, not textContent.
+ *
+ * textContent walks EVERY node including <script>, and Next inlines its RSC
+ * payload as script content -- so a row the page has already removed is still
+ * findable in textContent long after it stopped rendering. That silently turns
+ * "did this disappear?" assertions into permanent false negatives.
+ */
+async function visibleText(page) {
+  return page.innerText("body");
+}
+
+
+/**
  * Navigation here is a REDIRECT CHAIN, not a single hop: the login form always
  * aims at /feed, and the server then bounces anyone who isn't active on to
  * /pending.
@@ -78,7 +91,7 @@ async function login(page, email, expected = "/feed") {
   await login(page, "puba@rlstest.local");
   check("member lands on /feed after login", page.url().includes("/feed"), page.url());
 
-  const body = await page.textContent("body");
+  const body = await visibleText(page);
   check("feed greets the member by name", /Hello, Pub/.test(body ?? ""), "");
   check("feed shows the club name", /Public Club/.test(body ?? ""), "");
   check("member does NOT see the admin card", !/Club admin/.test(body ?? ""), "");
@@ -103,7 +116,7 @@ async function login(page, email, expected = "/feed") {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await ctx.newPage();
   await login(page, "coboth@rlstest.local");
-  const body = await page.textContent("body");
+  const body = await visibleText(page);
   // Belongs to the company club AND has paid to join the public club, so the
   // header must list both rather than silently showing only the primary one.
   check("multi-club member sees their company club",
@@ -121,14 +134,14 @@ async function login(page, email, expected = "/feed") {
   await login(page, "admin@rlstest.local");
   check("admin lands on /feed after login", page.url().includes("/feed"), page.url());
 
-  const feedBody = await page.textContent("body");
+  const feedBody = await visibleText(page);
   check("admin DOES see the admin card", /Club admin/.test(feedBody ?? ""), "");
 
   await page.goto(`${BASE}/admin`, { waitUntil: "domcontentloaded" });
   await settle(page, "/admin");
   check("admin reaches /admin", page.url().endsWith("/admin"), page.url());
 
-  const adminBody = await page.textContent("body");
+  const adminBody = await visibleText(page);
   check("admin sees super-admin-only areas", /Companies/.test(adminBody ?? ""), "");
   check("admin sees secretary areas", /Sessions/.test(adminBody ?? ""), "");
   await page.screenshot({ path: `${SHOT}e2e-admin.png`, fullPage: true });
@@ -142,9 +155,14 @@ async function login(page, email, expected = "/feed") {
   await login(page, "pending@rlstest.local", "/pending");
   check("pending applicant is sent to /pending", page.url().includes("/pending"), page.url());
 
-  const body = await page.textContent("body");
-  check("pending page explains the wait",
-    /application is with the club/i.test(body ?? ""), "");
+  const body = await visibleText(page);
+  // /pending has two faces: an applicant who has already applied is told to
+  // wait, and one who has not (the email-confirmation path) is offered the
+  // club picker. Either is correct -- what matters is that they are told
+  // something actionable rather than being dumped on a blank page.
+  check("pending page explains what happens next",
+    /application is with the club/i.test(body ?? "") ||
+    /choose a club/i.test(body ?? ""), body?.slice(0, 200));
 
   await page.goto(`${BASE}/feed`, { waitUntil: "domcontentloaded" });
   await settle(page, "/pending");

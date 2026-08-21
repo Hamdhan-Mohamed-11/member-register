@@ -277,22 +277,30 @@ async function rpc(token, name, args) {
   return { status: res.status, body: await j(res) };
 }
 
+// A THROWAWAY applicant for the approval flow, so `pend` stays genuinely
+// pending. Approving `pend` here would silently activate a fixture that
+// scripts/e2e-auth.mjs relies on being stuck on /pending -- the kind of
+// cross-suite coupling that produces a failure in the OTHER file.
+const applicantEmail = "rpcapplicant@rlstest.local";
+const applicantId = await createUser(applicantEmail);
+const tokApplicant = await signIn(applicantEmail);
+
 // The single most important check in this file: company clubs are invite-only,
 // and request_club_join is the only path a member has into a club.
-const joinCompany = await rpc(tokPend, "request_club_join", { p_club_id: coClub.id });
+const joinCompany = await rpc(tokApplicant, "request_club_join", { p_club_id: coClub.id });
 check("member CANNOT apply to a company club",
   joinCompany.status >= 400 && /invite only/i.test(JSON.stringify(joinCompany.body)),
   JSON.stringify(joinCompany));
 
-const joinPublic = await rpc(tokPend, "request_club_join", { p_club_id: pubClub.id });
+const joinPublic = await rpc(tokApplicant, "request_club_join", { p_club_id: pubClub.id });
 check("member CAN apply to a public club", joinPublic.status < 300, JSON.stringify(joinPublic));
 
-const joinTwice = await rpc(tokPend, "request_club_join", { p_club_id: pubClub.id });
+const joinTwice = await rpc(tokApplicant, "request_club_join", { p_club_id: pubClub.id });
 check("a second application while one is pending is refused",
   joinTwice.status >= 400, JSON.stringify(joinTwice));
 
 const reqId = joinPublic.body;
-const selfApprove = await rpc(tokPend, "approve_join_request", { p_request_id: reqId });
+const selfApprove = await rpc(tokApplicant, "approve_join_request", { p_request_id: reqId });
 check("applicant CANNOT approve their own request",
   selfApprove.status >= 400, JSON.stringify(selfApprove));
 
@@ -303,11 +311,11 @@ check("a plain member CANNOT approve a request",
 const adminApprove = await rpc(tokAdmin, "approve_join_request", { p_request_id: reqId });
 check("admin CAN approve a request", adminApprove.status < 300, JSON.stringify(adminApprove));
 
-const approved = (await j(await admin(`/rest/v1/profiles?id=eq.${ids.pend}&select=status`)))[0];
+const approved = (await j(await admin(`/rest/v1/profiles?id=eq.${applicantId}&select=status`)))[0];
 check("approval activates the account", approved.status === "active", JSON.stringify(approved));
 
 const newMembership = (await j(await admin(
-  `/rest/v1/club_memberships?member_id=eq.${ids.pend}&select=*`)))[0];
+  `/rest/v1/club_memberships?member_id=eq.${applicantId}&select=*`)))[0];
 check("approval creates an active membership",
   newMembership?.status === "active", JSON.stringify(newMembership));
 check("their first club is marked primary",

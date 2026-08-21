@@ -437,7 +437,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_join_request: { Args: { p_request_id: string }; Returns: string }
       can_view_member: { Args: { p_member_id: string }; Returns: boolean }
+      create_invite: {
+        Args: { p_club_id: string; p_email: string; p_role?: string }
+        Returns: string
+      }
       current_club_ids: { Args: never; Returns: string[] }
       current_member_has_active_club: { Args: never; Returns: boolean }
       current_member_is_active: { Args: never; Returns: boolean }
@@ -449,7 +454,41 @@ export type Database = {
         Args: { p_expiring_soon_days?: number; p_renewal: string }
         Returns: string
       }
+      reject_join_request: {
+        Args: { p_reason?: string; p_request_id: string }
+        Returns: undefined
+      }
+      request_club_join: {
+        Args: { p_club_id: string; p_message?: string }
+        Returns: string
+      }
+      resolve_club_terms: {
+        Args: { p_club_id: string }
+        Returns: {
+          fee_lkr: number
+          term_months: number
+        }[]
+      }
+      revoke_invite: { Args: { p_invite_id: string }; Returns: undefined }
+      set_member_role: {
+        Args: { p_member_id: string; p_role: string }
+        Returns: undefined
+      }
+      set_member_status: {
+        Args: { p_member_id: string; p_status: string }
+        Returns: undefined
+      }
       shares_active_club: { Args: { p_member_id: string }; Returns: boolean }
+      write_audit: {
+        Args: {
+          p_action: string
+          p_after?: Json
+          p_before?: Json
+          p_entity_id: string
+          p_entity_type: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
