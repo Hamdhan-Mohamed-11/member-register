@@ -78,6 +78,13 @@ export type Database = {
             foreignKeyName: "admin_audit_log_actor_id_fkey"
             columns: ["actor_id"]
             isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -118,6 +125,13 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "app_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "app_settings_updated_by_fkey"
             columns: ["updated_by"]
@@ -170,7 +184,21 @@ export type Database = {
             foreignKeyName: "club_join_requests_decided_by_fkey"
             columns: ["decided_by"]
             isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "club_join_requests_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "club_join_requests_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
             referencedColumns: ["id"]
           },
           {
@@ -222,6 +250,13 @@ export type Database = {
             columns: ["club_id"]
             isOneToOne: false
             referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "club_memberships_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
             referencedColumns: ["id"]
           },
           {
@@ -355,6 +390,13 @@ export type Database = {
             foreignKeyName: "invites_accepted_profile_id_fkey"
             columns: ["accepted_profile_id"]
             isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invites_accepted_profile_id_fkey"
+            columns: ["accepted_profile_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -370,6 +412,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
             referencedColumns: ["id"]
           },
           {
@@ -427,7 +476,21 @@ export type Database = {
             foreignKeyName: "member_activities_member_id_fkey"
             columns: ["member_id"]
             isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_activities_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_activities_recorded_by_fkey"
+            columns: ["recorded_by"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
             referencedColumns: ["id"]
           },
           {
@@ -442,6 +505,13 @@ export type Database = {
             columns: ["session_id"]
             isOneToOne: false
             referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_activities_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
             referencedColumns: ["id"]
           },
           {
@@ -479,6 +549,13 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "points_rules_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "points_rules_updated_by_fkey"
             columns: ["updated_by"]
@@ -578,6 +655,13 @@ export type Database = {
             foreignKeyName: "reading_items_member_id_fkey"
             columns: ["member_id"]
             isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reading_items_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -612,6 +696,13 @@ export type Database = {
           status?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "session_bookings_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "session_bookings_member_id_fkey"
             columns: ["member_id"]
@@ -691,6 +782,13 @@ export type Database = {
             foreignKeyName: "sessions_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sessions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -705,6 +803,13 @@ export type Database = {
             foreignKeyName: "sessions_presenter_member_id_fkey"
             columns: ["presenter_member_id"]
             isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sessions_presenter_member_id_fkey"
+            columns: ["presenter_member_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -712,9 +817,35 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      admin_members: {
+        Row: {
+          active_clubs: number | null
+          email: string | null
+          first_name: string | null
+          id: string | null
+          joined_on: string | null
+          last_name: string | null
+          next_renewal: string | null
+          points_balance: number | null
+          role: string | null
+          status: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      admin_add_club_membership: {
+        Args: { p_club_id: string; p_member_id: string; p_months?: number }
+        Returns: string
+      }
+      admin_set_membership: {
+        Args: {
+          p_membership_id: string
+          p_renewal_date?: string
+          p_status?: string
+        }
+        Returns: undefined
+      }
       approve_join_request: { Args: { p_request_id: string }; Returns: string }
       book_session: { Args: { p_session_id: string }; Returns: string }
       can_view_member: { Args: { p_member_id: string }; Returns: boolean }
@@ -800,6 +931,16 @@ export type Database = {
       shares_active_club: { Args: { p_member_id: string }; Returns: boolean }
       slugify: { Args: { p_text: string }; Returns: string }
       unique_club_slug: { Args: { p_base: string }; Returns: string }
+      update_app_settings: {
+        Args: {
+          p_book_discount?: number
+          p_expiring_soon_days?: number
+          p_grace_days?: number
+          p_membership_fee?: number
+          p_term_months?: number
+        }
+        Returns: undefined
+      }
       update_club: {
         Args: {
           p_club_id: string
@@ -809,6 +950,10 @@ export type Database = {
           p_name?: string
           p_term_months?: number
         }
+        Returns: undefined
+      }
+      update_points_rule: {
+        Args: { p_code: string; p_points: number }
         Returns: undefined
       }
       upsert_session: {

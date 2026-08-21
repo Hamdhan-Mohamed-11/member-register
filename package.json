@@ -15,7 +15,8 @@
     "test:onboarding": "node --env-file=.env.local scripts/e2e-onboarding.mjs",
     "test:company": "node --env-file=.env.local scripts/e2e-company.mjs",
     "test:directory": "node --env-file=.env.local scripts/e2e-directory.mjs",
-    "test:points": "node --env-file=.env.local scripts/points-test.mjs"
+    "test:points": "node --env-file=.env.local scripts/points-test.mjs",
+    "test:admin": "node --env-file=.env.local scripts/e2e-admin.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

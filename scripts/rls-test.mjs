@@ -352,6 +352,47 @@ check("the last super admin CANNOT be demoted",
   JSON.stringify(demoteLast));
 
 
+console.log("\n--- admin_members view ---");
+
+// A VIEW is the classic RLS bypass: by default it runs as its OWNER, whose
+// privileges ignore the policies on the underlying tables. admin_members is
+// declared `security_invoker = on` precisely so it does not, and that claim is
+// worth proving rather than trusting.
+const viewAsMember = await j(await asUser(tokA, "/rest/v1/admin_members?select=id,email"));
+check("admin_members view does NOT bypass RLS for a plain member",
+  Array.isArray(viewAsMember) && !viewAsMember.some((r) => r.email === emails.coC),
+  JSON.stringify(viewAsMember?.map?.((r) => r.email) ?? viewAsMember));
+
+const viewAsAdmin = await j(await asUser(tokAdmin, "/rest/v1/admin_members?select=id,email,active_clubs,next_renewal"));
+check("admin_members view shows every member to an admin",
+  Array.isArray(viewAsAdmin) &&
+    Object.values(emails).every((e) => viewAsAdmin.some((r) => r.email === e)),
+  `saw ${Array.isArray(viewAsAdmin) ? viewAsAdmin.length : 0}`);
+check("the view aggregates club counts",
+  Array.isArray(viewAsAdmin) &&
+    viewAsAdmin.find((r) => r.email === emails.coBoth)?.active_clubs === 2,
+  JSON.stringify(viewAsAdmin?.find?.((r) => r.email === emails.coBoth)));
+
+const anonView = await fetch(`${URL}/rest/v1/admin_members?select=id`, {
+  headers: { apikey: ANON, Authorization: `Bearer ${ANON}` },
+});
+const anonViewBody = await j(anonView);
+check("anon gets nothing from admin_members",
+  anonView.status >= 400 || (Array.isArray(anonViewBody) && anonViewBody.length === 0),
+  `${anonView.status} ${JSON.stringify(anonViewBody)}`);
+
+const settingsWrite = await rpc(tokA, "update_app_settings", { p_membership_fee: 1 });
+check("a plain member cannot change settings", settingsWrite.status >= 400, JSON.stringify(settingsWrite));
+
+const ruleWrite = await rpc(tokA, "update_points_rule", { p_code: "attend", p_points: 9999 });
+check("a plain member cannot re-tune points rules", ruleWrite.status >= 400, JSON.stringify(ruleWrite));
+
+const grantSelfClub = await rpc(tokA, "admin_add_club_membership",
+  { p_member_id: ids.pubA, p_club_id: coClub.id });
+check("a plain member cannot grant themselves a club",
+  grantSelfClub.status >= 400, JSON.stringify(grantSelfClub));
+
+
 console.log("\n--- anon exposure ---");
 const anonProfiles = await fetch(`${URL}/rest/v1/profiles?select=*`, {
   headers: { apikey: ANON, Authorization: `Bearer ${ANON}` },

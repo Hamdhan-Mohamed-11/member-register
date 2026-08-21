@@ -20,9 +20,9 @@ const AREAS = [
   { href: "/admin/videos", label: "Videos", desc: "Approve member-submitted recordings.", superOnly: false, ready: false },
   { href: "/admin/orders", label: "Book orders", desc: "Fulfil member purchases.", superOnly: false, ready: false },
   { href: "/admin/library", label: "Borrow requests", desc: "Issue and return library books.", superOnly: false, ready: false },
-  { href: "/admin/members", label: "Members", desc: "Roles, membership dates, suspensions.", superOnly: true, ready: false },
+  { href: "/admin/members", label: "Members", desc: "Roles, membership dates, suspensions.", superOnly: true, ready: true },
   { href: "/admin/invites", label: "Invites", desc: "Invite members and secretaries.", superOnly: true, ready: false },
-  { href: "/admin/settings", label: "Settings", desc: "Fees, terms, discount, points rules.", superOnly: true, ready: false },
+  { href: "/admin/settings", label: "Settings", desc: "Fees, terms, discount, points rules.", superOnly: true, ready: true },
 ];
 
 export default async function AdminPage() {
