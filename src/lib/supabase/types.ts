@@ -381,6 +381,113 @@ export type Database = {
           },
         ]
       }
+      member_activities: {
+        Row: {
+          activity_code: string
+          id: string
+          member_id: string
+          points_awarded: number
+          recorded_at: string
+          recorded_by: string | null
+          session_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          activity_code: string
+          id?: string
+          member_id: string
+          points_awarded: number
+          recorded_at?: string
+          recorded_by?: string | null
+          session_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          activity_code?: string
+          id?: string
+          member_id?: string
+          points_awarded?: number
+          recorded_at?: string
+          recorded_by?: string | null
+          session_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_activities_activity_code_fkey"
+            columns: ["activity_code"]
+            isOneToOne: false
+            referencedRelation: "points_rules"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "member_activities_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_activities_recorded_by_fkey"
+            columns: ["recorded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_activities_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_activities_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      points_rules: {
+        Row: {
+          code: string
+          is_active: boolean
+          label: string
+          points: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          code: string
+          is_active?: boolean
+          label: string
+          points: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          code?: string
+          is_active?: boolean
+          label?: string
+          points?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "points_rules_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_path: string | null
@@ -476,13 +583,145 @@ export type Database = {
           },
         ]
       }
+      session_bookings: {
+        Row: {
+          booked_at: string
+          confirmed_at: string | null
+          fee_lkr: number
+          id: string
+          member_id: string
+          session_id: string
+          status: string
+        }
+        Insert: {
+          booked_at?: string
+          confirmed_at?: string | null
+          fee_lkr?: number
+          id?: string
+          member_id: string
+          session_id: string
+          status?: string
+        }
+        Update: {
+          booked_at?: string
+          confirmed_at?: string | null
+          fee_lkr?: number
+          id?: string
+          member_id?: string
+          session_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_bookings_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_bookings_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sessions: {
+        Row: {
+          book_author: string
+          book_title: string
+          capacity: number | null
+          created_at: string
+          created_by: string | null
+          guest_fee_lkr: number | null
+          held_at: string
+          host_club_id: string
+          id: string
+          location: string | null
+          notes: string | null
+          presenter_member_id: string | null
+          pricing_kind: string
+          status: string
+          title: string
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          book_author?: string
+          book_title?: string
+          capacity?: number | null
+          created_at?: string
+          created_by?: string | null
+          guest_fee_lkr?: number | null
+          held_at: string
+          host_club_id: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          presenter_member_id?: string | null
+          pricing_kind?: string
+          status?: string
+          title: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          book_author?: string
+          book_title?: string
+          capacity?: number | null
+          created_at?: string
+          created_by?: string | null
+          guest_fee_lkr?: number | null
+          held_at?: string
+          host_club_id?: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          presenter_member_id?: string | null
+          pricing_kind?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sessions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sessions_host_club_id_fkey"
+            columns: ["host_club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sessions_presenter_member_id_fkey"
+            columns: ["presenter_member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       approve_join_request: { Args: { p_request_id: string }; Returns: string }
+      book_session: { Args: { p_session_id: string }; Returns: string }
       can_view_member: { Args: { p_member_id: string }; Returns: boolean }
+      cancel_session_booking: {
+        Args: { p_booking_id: string }
+        Returns: undefined
+      }
       create_company_with_club: {
         Args: {
           p_club_name?: string
@@ -521,6 +760,15 @@ export type Database = {
         Args: { p_expiring_soon_days?: number; p_renewal: string }
         Returns: string
       }
+      recompute_all_points: { Args: never; Returns: number }
+      recompute_member_points: {
+        Args: { p_member_id: string }
+        Returns: number
+      }
+      record_session_attendance: {
+        Args: { p_entries: Json; p_session_id: string }
+        Returns: number
+      }
       reject_join_request: {
         Args: { p_reason?: string; p_request_id: string }
         Returns: undefined
@@ -537,6 +785,10 @@ export type Database = {
         }[]
       }
       revoke_invite: { Args: { p_invite_id: string }; Returns: undefined }
+      session_fee_for: {
+        Args: { p_member_id: string; p_session_id: string }
+        Returns: number
+      }
       set_member_role: {
         Args: { p_member_id: string; p_role: string }
         Returns: undefined
@@ -558,6 +810,25 @@ export type Database = {
           p_term_months?: number
         }
         Returns: undefined
+      }
+      upsert_session: {
+        Args: {
+          p_book_author: string
+          p_book_title: string
+          p_capacity?: number
+          p_guest_fee?: number
+          p_held_at: string
+          p_host_club_id: string
+          p_location?: string
+          p_notes?: string
+          p_presenter?: string
+          p_pricing_kind?: string
+          p_session_id: string
+          p_status?: string
+          p_title: string
+          p_video_url?: string
+        }
+        Returns: string
       }
       write_audit: {
         Args: {

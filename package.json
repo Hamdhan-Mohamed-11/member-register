@@ -14,7 +14,8 @@
     "db:types": "npx supabase gen types typescript --linked > src/lib/supabase/types.ts",
     "test:onboarding": "node --env-file=.env.local scripts/e2e-onboarding.mjs",
     "test:company": "node --env-file=.env.local scripts/e2e-company.mjs",
-    "test:directory": "node --env-file=.env.local scripts/e2e-directory.mjs"
+    "test:directory": "node --env-file=.env.local scripts/e2e-directory.mjs",
+    "test:points": "node --env-file=.env.local scripts/points-test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
