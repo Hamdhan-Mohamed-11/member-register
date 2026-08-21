@@ -182,6 +182,57 @@ export type Database = {
           },
         ]
       }
+      club_memberships: {
+        Row: {
+          club_id: string
+          created_at: string
+          id: string
+          is_primary: boolean
+          joined_on: string | null
+          member_id: string
+          renewal_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          club_id: string
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          joined_on?: string | null
+          member_id: string
+          renewal_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          club_id?: string
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          joined_on?: string | null
+          member_id?: string
+          renewal_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_memberships_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "club_memberships_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clubs: {
         Row: {
           company_id: string | null
@@ -190,8 +241,10 @@ export type Database = {
           id: string
           is_active: boolean
           kind: string
+          membership_fee_lkr: number | null
           name: string
           slug: string
+          term_months: number | null
         }
         Insert: {
           company_id?: string | null
@@ -200,8 +253,10 @@ export type Database = {
           id?: string
           is_active?: boolean
           kind: string
+          membership_fee_lkr?: number | null
           name: string
           slug: string
+          term_months?: number | null
         }
         Update: {
           company_id?: string | null
@@ -210,8 +265,10 @@ export type Database = {
           id?: string
           is_active?: boolean
           kind?: string
+          membership_fee_lkr?: number | null
           name?: string
           slug?: string
+          term_months?: number | null
         }
         Relationships: [
           {
@@ -328,7 +385,6 @@ export type Database = {
         Row: {
           avatar_path: string | null
           bio: string | null
-          club_id: string | null
           created_at: string
           email: string
           first_name: string
@@ -338,7 +394,6 @@ export type Database = {
           learning_tags: string[]
           phone: string | null
           points_balance: number
-          renewal_date: string | null
           role: string
           status: string
           updated_at: string
@@ -346,7 +401,6 @@ export type Database = {
         Insert: {
           avatar_path?: string | null
           bio?: string | null
-          club_id?: string | null
           created_at?: string
           email: string
           first_name?: string
@@ -356,7 +410,6 @@ export type Database = {
           learning_tags?: string[]
           phone?: string | null
           points_balance?: number
-          renewal_date?: string | null
           role?: string
           status?: string
           updated_at?: string
@@ -364,7 +417,6 @@ export type Database = {
         Update: {
           avatar_path?: string | null
           bio?: string | null
-          club_id?: string | null
           created_at?: string
           email?: string
           first_name?: string
@@ -374,20 +426,11 @@ export type Database = {
           learning_tags?: string[]
           phone?: string | null
           points_balance?: number
-          renewal_date?: string | null
           role?: string
           status?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_club_id_fkey"
-            columns: ["club_id"]
-            isOneToOne: false
-            referencedRelation: "clubs"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
@@ -395,7 +438,8 @@ export type Database = {
     }
     Functions: {
       can_view_member: { Args: { p_member_id: string }; Returns: boolean }
-      current_club_id: { Args: never; Returns: string }
+      current_club_ids: { Args: never; Returns: string[] }
+      current_member_has_active_club: { Args: never; Returns: boolean }
       current_member_is_active: { Args: never; Returns: boolean }
       current_member_role: { Args: never; Returns: string }
       is_admin: { Args: never; Returns: boolean }
@@ -405,6 +449,7 @@ export type Database = {
         Args: { p_expiring_soon_days?: number; p_renewal: string }
         Returns: string
       }
+      shares_active_club: { Args: { p_member_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

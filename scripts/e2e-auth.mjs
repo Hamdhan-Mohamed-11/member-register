@@ -98,6 +98,22 @@ async function login(page, email, expected = "/feed") {
   await ctx.close();
 }
 
+// --- 2b. multi-club member -----------------------------------------------
+{
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await ctx.newPage();
+  await login(page, "coboth@rlstest.local");
+  const body = await page.textContent("body");
+  // Belongs to the company club AND has paid to join the public club, so the
+  // header must list both rather than silently showing only the primary one.
+  check("multi-club member sees their company club",
+    /Acme Club/.test(body ?? ""), "");
+  check("multi-club member sees their public club",
+    /Public Club/.test(body ?? ""), "");
+  await page.screenshot({ path: `${SHOT}e2e-multiclub.png`, fullPage: true });
+  await ctx.close();
+}
+
 // --- 3. super admin ------------------------------------------------------
 {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });

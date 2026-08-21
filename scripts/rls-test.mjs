@@ -125,23 +125,52 @@ const emails = {
   pubB: "pubb@rlstest.local",
   coC: "coc@rlstest.local",
   coD: "cod@rlstest.local",
+  // A company employee who has ALSO paid to join the public club. This is the
+  // whole point of the multi-club model and the case most likely to leak.
+  coBoth: "coboth@rlstest.local",
   pend: "pending@rlstest.local",
 };
 
 const ids = {};
 for (const [k, e] of Object.entries(emails)) ids[k] = await createUser(e);
 
-await patchProfile(ids.admin, { role: "super_admin", status: "active", club_id: pubClub.id, first_name: "Super", last_name: "Admin" });
-await patchProfile(ids.pubA, { status: "active", club_id: pubClub.id, first_name: "Pub", last_name: "Aye" });
-await patchProfile(ids.pubB, { status: "active", club_id: pubClub.id, first_name: "Pub", last_name: "Bee" });
-await patchProfile(ids.coC, { status: "active", club_id: coClub.id, first_name: "Co", last_name: "Cee" });
-await patchProfile(ids.coD, { status: "active", club_id: coClub.id, first_name: "Co", last_name: "Dee" });
-// pend stays status='pending', club_id=null -- exactly what handle_new_user made
+async function joinClub(memberId, clubId, { primary = false, status = "active" } = {}) {
+  const r = await admin("/rest/v1/club_memberships", {
+    method: "POST",
+    headers: { Prefer: "return=representation" },
+    body: JSON.stringify({
+      member_id: memberId, club_id: clubId, status,
+      is_primary: primary, joined_on: "2026-01-01", renewal_date: "2027-01-01",
+    }),
+  });
+  const d = await j(r);
+  if (!Array.isArray(d) || !d.length) throw new Error(`joinClub: ${JSON.stringify(d)}`);
+  return d[0];
+}
+
+await patchProfile(ids.admin, { role: "super_admin", status: "active", first_name: "Super", last_name: "Admin" });
+await patchProfile(ids.pubA, { status: "active", first_name: "Pub", last_name: "Aye" });
+await patchProfile(ids.pubB, { status: "active", first_name: "Pub", last_name: "Bee" });
+await patchProfile(ids.coC, { status: "active", first_name: "Co", last_name: "Cee" });
+await patchProfile(ids.coD, { status: "active", first_name: "Co", last_name: "Dee" });
+await patchProfile(ids.coBoth, { status: "active", first_name: "Co", last_name: "Both" });
+
+await joinClub(ids.admin, pubClub.id, { primary: true });
+await joinClub(ids.pubA, pubClub.id, { primary: true });
+await joinClub(ids.pubB, pubClub.id, { primary: true });
+await joinClub(ids.coC, coClub.id, { primary: true });
+await joinClub(ids.coD, coClub.id, { primary: true });
+await joinClub(ids.coBoth, coClub.id, { primary: true });
+await joinClub(ids.coBoth, pubClub.id);   // paid to join the public club as well
+// pend stays status='pending' with NO membership -- what handle_new_user made
+
 
 console.log("\n--- handle_new_user provisioning ---");
 const pendProfile = (await j(await admin(`/rest/v1/profiles?id=eq.${ids.pend}&select=*`)))[0];
 check("new signup lands status=pending", pendProfile.status === "pending", `got ${pendProfile.status}`);
-check("new signup lands with no club", pendProfile.club_id === null, `got ${pendProfile.club_id}`);
+const pendMemberships = await j(await admin(`/rest/v1/club_memberships?member_id=eq.${ids.pend}`));
+check("new signup lands with no club membership",
+  Array.isArray(pendMemberships) && pendMemberships.length === 0, JSON.stringify(pendMemberships));
 check("new signup lands role=member", pendProfile.role === "member", `got ${pendProfile.role}`);
 check("email mirrored onto profile", pendProfile.email === emails.pend, `got ${pendProfile.email}`);
 
@@ -149,6 +178,7 @@ console.log("\n--- directory visibility ---");
 const tokA = await signIn(emails.pubA);
 const tokC = await signIn(emails.coC);
 const tokD = await signIn(emails.coD);
+const tokBoth = await signIn(emails.coBoth);
 const tokPend = await signIn(emails.pend);
 const tokAdmin = await signIn(emails.admin);
 
@@ -158,16 +188,34 @@ check("public member sees another public member", seenByA.includes(emails.pubB))
 check("public member CANNOT see company member C", !seenByA.includes(emails.coC), `saw: ${seenByA}`);
 check("public member CANNOT see company member D", !seenByA.includes(emails.coD), `saw: ${seenByA}`);
 check("public member CANNOT see pending applicant", !seenByA.includes(emails.pend), `saw: ${seenByA}`);
+check("public member CAN see the company employee who joined their club",
+  seenByA.includes(emails.coBoth), `saw: ${seenByA}`);
 
 const seenByC = await visibleIds(tokC);
 check("company member sees their colleague", seenByC.includes(emails.coD), `saw: ${seenByC}`);
 check("company member CANNOT see public members", !seenByC.includes(emails.pubA), `saw: ${seenByC}`);
+check("company-only member sees the dual-club colleague (shared company club)",
+  seenByC.includes(emails.coBoth), `saw: ${seenByC}`);
+
+// The dual-club member is the crux of the multi-club model: they should see
+// BOTH sets, and joining a public club must not drag their colleagues into
+// public view.
+const seenByBoth = await visibleIds(tokBoth);
+check("dual-club member sees their company colleagues",
+  seenByBoth.includes(emails.coC) && seenByBoth.includes(emails.coD), `saw: ${seenByBoth}`);
+check("dual-club member sees public club members",
+  seenByBoth.includes(emails.pubA) && seenByBoth.includes(emails.pubB), `saw: ${seenByBoth}`);
+check("joining a public club does NOT expose the member's colleagues to it",
+  !seenByA.includes(emails.coC) && !seenByA.includes(emails.coD), `public member saw: ${seenByA}`);
 
 // Symmetric check -- visibility must not depend on which colleague is asking.
 const seenByD = await visibleIds(tokD);
 check("colleague visibility is symmetric", seenByD.includes(emails.coC), `saw: ${seenByD}`);
+// coBoth is legitimately in this company club too -- the assertion is that D
+// sees the company club and NOTHING beyond it.
+const companyClubEmails = [emails.coC, emails.coD, emails.coBoth];
 check("company member sees ONLY their own club",
-  seenByD.every((e) => e === emails.coC || e === emails.coD), `saw: ${seenByD}`);
+  seenByD.every((e) => companyClubEmails.includes(e)), `saw: ${seenByD}`);
 
 const seenByPend = await visibleIds(tokPend);
 check("pending applicant sees ONLY themselves",
@@ -193,15 +241,20 @@ const escPoints = await asUser(tokA, `/rest/v1/profiles?id=eq.${ids.pubA}`, {
 });
 check("member CANNOT set their own points_balance", escPoints.status >= 400, `status ${escPoints.status}`);
 
-const escRenewal = await asUser(tokA, `/rest/v1/profiles?id=eq.${ids.pubA}`, {
+// Clubs are rows in club_memberships now, so the escalation to block is
+// "insert yourself into a club you never paid for".
+const escJoin = await asUser(tokA, "/rest/v1/club_memberships", {
+  method: "POST",
+  body: JSON.stringify({ member_id: ids.pubA, club_id: coClub.id, status: "active" }),
+});
+check("member CANNOT insert their own club membership",
+  escJoin.status >= 400, `status ${escJoin.status}`);
+
+const escActivate = await asUser(tokA, `/rest/v1/club_memberships?member_id=eq.${ids.pubA}`, {
   method: "PATCH", body: JSON.stringify({ renewal_date: "2099-01-01" }),
 });
-check("member CANNOT set their own renewal_date", escRenewal.status >= 400, `status ${escRenewal.status}`);
-
-const escClub = await asUser(tokA, `/rest/v1/profiles?id=eq.${ids.pubA}`, {
-  method: "PATCH", body: JSON.stringify({ club_id: coClub.id }),
-});
-check("member CANNOT move themselves into a company club", escClub.status >= 400, `status ${escClub.status}`);
+check("member CANNOT extend their own membership",
+  escActivate.status >= 400, `status ${escActivate.status}`);
 
 const legit = await asUser(tokA, `/rest/v1/profiles?id=eq.${ids.pubA}`, {
   method: "PATCH", body: JSON.stringify({ bio: "hello", first_name: "Pub" }),
