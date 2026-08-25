@@ -5,9 +5,11 @@ import Link from "next/link";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browserClient";
 import { Button } from "@/components/ui/Button";
 import { Field, Notice } from "@/components/ui/Field";
+import { useHydrated } from "@/lib/useHydrated";
 
 export function ForgotPasswordForm({ siteUrl }: { siteUrl: string }) {
   const [sent, setSent] = useState(false);
+  const hydrated = useHydrated();
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -44,7 +46,7 @@ export function ForgotPasswordForm({ siteUrl }: { siteUrl: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form method="post" onSubmit={onSubmit} className="space-y-4">
       <Field
         label="Email"
         name="email"
@@ -53,7 +55,7 @@ export function ForgotPasswordForm({ siteUrl }: { siteUrl: string }) {
         required
         placeholder="you@example.com"
       />
-      <Button type="submit" disabled={busy} className="w-full">
+      <Button type="submit" disabled={busy || !hydrated} className="w-full">
         {busy ? "Sending…" : "Send reset link"}
       </Button>
       <Link href="/login" className="block text-sm text-brand-600 hover:underline">

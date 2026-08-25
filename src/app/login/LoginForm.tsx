@@ -6,11 +6,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browserClient";
 import { Button } from "@/components/ui/Button";
 import { Field, Notice } from "@/components/ui/Field";
+import { useHydrated } from "@/lib/useHydrated";
 
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+  const hydrated = useHydrated();
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -47,7 +49,15 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    /*
+      method="post" and the hydration gate are both about the same failure:
+      before React attaches onSubmit, this form is visible and clickable but
+      inert, so the browser does a NATIVE submit -- which for a GET form puts
+      the email and password straight into the URL, and from there into nginx
+      access logs and browser history. The button stays disabled until
+      hydration, and the method is a belt-and-braces fallback.
+    */
+    <form method="post" onSubmit={onSubmit} className="space-y-4">
       {error ? <Notice>{error}</Notice> : null}
 
       <Field
@@ -66,7 +76,7 @@ export function LoginForm() {
         required
       />
 
-      <Button type="submit" disabled={busy} className="w-full">
+      <Button type="submit" disabled={busy || !hydrated} className="w-full">
         {busy ? "Signing in…" : "Log in"}
       </Button>
 

@@ -52,6 +52,13 @@ export async function login(page, baseUrl, email, password, expected = "/feed") 
 
     const submit = page.locator('button[type="submit"]');
     await submit.waitFor({ state: "visible", timeout: 60_000 });
+
+    // The credential forms keep this button disabled until React has hydrated
+    // (see src/lib/useHydrated.ts), so waiting for it to become enabled is a
+    // real hydration check rather than a no-op. An earlier version of this
+    // helper made the same check BEFORE the app did that, when the button was
+    // enabled from first paint -- so it clicked an inert form, the browser did
+    // a native GET, and the password ended up in the URL.
     await page.waitForFunction(
       () => document.querySelector('button[type="submit"]')?.disabled === false,
       { timeout: 60_000 },

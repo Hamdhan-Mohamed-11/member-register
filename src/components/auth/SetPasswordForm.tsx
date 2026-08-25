@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browserClient";
 import { Button } from "@/components/ui/Button";
 import { Field, Notice } from "@/components/ui/Field";
+import { useHydrated } from "@/lib/useHydrated";
 
 const MIN_LENGTH = 10;
 
@@ -22,6 +23,7 @@ export function SetPasswordForm({
 }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const hydrated = useHydrated();
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -60,7 +62,7 @@ export function SetPasswordForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form method="post" onSubmit={onSubmit} className="space-y-4">
       {error ? <Notice>{error}</Notice> : null}
 
       <Field
@@ -80,7 +82,7 @@ export function SetPasswordForm({
         required
       />
 
-      <Button type="submit" disabled={busy} className="w-full">
+      <Button type="submit" disabled={busy || !hydrated} className="w-full">
         {busy ? "Saving…" : submitLabel}
       </Button>
     </form>

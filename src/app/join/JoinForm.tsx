@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browserClient";
 import { Button } from "@/components/ui/Button";
 import { Field, Notice } from "@/components/ui/Field";
+import { useHydrated } from "@/lib/useHydrated";
 
 export type JoinableClub = {
   id: string;
@@ -24,6 +25,7 @@ export function JoinForm({
 }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const hydrated = useHydrated();
   const [needsConfirm, setNeedsConfirm] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -112,7 +114,7 @@ export function JoinForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form method="post" onSubmit={onSubmit} className="space-y-4">
       {error ? <Notice>{error}</Notice> : null}
 
       <div className="grid grid-cols-2 gap-3">
@@ -164,7 +166,7 @@ export function JoinForm({
         </p>
       </div>
 
-      <Button type="submit" disabled={busy} className="w-full">
+      <Button type="submit" disabled={busy || !hydrated} className="w-full">
         {busy ? "Creating your account…" : "Apply to join"}
       </Button>
 
