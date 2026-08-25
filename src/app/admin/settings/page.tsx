@@ -58,7 +58,7 @@ export default async function SettingsPage() {
         <Link href="/admin" className="text-sm text-brand-600 hover:underline">
           ← Admin
         </Link>
-        <h1 className="font-display text-2xl text-ink mt-1">Settings</h1>
+        <h1 className="text-2xl font-semibold text-ink mt-1">Settings</h1>
         <p className="text-sm text-ink-muted">
           Defaults used across the portal. Individual clubs can override the fee
           and term.

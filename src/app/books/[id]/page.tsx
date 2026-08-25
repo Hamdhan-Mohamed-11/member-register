@@ -95,7 +95,7 @@ export default async function BookPage({
 
         <div className="space-y-4">
           <Card>
-            <h1 className="font-display text-xl text-ink">{book.title}</h1>
+            <h1 className="text-xl font-semibold text-ink">{book.title}</h1>
             {book.author ? <p className="text-sm text-ink-muted mt-0.5">{book.author}</p> : null}
 
             <div className="mt-4">

@@ -27,7 +27,7 @@ export default async function MyPointsPage() {
         <Link href="/me" className="text-sm text-brand-600 hover:underline">
           ← My profile
         </Link>
-        <h1 className="font-display text-2xl text-ink mt-1">My points</h1>
+        <h1 className="text-2xl font-semibold text-ink mt-1">My points</h1>
       </div>
 
       <div className="space-y-4">

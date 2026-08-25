@@ -60,7 +60,7 @@ export default async function AdminSessionPage({
         <Link href="/admin/sessions" className="text-sm text-brand-600 hover:underline">
           ← Sessions
         </Link>
-        <h1 className="font-display text-2xl text-ink mt-1">{session.title}</h1>
+        <h1 className="text-2xl font-semibold text-ink mt-1">{session.title}</h1>
         <p className="text-sm text-ink-muted">
           {formatWhen(session.heldAt)} · {session.hostClub?.name}
         </p>

@@ -19,7 +19,7 @@ export function TopBar({ member }: { member: TopBarMember | null }) {
       <div className="mx-auto max-w-5xl px-4 h-14 flex items-center gap-4">
         <Link
           href={member ? "/feed" : "/"}
-          className="font-display text-xl text-brand-600 shrink-0"
+          className="text-lg font-semibold text-brand-600 tracking-tight shrink-0"
         >
           Pick a Book
         </Link>

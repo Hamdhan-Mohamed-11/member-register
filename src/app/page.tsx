@@ -7,15 +7,15 @@ import { getSessionMember } from "@/lib/auth/session";
 const FEATURES = [
   {
     title: "Your reading, in one place",
-    body: "Keep track of what you're reading now, what's next, and everything you've finished.",
+    body: "What you're reading now, what's next, and everything you've finished.",
   },
   {
     title: "Sessions and points",
-    body: "Turn up, present a book, earn points. Your club secretary records it as it happens.",
+    body: "Turn up, present a book, earn points. Recorded as the session happens.",
   },
   {
     title: "25% off every book",
-    body: "The whole Pick a Book catalogue at member prices, plus the lending library.",
+    body: "The full Pick a Book catalogue at member prices, plus the lending library.",
   },
 ];
 
@@ -25,73 +25,79 @@ export default async function Home() {
 
   return (
     <AppShell member={null}>
-      <div className="max-w-2xl mx-auto">
-        <section className="text-center pt-8 pb-10">
+      <div className="max-w-3xl mx-auto">
+        <section className="text-center pt-10 pb-12">
           {/*
-            A small piece of ornament rather than a stock illustration: it
-            costs nothing to load, scales cleanly, and cannot look dated.
+            An inline SVG rather than an image: nothing to load, scales cleanly,
+            and cannot look dated. Kept small — restraint is what reads as
+            professional here.
           */}
           <div
             aria-hidden="true"
-            className="mx-auto mb-6 w-14 h-14 rounded-2xl bg-brand-600 shadow-hero grid place-items-center"
+            className="mx-auto mb-7 w-12 h-12 rounded-xl bg-brand-600 shadow-hero grid place-items-center"
           >
             <svg
               viewBox="0 0 24 24"
               fill="none"
-              stroke="var(--color-accent-500)"
-              strokeWidth={1.8}
+              stroke="white"
+              strokeWidth={1.75}
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="w-7 h-7"
+              className="w-6 h-6"
             >
               <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H19v16H5.5A1.5 1.5 0 0 1 4 18.5z" />
               <path d="M8 4v16" />
             </svg>
           </div>
 
-          <h1 className="font-display text-4xl sm:text-5xl text-ink leading-[1.1]">
-            The Pick a Book
-            <span className="block text-brand-600">member portal</span>
+          <h1 className="text-4xl sm:text-5xl font-semibold text-ink leading-[1.08]">
+            Everything your book
+            <span className="block text-brand-600">club does, in one place</span>
           </h1>
 
-          <p className="mt-4 text-ink-muted text-base sm:text-lg max-w-md mx-auto">
-            Track what you&apos;re reading, see your club&apos;s sessions, earn
-            points for taking part, and borrow or buy books at a member
-            discount.
+          <p className="mt-5 text-ink-muted text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
+            Track your reading, join sessions, earn points for taking part, and
+            buy or borrow books at a member discount.
           </p>
 
-          <div className="mt-7 flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/login" className={buttonClassName("primary")}>
-              Log in
-            </Link>
-            <Link href="/join" className={buttonClassName("secondary")}>
+          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/join" className={buttonClassName("primary")}>
               Join a club
+            </Link>
+            <Link href="/login" className={buttonClassName("secondary")}>
+              Log in
             </Link>
           </div>
         </section>
 
-        <section className="grid gap-3 sm:grid-cols-3">
+        {/*
+          A hairline divider instead of a section break. On a near-white page,
+          a rule does the separating work a background colour would, without
+          introducing a second surface.
+        */}
+        <div className="h-px bg-line" />
+
+        <section className="grid gap-px sm:grid-cols-3 bg-line border-x border-b border-line rounded-b-card overflow-hidden">
           {FEATURES.map((f) => (
-            <div
-              key={f.title}
-              className="bg-surface border border-line rounded-card p-4 shadow-card"
-            >
-              <h2 className="font-display text-base text-ink leading-snug">
+            <div key={f.title} className="bg-surface p-5">
+              <h2 className="text-[15px] font-semibold text-ink leading-snug">
                 {f.title}
               </h2>
-              <p className="text-sm text-ink-muted mt-1.5">{f.body}</p>
+              <p className="text-sm text-ink-muted mt-2 leading-relaxed">{f.body}</p>
             </div>
           ))}
         </section>
 
-        <section className="mt-4 rounded-card border border-accent-300 bg-accent-100 p-4 text-center">
-          <p className="text-sm text-ink">
-            Already a member of a company club? Look for your invite email — it
-            has a link to set your password.
+        <section className="mt-8 text-center">
+          <p className="text-sm text-ink-muted">
+            Already invited by your employer?{" "}
+            <span className="text-ink">
+              Check your email for a link to set your password.
+            </span>
           </p>
         </section>
 
-        <p className="text-center text-xs text-ink-faint mt-8 pb-4">
+        <p className="text-center text-xs text-ink-faint mt-10 pb-4">
           Part of{" "}
           <a
             href="https://www.pickabook.lk"

@@ -15,7 +15,7 @@ export default async function LoginPage() {
   return (
     <AppShell member={null}>
       <div className="max-w-sm mx-auto pt-6">
-        <h1 className="font-display text-2xl text-ink text-center mb-5">
+        <h1 className="text-2xl font-semibold text-ink text-center mb-5">
           Log in to Pick a Book
         </h1>
         <Card>

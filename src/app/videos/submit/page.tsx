@@ -24,7 +24,7 @@ export default async function SubmitVideoPage() {
         <Link href="/videos" className="text-sm text-brand-600 hover:underline">
           ← Videos
         </Link>
-        <h1 className="font-display text-2xl text-ink mt-1">Add a video</h1>
+        <h1 className="text-2xl font-semibold text-ink mt-1">Add a video</h1>
       </div>
 
       <Card className="max-w-lg">

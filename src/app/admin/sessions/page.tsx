@@ -28,7 +28,7 @@ export default async function AdminSessionsPage() {
           <Link href="/admin" className="text-sm text-brand-600 hover:underline">
             ← Admin
           </Link>
-          <h1 className="font-display text-2xl text-ink mt-1">Sessions</h1>
+          <h1 className="text-2xl font-semibold text-ink mt-1">Sessions</h1>
           <p className="text-sm text-ink-muted">
             Create sessions and record attendance as they happen.
           </p>

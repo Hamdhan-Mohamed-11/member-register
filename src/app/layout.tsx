@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Calistoga, Poppins } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 
 // Poppins has no variable font on Google Fonts, so the weights we actually use
@@ -11,14 +11,6 @@ const poppins = Poppins({
   display: "swap",
 });
 
-// Display face for headings. A single weight, so it is one small file -- the
-// warmth is worth that; a second variable font would not be.
-const calistoga = Calistoga({
-  variable: "--font-calistoga",
-  subsets: ["latin"],
-  weight: "400",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: {
@@ -34,7 +26,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${poppins.variable} ${calistoga.variable} h-full antialiased`}>
+    <html lang="en" className={`${poppins.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-canvas text-ink">
         {children}
       </body>

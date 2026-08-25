@@ -1,47 +1,49 @@
 @import "tailwindcss";
 
 /*
-  Palette: "book brown and page amber", warmed up from the original cold grey.
+  Blue and white. Professional, modern, minimal.
 
-  The single biggest change is the background. A neutral grey (#f0f2f5) reads
-  as an admin tool; a warm paper tone reads as something to do with books, and
-  costs nothing in performance or complexity.
+  The palette is deliberately narrow: one blue carrying every action, a cool
+  neutral ramp for everything structural, and colour used only where it means
+  something (status, the member discount). Restraint is what reads as
+  professional -- a second decorative hue would not.
 
-  Brand blue and gold are inherited from pickabook.lk deliberately -- the
-  portal should look like part of the same organisation, not a separate
-  product. The warm neutrals are what carry the character.
+  Brand blue is inherited from pickabook.lk so the portal looks like part of
+  the same organisation.
 
-  Light only. Adding a dark theme doubles the design QA surface for no stated
-  need; if it is ever wanted, add a :root[data-theme="dark"] block rather than
-  a bare prefers-color-scheme one, so a toggle can win.
+  Light only. A dark theme doubles the design QA surface for no stated need;
+  if it is ever wanted, add a :root[data-theme="dark"] block rather than a bare
+  prefers-color-scheme one, so a toggle can win.
 */
 @theme {
-  /* Brand — from the parent site */
+  /* Brand — from the parent site. */
+  --color-brand-900: #131c4d;
   --color-brand-800: #1a2560;
   --color-brand-700: #1e2a70;
   --color-brand-600: #293896;
-  --color-brand-500: #3a4bb8;
-  --color-brand-100: #e4e7f6;
-  --color-brand-50: #f1f3fc;
+  --color-brand-500: #4457b5;
+  --color-brand-200: #c3cbec;
+  --color-brand-100: #dde2f5;
+  --color-brand-50: #eff2fb;
 
-  /* Gold from the parent site, plus an amber dark enough for text on paper. */
-  --color-accent-600: #b45309;
+  /* Gold, kept for the few places an accent genuinely helps. */
+  --color-accent-600: #9a6700;
   --color-accent-500: #f9cd59;
-  --color-accent-300: #fbe08f;
-  --color-accent-100: #fdf3d7;
+  --color-accent-100: #fef7e3;
 
   /*
-    Warm neutrals. `canvas` is the page, `surface` is a card sitting on it —
-    white against warm paper, so cards lift without needing a heavy shadow.
+    Cool neutrals. `canvas` is the page, `surface` is a card on it. The page is
+    a barely-there blue-white rather than pure white, so white cards separate
+    without needing a heavy shadow.
   */
-  --color-canvas: #faf6ef;
-  --color-canvas-deep: #f3ece0;
+  --color-canvas: #f7f9fc;
+  --color-canvas-deep: #eef2f8;
   --color-surface: #ffffff;
-  --color-ink: #1c1917;
-  --color-ink-muted: #6b6259;
-  --color-ink-faint: #98908a;
-  --color-line: #e9e1d5;
-  --color-line-strong: #d8cec0;
+  --color-ink: #0f172a;
+  --color-ink-muted: #5b6577;
+  --color-ink-faint: #8b94a3;
+  --color-line: #e4e9f0;
+  --color-line-strong: #cfd7e3;
 
   /* Status */
   --color-success-600: #147233;
@@ -52,29 +54,28 @@
   --color-danger-100: #fbe4e4;
 
   /*
-    Warm-tinted shadows. A pure-black shadow over a warm background looks
-    muddy; tinting it toward the paper keeps cards feeling like paper on paper.
+    Cool-tinted shadows. A pure-black shadow over a blue-white background reads
+    grey and muddy; tinting it toward the page keeps edges clean.
   */
-  --shadow-card: 0 1px 2px rgba(69, 56, 40, 0.06), 0 1px 3px rgba(69, 56, 40, 0.05);
-  --shadow-raised: 0 4px 12px rgba(69, 56, 40, 0.1), 0 2px 4px rgba(69, 56, 40, 0.06);
-  --shadow-hero: 0 12px 40px rgba(41, 56, 150, 0.12);
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.05);
+  --shadow-raised: 0 4px 16px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.05);
+  --shadow-hero: 0 10px 32px rgba(41, 56, 150, 0.18);
 
   --radius-card: 0.75rem;
 }
 
 /*
   `inline` so the utility resolves to the font stack itself rather than
-  var(--font-sans) pointing at another var — next/font defines the variables on
+  var(--font-sans) pointing at another var — next/font defines the variable on
   <html>, and the indirection breaks if emitted as a plain var reference.
 
-  Calistoga is a single weight (400) display face: one small file, and the
-  warmth that a UI sans alone cannot carry. Poppins stays for everything
-  readable — body, labels, buttons.
+  Poppins throughout, headings included. Character comes from weight and scale
+  rather than a second typeface: one font family is faster, more consistent,
+  and reads as more modern than mixing a display serif in.
 */
 @theme inline {
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, sans-serif;
-  --font-display: var(--font-calistoga), Georgia, "Times New Roman", serif;
 }
 
 @layer base {
@@ -94,23 +95,24 @@
     cursor: pointer;
   }
 
-  /* Keep long member names and book titles from blowing out narrow cards. */
+  /*
+    Headings are tightened deliberately. Poppins is geometric and wide, so at
+    display sizes its default tracking and leading look loose and amateurish;
+    pulling both in is most of what separates "plain" from "designed".
+  */
   h1,
   h2,
-  h3,
-  h4 {
+  h3 {
+    letter-spacing: -0.02em;
     text-wrap: balance;
   }
 
-  /* Paragraphs read better without a lone word on the last line. */
   p {
     text-wrap: pretty;
   }
 
-  /*
-    One visible focus ring everywhere, warm enough not to clash with the
-    paper background. Never remove it — keyboard users have nothing else.
-  */
+  /* One visible focus ring everywhere. Never remove it — keyboard users have
+     nothing else to go on. */
   :focus-visible {
     outline: 2px solid var(--color-brand-600);
     outline-offset: 2px;
