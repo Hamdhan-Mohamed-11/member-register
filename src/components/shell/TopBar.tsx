@@ -15,11 +15,11 @@ export function TopBar({ member }: { member: TopBarMember | null }) {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 bg-surface border-b border-line">
+    <header className="sticky top-0 z-40 bg-surface/95 backdrop-blur border-b border-line">
       <div className="mx-auto max-w-5xl px-4 h-14 flex items-center gap-4">
         <Link
           href={member ? "/feed" : "/"}
-          className="font-semibold text-brand-600 text-lg shrink-0"
+          className="font-display text-xl text-brand-600 shrink-0"
         >
           Pick a Book
         </Link>
@@ -39,7 +39,7 @@ export function TopBar({ member }: { member: TopBarMember | null }) {
                         className={`inline-flex items-center min-h-9 px-3 rounded-lg text-sm ${
                           active
                             ? "bg-brand-50 text-brand-700 font-medium"
-                            : "text-ink-muted hover:bg-canvas hover:text-ink"
+                            : "text-ink-muted hover:bg-canvas-deep hover:text-ink"
                         }`}
                       >
                         {item.label}

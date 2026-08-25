@@ -29,7 +29,7 @@ export default async function MyVideosPage() {
           <Link href="/me" className="text-sm text-brand-600 hover:underline">
             ← My profile
           </Link>
-          <h1 className="text-xl font-semibold text-ink mt-1">My videos</h1>
+          <h1 className="font-display text-2xl text-ink mt-1">My videos</h1>
           <p className="text-sm text-ink-muted">
             Only you and the club admins can see anything still awaiting review.
           </p>

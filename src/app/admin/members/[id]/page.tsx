@@ -78,7 +78,7 @@ export default async function AdminMemberPage({
               size="lg"
             />
             <div className="min-w-0">
-              <h1 className="text-lg font-semibold text-ink">{name}</h1>
+              <h1 className="font-display text-xl text-ink">{name}</h1>
               <p className="text-sm text-ink-muted truncate">{profile.email}</p>
               {profile.phone ? (
                 <p className="text-sm text-ink-muted">{profile.phone}</p>

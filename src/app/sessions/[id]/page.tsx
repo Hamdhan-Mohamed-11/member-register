@@ -54,7 +54,7 @@ export default async function SessionPage({
 
       <div className="space-y-4">
         <Card>
-          <h1 className="text-lg font-semibold text-ink">{session.title}</h1>
+          <h1 className="font-display text-xl text-ink">{session.title}</h1>
           <p className="text-sm text-ink-muted mt-1">{formatWhen(session.heldAt)}</p>
 
           <dl className="mt-4 space-y-2 text-sm">

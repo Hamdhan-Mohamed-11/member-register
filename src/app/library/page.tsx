@@ -44,7 +44,7 @@ export default async function LibraryPage({
       }}
     >
       <div className="mb-4">
-        <h1 className="text-xl font-semibold text-ink">Library</h1>
+        <h1 className="font-display text-2xl text-ink">Library</h1>
         <p className="text-sm text-ink-muted">
           Books you can borrow rather than buy.
         </p>

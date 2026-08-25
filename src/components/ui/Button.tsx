@@ -5,10 +5,13 @@ export type ButtonSize = "md" | "sm";
 
 // min-h-11 is 44px — the minimum comfortable touch target. The attendance
 // recorder is used one-handed, standing up, so this is not negotiable.
+// active:scale is not decoration -- on a phone there is no hover, so a pressed
+// state is the only immediate confirmation that a tap registered.
 const base =
   "inline-flex items-center justify-center gap-2 rounded-lg font-medium " +
-  "transition-colors focus-visible:outline-none focus-visible:ring-2 " +
-  "focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
+  "transition-[background-color,box-shadow,transform] duration-150 " +
+  "active:scale-[0.98] motion-reduce:active:scale-100 " +
+  "focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none";
 
 const sizes: Record<ButtonSize, string> = {
   md: "min-h-11 px-4 text-sm",
@@ -16,14 +19,11 @@ const sizes: Record<ButtonSize, string> = {
 };
 
 const variants: Record<ButtonVariant, string> = {
-  primary:
-    "bg-brand-600 text-white hover:bg-brand-700 focus-visible:ring-brand-600",
+  primary: "bg-brand-600 text-white shadow-card hover:bg-brand-700",
   secondary:
-    "bg-brand-50 text-brand-700 hover:bg-brand-100 focus-visible:ring-brand-600",
-  ghost:
-    "text-ink-muted hover:bg-canvas hover:text-ink focus-visible:ring-brand-600",
-  danger:
-    "bg-danger-600 text-white hover:brightness-90 focus-visible:ring-danger-600",
+    "bg-surface text-brand-700 border border-line-strong hover:bg-brand-50 hover:border-brand-500",
+  ghost: "text-ink-muted hover:bg-canvas-deep hover:text-ink",
+  danger: "bg-danger-600 text-white shadow-card hover:brightness-95",
 };
 
 /**

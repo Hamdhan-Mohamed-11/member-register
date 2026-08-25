@@ -1,23 +1,37 @@
-import type { HTMLAttributes, ReactNode } from "react";
+import type { ReactNode } from "react";
 
-type CardProps = HTMLAttributes<HTMLDivElement> & {
-  /** Removes the default padding, for cards whose children manage their own. */
+/**
+ * The surface everything sits on.
+ *
+ * A hairline border plus a light warm shadow, rather than shadow alone: on a
+ * warm background a pure shadow reads as muddy, while a border keeps the edge
+ * crisp at any zoom level and on low-quality screens.
+ */
+export function Card({
+  children,
+  className = "",
+  flush = false,
+}: {
+  children: ReactNode;
+  className?: string;
+  /** Remove the padding, for cards whose children manage their own. */
   flush?: boolean;
-};
-
-export function Card({ flush, className = "", ...props }: CardProps) {
+}) {
   return (
     <div
-      className={`bg-surface rounded-card shadow-card ${flush ? "" : "p-4"} ${className}`}
-      {...props}
-    />
+      className={`bg-surface border border-line rounded-card shadow-card ${
+        flush ? "" : "p-4"
+      } ${className}`}
+    >
+      {children}
+    </div>
   );
 }
 
 export function CardHeader({
   title,
-  action,
   description,
+  action,
 }: {
   title: ReactNode;
   description?: ReactNode;
@@ -26,7 +40,7 @@ export function CardHeader({
   return (
     <div className="flex items-start justify-between gap-3 mb-3">
       <div className="min-w-0">
-        <h2 className="text-base font-semibold text-ink">{title}</h2>
+        <h2 className="font-display text-lg text-ink leading-tight">{title}</h2>
         {description ? (
           <p className="text-sm text-ink-muted mt-0.5">{description}</p>
         ) : null}

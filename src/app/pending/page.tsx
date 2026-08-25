@@ -68,7 +68,7 @@ export default async function PendingPage() {
         <Card>
           {canApply ? (
             <>
-              <h1 className="text-lg font-semibold text-ink">
+              <h1 className="font-display text-xl text-ink">
                 One more step
               </h1>
               <p className="mt-2 mb-4 text-sm text-ink-muted">
@@ -79,7 +79,7 @@ export default async function PendingPage() {
             </>
           ) : (
             <>
-              <h1 className="text-lg font-semibold text-ink">{copy.title}</h1>
+              <h1 className="font-display text-xl text-ink">{copy.title}</h1>
               <p className="mt-2 text-sm text-ink-muted">{copy.body}</p>
             </>
           )}

@@ -79,7 +79,7 @@ export default async function PaymentsPage() {
         <Link href="/admin" className="text-sm text-brand-600 hover:underline">
           ← Admin
         </Link>
-        <h1 className="text-xl font-semibold text-ink mt-1">Payments</h1>
+        <h1 className="font-display text-2xl text-ink mt-1">Payments</h1>
         <p className="text-sm text-ink-muted">
           {configured
             ? `PayHere is connected in ${getPayHereMode()} mode.`

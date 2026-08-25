@@ -27,7 +27,7 @@ export default async function DirectoryPage() {
       }}
     >
       <div className="mb-4">
-        <h1 className="text-xl font-semibold text-ink">Members</h1>
+        <h1 className="font-display text-2xl text-ink">Members</h1>
         <p className="text-sm text-ink-muted">
           {clubs.length
             ? `Everyone in ${clubs.map((c) => c.clubName).join(" and ")}.`

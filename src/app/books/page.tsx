@@ -67,7 +67,7 @@ export default async function BooksPage({
       }}
     >
       <div className="mb-4">
-        <h1 className="text-xl font-semibold text-ink">Books</h1>
+        <h1 className="font-display text-2xl text-ink">Books</h1>
         <p className="text-sm text-ink-muted">
           {discount > 0
             ? `Members pay ${discount}% less than the shop price.`

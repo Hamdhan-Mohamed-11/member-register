@@ -1,57 +1,80 @@
 @import "tailwindcss";
 
 /*
-  Palette is deliberately small and light-only. The portal should read as a
-  plain, familiar app (think Facebook): a grey canvas, white cards, one brand
-  blue for actions. Brand colours are taken from the existing pickabook.lk site
-  so the two feel related — #293896 buttons, #F9CD59 accent.
+  Palette: "book brown and page amber", warmed up from the original cold grey.
 
-  There is no dark mode in v1. Adding one doubles the design QA surface for no
-  stated need; if it is ever wanted, add a `:root[data-theme="dark"]` block
-  rather than a bare `prefers-color-scheme` one, so a toggle can win.
+  The single biggest change is the background. A neutral grey (#f0f2f5) reads
+  as an admin tool; a warm paper tone reads as something to do with books, and
+  costs nothing in performance or complexity.
+
+  Brand blue and gold are inherited from pickabook.lk deliberately -- the
+  portal should look like part of the same organisation, not a separate
+  product. The warm neutrals are what carry the character.
+
+  Light only. Adding a dark theme doubles the design QA surface for no stated
+  need; if it is ever wanted, add a :root[data-theme="dark"] block rather than
+  a bare prefers-color-scheme one, so a toggle can win.
 */
 @theme {
-  /* Brand */
+  /* Brand — from the parent site */
+  --color-brand-800: #1a2560;
   --color-brand-700: #1e2a70;
   --color-brand-600: #293896;
   --color-brand-500: #3a4bb8;
-  --color-brand-100: #e6e9f7;
-  --color-brand-50: #f2f4fc;
+  --color-brand-100: #e4e7f6;
+  --color-brand-50: #f1f3fc;
 
+  /* Gold from the parent site, plus an amber dark enough for text on paper. */
+  --color-accent-600: #b45309;
   --color-accent-500: #f9cd59;
-  --color-accent-100: #fef6e2;
+  --color-accent-300: #fbe08f;
+  --color-accent-100: #fdf3d7;
 
-  /* Neutrals — `canvas` is the page, `surface` is a card sitting on it. */
-  --color-canvas: #f0f2f5;
+  /*
+    Warm neutrals. `canvas` is the page, `surface` is a card sitting on it —
+    white against warm paper, so cards lift without needing a heavy shadow.
+  */
+  --color-canvas: #faf6ef;
+  --color-canvas-deep: #f3ece0;
   --color-surface: #ffffff;
-  --color-ink: #1c1e21;
-  --color-ink-muted: #65676b;
-  --color-ink-faint: #8a8d91;
-  --color-line: #dcdfe4;
+  --color-ink: #1c1917;
+  --color-ink-muted: #6b6259;
+  --color-ink-faint: #98908a;
+  --color-line: #e9e1d5;
+  --color-line-strong: #d8cec0;
 
   /* Status */
-  --color-success-600: #1a7f37;
-  --color-success-100: #e6f4ea;
-  --color-warning-600: #9a6700;
-  --color-warning-100: #fff4d6;
-  --color-danger-600: #c0392b;
-  --color-danger-100: #fdecea;
+  --color-success-600: #147233;
+  --color-success-100: #dcf3e4;
+  --color-warning-600: #a15c07;
+  --color-warning-100: #fbeed3;
+  --color-danger-600: #b91c1c;
+  --color-danger-100: #fbe4e4;
 
-  /* One card shadow, used everywhere. */
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow-raised: 0 2px 8px rgba(0, 0, 0, 0.12);
+  /*
+    Warm-tinted shadows. A pure-black shadow over a warm background looks
+    muddy; tinting it toward the paper keeps cards feeling like paper on paper.
+  */
+  --shadow-card: 0 1px 2px rgba(69, 56, 40, 0.06), 0 1px 3px rgba(69, 56, 40, 0.05);
+  --shadow-raised: 0 4px 12px rgba(69, 56, 40, 0.1), 0 2px 4px rgba(69, 56, 40, 0.06);
+  --shadow-hero: 0 12px 40px rgba(41, 56, 150, 0.12);
 
-  --radius-card: 0.5rem;
+  --radius-card: 0.75rem;
 }
 
 /*
   `inline` so the utility resolves to the font stack itself rather than
-  `var(--font-sans)` pointing at another var — next/font defines --font-poppins
-  on <html>, and the indirection breaks if this is emitted as a plain var ref.
+  var(--font-sans) pointing at another var — next/font defines the variables on
+  <html>, and the indirection breaks if emitted as a plain var reference.
+
+  Calistoga is a single weight (400) display face: one small file, and the
+  warmth that a UI sans alone cannot carry. Poppins stays for everything
+  readable — body, labels, buttons.
 */
 @theme inline {
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-calistoga), Georgia, "Times New Roman", serif;
 }
 
 @layer base {
@@ -59,14 +82,13 @@
     Must be inside @layer base. Tailwind v4 emits utilities into a cascade
     layer, and an UNLAYERED rule beats a layered one regardless of specificity —
     so an unlayered `a { color: ... }` here would silently defeat every
-    `text-*` utility applied to a link.
+    text-* utility applied to a link.
   */
   a {
     color: inherit;
     text-decoration: none;
   }
 
-  /* Touch targets: never smaller than 44px on interactive controls. */
   button,
   [role="button"] {
     cursor: pointer;
@@ -78,6 +100,21 @@
   h3,
   h4 {
     text-wrap: balance;
+  }
+
+  /* Paragraphs read better without a lone word on the last line. */
+  p {
+    text-wrap: pretty;
+  }
+
+  /*
+    One visible focus ring everywhere, warm enough not to clash with the
+    paper background. Never remove it — keyboard users have nothing else.
+  */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
   }
 }
 

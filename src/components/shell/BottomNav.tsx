@@ -16,7 +16,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Primary"
-      className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-surface border-t border-line pb-[env(safe-area-inset-bottom)]"
+      className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-surface/95 backdrop-blur border-t border-line pb-[env(safe-area-inset-bottom)]"
     >
       <ul className="grid grid-cols-5">
         {MEMBER_NAV.map((item) => {

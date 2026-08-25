@@ -68,7 +68,7 @@ export default async function AdminMembersPage({
         <Link href="/admin" className="text-sm text-brand-600 hover:underline">
           ← Admin
         </Link>
-        <h1 className="text-xl font-semibold text-ink mt-1">Members</h1>
+        <h1 className="font-display text-2xl text-ink mt-1">Members</h1>
         <p className="text-sm text-ink-muted">
           {members.length} {members.length === 1 ? "account" : "accounts"}.
         </p>

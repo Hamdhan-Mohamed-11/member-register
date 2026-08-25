@@ -27,7 +27,7 @@ export default async function AdminVideosPage() {
         <Link href="/admin" className="text-sm text-brand-600 hover:underline">
           ← Admin
         </Link>
-        <h1 className="text-xl font-semibold text-ink mt-1">Videos</h1>
+        <h1 className="font-display text-2xl text-ink mt-1">Videos</h1>
         <p className="text-sm text-ink-muted">
           Member submissions are visible only to them until published here.
         </p>
