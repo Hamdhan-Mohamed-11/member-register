@@ -24,6 +24,17 @@ const PAYHERE_ORIGINS = "https://sandbox.payhere.lk https://www.payhere.lk";
 const VIDEO_FRAME_ORIGINS =
   "https://www.youtube-nocookie.com https://www.youtube.com https://player.vimeo.com";
 
+// Book covers. Measured rather than guessed: of 13,138 books with an image,
+// 13,132 are bare filenames that resolve to the legacy uploads directory and
+// exactly 6 are absolute URLs, all on m.media-amazon.com. That is narrow
+// enough to allowlist precisely instead of opening img-src to all of https:.
+//
+// If the shop ever starts using another image host, those covers will show as
+// broken rather than silently loading from anywhere -- which is the trade
+// being made deliberately.
+const BOOK_IMAGE_ORIGINS =
+  "https://www.pickabook.lk https://pickabook.lk https://m.media-amazon.com";
+
 export function buildCsp(isDev: boolean): string {
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],
@@ -39,8 +50,15 @@ export function buildCsp(isDev: boolean): string {
 
     // Avatars are served same-origin by /api/avatars, which 307s to a signed
     // Supabase URL -- so the Storage origin has to be allowed as an image
-    // source even though no markup references it directly.
-    "img-src": ["'self'", "data:", "blob:", SUPABASE_ORIGIN].filter(Boolean),
+    // source even though no markup references it directly. Book covers come
+    // from the legacy shop.
+    "img-src": [
+      "'self'",
+      "data:",
+      "blob:",
+      SUPABASE_ORIGIN,
+      ...BOOK_IMAGE_ORIGINS.split(" "),
+    ].filter(Boolean),
 
     "font-src": ["'self'", "data:"],
 
