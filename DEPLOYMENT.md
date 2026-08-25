@@ -1,5 +1,29 @@
 # Deployment checklist
 
+## Live as of 25 Aug 2026
+
+| | |
+|---|---|
+| Member portal | https://member.pickabook.lk |
+| Quiz night | https://quiz.pickabook.lk |
+| VPS | InterServer, `162.35.112.114`, Ubuntu 26.04, 2 vCPU / 7.4 GB |
+| Apps | `/srv/apps/member-register` (:3001), `/srv/apps/web-game` (:3000) |
+| Services | `pab-member`, `pab-quiz` — systemd, run as user `pab`, restart on failure and on boot |
+| TLS | Let's Encrypt via certbot, `certbot.timer` renews automatically |
+| Update | `/srv/apps/deploy.sh [member|quiz|both]` as root |
+
+`pickabook.lk` itself is **untouched** on HostGator (`192.254.185.29`). Only two
+new DNS A records were added; no existing record was changed.
+
+### Logs
+
+```bash
+journalctl -u pab-member -f          # or pab-quiz
+journalctl -u pab-member -n 100 --no-pager
+grep -r "\[payhere:notify\]" /var/log/   # webhook problems
+```
+
+
 Things that are **deliberately wrong for production** while developing, plus
 the ones that are easy to forget. Work top to bottom when moving to the VPS.
 
@@ -86,9 +110,16 @@ and deletes users under its own test domain (`@rlstest.local`, `@pay.test`,
 Two Next apps share the box: quiz on **3000**, portal on **3001**.
 
 - Separate systemd/PM2 units, separate `.env` files, one nginx in front.
-- **Never run `next build` in production while serving.** Peak build memory
-  will take the other app down with it. Build elsewhere, or on a swap-backed
-  box, and deploy the artefact.
+- `deploy.sh` builds in place. On this box that is fine — 7.4 GB RAM against
+  two apps using ~180 MB — but it means roughly 30 seconds where the app being
+  rebuilt is serving from a half-written `.next`. Deploy when nobody is mid-session.
+- `deploy.sh` deletes `.next` before every build. Turbopack will otherwise
+  reuse a chunk cached from a failed or older build, which surfaces as a
+  module-resolution error that looks exactly like a missing package. This cost
+  an hour during the first deploy.
+- **Never `npm ci --omit=dev`.** tailwind, postcss and typescript are
+  devDependencies and the build needs them; a production-only install fails
+  with "Cannot find module '@tailwindcss/postcss'".
 - Pin the VPS's outbound public IP — the legacy MySQL access (Phase 6) is
   whitelisted by IP in cPanel → Remote MySQL, and a changed IP kills the book
   catalogue silently with a connect timeout.
