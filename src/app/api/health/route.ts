@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServiceSupabaseClient } from "@/lib/supabase/serverClient";
 import { isPayHereConfigured, getPayHereMode } from "@/lib/payments/payhere";
+import { legacyPing } from "@/lib/legacy/books";
+import { isLegacyConfigured } from "@/lib/legacy/env";
 
 export const runtime = "nodejs";
 // Never cached: a cached health check reports the state of whenever it was
@@ -54,8 +56,20 @@ export async function GET() {
     detail: isPayHereConfigured() ? `configured (${getPayHereMode()})` : "not configured",
   };
 
-  // Phase 6 will add the legacy MySQL catalogue here. It is deliberately
-  // absent rather than reported as failing, so its arrival is visible.
+  // The legacy catalogue is a THIRD PARTY. It is reported, but a failure here
+  // does not make the app unhealthy -- the portal works fine without it, and
+  // paging a human at 3am because HostGator is busy would be wrong.
+  if (isLegacyConfigured()) {
+    const started = Date.now();
+    const reachable = await legacyPing();
+    checks.catalogue = {
+      ok: true,
+      ms: Date.now() - started,
+      detail: reachable ? "reachable" : "unreachable (portal unaffected)",
+    };
+  } else {
+    checks.catalogue = { ok: true, detail: "not configured" };
+  }
 
   const healthy = Object.values(checks).every((c) => c.ok);
 
