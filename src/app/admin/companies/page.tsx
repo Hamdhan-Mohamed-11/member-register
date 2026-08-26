@@ -61,7 +61,7 @@ export default async function CompaniesPage() {
         <Link href="/admin" className="text-sm text-brand-600 hover:underline">
           ← Admin
         </Link>
-        <h1 className="text-2xl font-semibold text-ink mt-1">Companies</h1>
+        <h1 className="font-display text-3xl text-ink mt-1">Companies</h1>
         <p className="text-sm text-ink-muted">
           Each company gets one private club. Employees join by invite only —
           they never appear in the public member directory.

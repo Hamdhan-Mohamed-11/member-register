@@ -51,7 +51,7 @@ export default async function JoinRequestsPage() {
         <Link href="/admin" className="text-sm text-brand-600 hover:underline">
           ← Admin
         </Link>
-        <h1 className="text-2xl font-semibold text-ink mt-1">Join requests</h1>
+        <h1 className="font-display text-3xl text-ink mt-1">Join requests</h1>
         <p className="text-sm text-ink-muted">
           Approving adds the member to the club and activates their account.
         </p>

@@ -8,7 +8,7 @@ export type ButtonSize = "md" | "sm";
 // active:scale is not decoration -- on a phone there is no hover, so a pressed
 // state is the only immediate confirmation that a tap registered.
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-lg font-medium " +
+  "inline-flex items-center justify-center gap-2 rounded-xl font-medium " +
   "transition-[background-color,box-shadow,transform] duration-150 " +
   "active:scale-[0.98] motion-reduce:active:scale-100 " +
   "focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none";

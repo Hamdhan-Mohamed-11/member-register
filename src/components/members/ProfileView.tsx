@@ -40,7 +40,7 @@ export function ProfileView({
             size="lg"
           />
           <div className="min-w-0 flex-1">
-            <h1 className="text-xl font-semibold text-ink">{name}</h1>
+            <h1 className="font-display text-2xl text-ink">{name}</h1>
             {isSelf ? (
               <p className="text-sm text-ink-muted truncate">{profile.email}</p>
             ) : null}

@@ -99,7 +99,7 @@ export default async function RenewPage({
         <Link href="/me" className="text-sm text-brand-600 hover:underline">
           ← My profile
         </Link>
-        <h1 className="text-2xl font-semibold text-ink mt-1">Membership</h1>
+        <h1 className="font-display text-3xl text-ink mt-1">Membership</h1>
         <p className="text-sm text-ink-muted">
           Each club is paid for separately and renews on its own date.
         </p>

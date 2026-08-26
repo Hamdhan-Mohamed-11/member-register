@@ -12,7 +12,7 @@ export default function NotFound() {
   return (
     <main className="flex-1 flex items-center justify-center p-4">
       <Card className="max-w-sm w-full text-center">
-        <h1 className="text-xl font-semibold text-ink">Not found</h1>
+        <h1 className="font-display text-2xl text-ink">Not found</h1>
         <p className="mt-2 text-sm text-ink-muted">
           That page doesn&apos;t exist, or it isn&apos;t available to you.
         </p>

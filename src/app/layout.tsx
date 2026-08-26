@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Poppins } from "next/font/google";
+import { Playfair_Display, Poppins } from "next/font/google";
 import "./globals.css";
 
 // Poppins has no variable font on Google Fonts, so the weights we actually use
@@ -12,6 +12,17 @@ const poppins = Poppins({
 });
 
 
+// Display face for headings only, italic included -- the reference uses an
+// italic phrase as its single flourish. Variable, so the weight range costs
+// one file.
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: {
     default: "Pick a Book",
@@ -21,12 +32,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#293896",
+  themeColor: "#16205c",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${poppins.variable} h-full antialiased`}>
+    <html lang="en" className={`${poppins.variable} ${playfair.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-canvas text-ink">
         {children}
       </body>

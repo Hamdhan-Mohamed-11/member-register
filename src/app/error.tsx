@@ -30,7 +30,7 @@ export default function AppError({
   return (
     <main className="flex-1 flex items-center justify-center p-4">
       <Card className="max-w-sm w-full text-center">
-        <h1 className="text-xl font-semibold text-ink">Something went wrong</h1>
+        <h1 className="font-display text-2xl text-ink">Something went wrong</h1>
         <p className="mt-2 text-sm text-ink-muted">
           That page didn&apos;t load. Trying again usually works — if it keeps
           happening, let a club admin know.

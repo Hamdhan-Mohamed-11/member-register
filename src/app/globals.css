@@ -1,49 +1,56 @@
 @import "tailwindcss";
 
 /*
-  Blue and white. Professional, modern, minimal.
+  Navy, cream and gold — matched to the reference design.
 
-  The palette is deliberately narrow: one blue carrying every action, a cool
-  neutral ramp for everything structural, and colour used only where it means
-  something (status, the member discount). Restraint is what reads as
-  professional -- a second decorative hue would not.
+  Three surfaces do the work: white for the app itself, a warm cream panel for
+  hero and feature areas, and a deep navy band for the one section that should
+  stop you. Gold appears sparingly, as a rule or an eyebrow, never as a large
+  field — it is an accent and stops reading as premium the moment it spreads.
 
   Brand blue is inherited from pickabook.lk so the portal looks like part of
   the same organisation.
 
-  Light only. A dark theme doubles the design QA surface for no stated need;
-  if it is ever wanted, add a :root[data-theme="dark"] block rather than a bare
-  prefers-color-scheme one, so a toggle can win.
+  Light only. A dark theme doubles the design QA surface for no stated need.
 */
 @theme {
-  /* Brand — from the parent site. */
-  --color-brand-900: #131c4d;
-  --color-brand-800: #1a2560;
-  --color-brand-700: #1e2a70;
+  /* Brand navy */
+  --color-brand-950: #0f1640;
+  --color-brand-900: #16205c;
+  --color-brand-800: #1a2570;
+  --color-brand-700: #1e2a80;
   --color-brand-600: #293896;
   --color-brand-500: #4457b5;
   --color-brand-200: #c3cbec;
   --color-brand-100: #dde2f5;
   --color-brand-50: #eff2fb;
 
-  /* Gold, kept for the few places an accent genuinely helps. */
-  --color-accent-600: #9a6700;
-  --color-accent-500: #f9cd59;
-  --color-accent-100: #fef7e3;
+  /* Gold — accents, rules and eyebrows only. */
+  --color-gold-700: #8a6410;
+  --color-gold-600: #b8891f;
+  --color-gold-500: #f9cd59;
+  --color-gold-200: #f6e3b4;
+  --color-gold-100: #fdf6e4;
 
   /*
-    Cool neutrals. `canvas` is the page, `surface` is a card on it. The page is
-    a barely-there blue-white rather than pure white, so white cards separate
-    without needing a heavy shadow.
+    Surfaces. `canvas` is the app background, `cream` is the warm panel used
+    for hero and marketing areas, `surface` is a card on either.
   */
-  --color-canvas: #f7f9fc;
-  --color-canvas-deep: #eef2f8;
+  --color-canvas: #f8f9fc;
+  --color-canvas-deep: #eef1f7;
+  --color-cream: #f8f2e9;
+  --color-cream-deep: #f1e8da;
   --color-surface: #ffffff;
-  --color-ink: #0f172a;
-  --color-ink-muted: #5b6577;
-  --color-ink-faint: #8b94a3;
-  --color-line: #e4e9f0;
-  --color-line-strong: #cfd7e3;
+
+  --color-ink: #14162e;
+  --color-ink-muted: #5a6178;
+  --color-ink-faint: #8b91a3;
+  --color-line: #e6e9f0;
+  --color-line-strong: #cdd4e0;
+
+  /* On the navy band. */
+  --color-on-navy: #ffffff;
+  --color-on-navy-muted: #bcc4e4;
 
   /* Status */
   --color-success-600: #147233;
@@ -53,29 +60,29 @@
   --color-danger-600: #b91c1c;
   --color-danger-100: #fbe4e4;
 
-  /*
-    Cool-tinted shadows. A pure-black shadow over a blue-white background reads
-    grey and muddy; tinting it toward the page keeps edges clean.
-  */
-  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.05);
-  --shadow-raised: 0 4px 16px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.05);
-  --shadow-hero: 0 10px 32px rgba(41, 56, 150, 0.18);
+  --shadow-card: 0 1px 2px rgba(20, 22, 46, 0.04), 0 1px 3px rgba(20, 22, 46, 0.05);
+  --shadow-raised: 0 4px 16px rgba(20, 22, 46, 0.08), 0 1px 3px rgba(20, 22, 46, 0.05);
+  --shadow-hero: 0 12px 36px rgba(41, 56, 150, 0.2);
+  --shadow-band: 0 18px 44px rgba(15, 22, 64, 0.24);
 
-  --radius-card: 0.75rem;
+  --radius-card: 0.875rem;
+  --radius-panel: 1.5rem;
 }
 
 /*
-  `inline` so the utility resolves to the font stack itself rather than
-  var(--font-sans) pointing at another var — next/font defines the variable on
+  `inline` so the utility resolves to the stack itself rather than
+  var(--font-sans) pointing at another var — next/font defines the variables on
   <html>, and the indirection breaks if emitted as a plain var reference.
 
-  Poppins throughout, headings included. Character comes from weight and scale
-  rather than a second typeface: one font family is faster, more consistent,
-  and reads as more modern than mixing a display serif in.
+  Playfair Display for display headings only, including its italic, which the
+  reference uses as its one flourish. Poppins carries every piece of interface
+  and everything read at length: the serif is for character at large sizes, not
+  for reading.
 */
 @theme inline {
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-playfair), Georgia, "Times New Roman", serif;
 }
 
 @layer base {
@@ -95,15 +102,9 @@
     cursor: pointer;
   }
 
-  /*
-    Headings are tightened deliberately. Poppins is geometric and wide, so at
-    display sizes its default tracking and leading look loose and amateurish;
-    pulling both in is most of what separates "plain" from "designed".
-  */
   h1,
   h2,
   h3 {
-    letter-spacing: -0.02em;
     text-wrap: balance;
   }
 
@@ -117,6 +118,11 @@
     outline: 2px solid var(--color-brand-600);
     outline-offset: 2px;
     border-radius: 0.25rem;
+  }
+
+  /* On navy, the brand ring would disappear. */
+  .on-navy :focus-visible {
+    outline-color: var(--color-gold-500);
   }
 }
 

@@ -13,14 +13,17 @@ import { TopBar, type TopBarMember } from "./TopBar";
 export function AppShell({
   member,
   children,
+  wide = false,
 }: {
   member: TopBarMember | null;
   children: ReactNode;
+  /** Wider container for marketing pages; app pages keep the reading width. */
+  wide?: boolean;
 }) {
   return (
     <>
       <TopBar member={member} />
-      <main className="flex-1 mx-auto w-full max-w-5xl px-4 py-4 pb-20 md:pb-8">
+      <main className={`flex-1 mx-auto w-full px-4 py-4 pb-20 md:pb-8 ${wide ? "max-w-6xl" : "max-w-5xl"}`}>
         {children}
       </main>
       {member ? <BottomNav /> : null}

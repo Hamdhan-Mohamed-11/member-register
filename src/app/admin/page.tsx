@@ -40,7 +40,7 @@ export default async function AdminPage() {
       }}
     >
       <div className="mb-4">
-        <h1 className="text-2xl font-semibold text-ink">Club admin</h1>
+        <h1 className="font-display text-3xl text-ink">Club admin</h1>
         <p className="text-sm text-ink-muted">
           Signed in as {member.role === "super_admin" ? "super admin" : "secretary"}.
         </p>

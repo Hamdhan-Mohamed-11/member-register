@@ -40,7 +40,7 @@ export function CardHeader({
   return (
     <div className="flex items-start justify-between gap-3 mb-3">
       <div className="min-w-0">
-        <h2 className="text-lg font-semibold text-ink leading-tight">{title}</h2>
+        <h2 className="font-display text-lg text-ink leading-tight">{title}</h2>
         {description ? (
           <p className="text-sm text-ink-muted mt-0.5">{description}</p>
         ) : null}

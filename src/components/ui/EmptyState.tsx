@@ -11,7 +11,7 @@ export function EmptyState({
 }) {
   return (
     <div className="text-center py-10 px-4">
-      <p className="text-lg font-semibold text-ink">{title}</p>
+      <p className="font-display text-xl text-ink">{title}</p>
       {description ? (
         <p className="text-sm text-ink-muted mt-1 max-w-sm mx-auto">
           {description}
