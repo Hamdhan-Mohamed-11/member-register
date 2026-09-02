@@ -61,15 +61,20 @@ on the current free-tier setup, and neither is blocked by code.
       against the real gateway: a signed form returns a genuine checkout page
       rather than "Unauthorized payment request", which with the old
       placeholder credentials was indistinguishable from a bad signature.
-- [ ] **PayHere has still never called the webhook.** Everything up to the
-      gateway is verified; settlement is not. Run one real sandbox payment on
-      `https://member.pickabook.lk/renew` and confirm `payment_events` shows
-      `applied = true`. See TESTING.md §6.
+- [x] **PayHere has called the webhook, and settlement works.** Verified with a
+      real sandbox payment on 2 Sep 2026 — order `MB-47FC2D3721`, LKR 4,750,
+      PayHere payment id `320032649576`. `payment_events` recorded exactly one
+      row: `signature_ok = true`, `applied = true`,
+      `outcome = membership_extended`, `status_code = 2`. The membership moved
+      2027-03-01 → 2028-03-01, i.e. one term **added to the existing expiry**
+      rather than restarted from today.
 
-Until the webhook has fired for real, treat automatic payment settlement as
-**unverified against the real service**, however green the suites look. The
-manual "record as paid" action in `/admin/payments` exists to cover the gap,
-not to replace the webhook.
+      Automatic payment settlement is therefore verified end to end against the
+      real gateway. `/admin/payments` "record as paid" remains for payments
+      taken another way (bank transfer, cash) — it is no longer covering a gap.
+
+      Still sandbox. Switching `PAYHERE_MODE` to `live` needs a live merchant
+      account, which is a separate commercial step.
 
 A database migration to the VPS is planned separately — see MIGRATION.md.
 
