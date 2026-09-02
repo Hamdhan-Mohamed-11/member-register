@@ -32,25 +32,33 @@ the ones that are easy to forget. Work top to bottom when moving to the VPS.
 Both of these are built and waiting on configuration. Neither can be finished
 on the current free-tier setup, and neither is blocked by code.
 
-- [ ] **Email (custom SMTP).** Everything that sends mail — signup
-      confirmation, invite links, password reset — is written and works
-      against the API, but the built-in mailer caps at ~2 sends/hour, so those
-      paths have never been exercised end to end. Configure SMTP, turn
-      **Confirm email back ON**, then run `npm run test:onboarding` — it stops
-      skipping the browser signup and that is the moment signup is genuinely
-      tested. See §1.
-- [ ] **PayHere webhook.** The notify endpoint, signature check and
-      idempotency are built and tested against synthetic notifications, but
-      **PayHere has never actually called it** — a webhook cannot reach
-      `localhost`. On the VPS: point `notify_url` at
-      `https://<origin>/api/payhere/notify`, whitelist the domain in the
-      merchant portal, switch `PAYHERE_MODE` to `live`, and run one real
-      sandbox payment end to end. See §5.
+- [x] **Email (custom SMTP).** Done — HostGator, sending as
+      `noreply@pickabook.lk`. Signup confirmation and magic links both
+      verified as arriving (1 Sep 2026).
+- [ ] **Password reset email does not arrive.** Signup confirmation and magic
+      link deliver over the same SMTP; `recovery` specifically does not —
+      including when triggered from the Supabase dashboard. So it is not
+      deliverability in general but something specific to the recovery
+      template or flow. **Real members who forget a password currently have no
+      way back in.** TESTING.md §1 has the failing check.
+- [x] **PayHere sandbox configured.** Merchant `1237809`, mode `sandbox`, live
+      on the VPS — `/api/health` reports `configured (sandbox)`. The domain
+      whitelist is the **apex** `pickabook.lk`; PayHere rejects subdomains, and
+      the apex covers `member.` beneath it. The checkout hash is now verified
+      against the real gateway: a signed form returns a genuine checkout page
+      rather than "Unauthorized payment request", which with the old
+      placeholder credentials was indistinguishable from a bad signature.
+- [ ] **PayHere has still never called the webhook.** Everything up to the
+      gateway is verified; settlement is not. Run one real sandbox payment on
+      `https://member.pickabook.lk/renew` and confirm `payment_events` shows
+      `applied = true`. See TESTING.md §6.
 
-Until both are done, treat signup-by-email and automatic payment settlement as
-**unverified against the real services**, however green the test suites look.
-The manual "record as paid" action in `/admin/payments` exists to cover the
-gap, not to replace the webhook.
+Until the webhook has fired for real, treat automatic payment settlement as
+**unverified against the real service**, however green the suites look. The
+manual "record as paid" action in `/admin/payments` exists to cover the gap,
+not to replace the webhook.
+
+A database migration to the VPS is planned separately — see MIGRATION.md.
 
 ## 1. Supabase Auth — settings that MUST change
 
