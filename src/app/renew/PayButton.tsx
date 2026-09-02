@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/Button";
 import { Notice } from "@/components/ui/Field";
 import type { ActionResult, CheckoutPayload } from "./actions";
@@ -45,12 +45,27 @@ export function PayButton({
         return;
       }
       setCheckout(result.data);
-      // Submit after React has rendered the hidden inputs. requestAnimationFrame
-      // rather than a timeout: it fires after paint, so the form definitely
-      // exists, without guessing at a delay.
-      requestAnimationFrame(() => formRef.current?.submit());
     });
   }
+
+  /**
+   * Submit once the hidden form is actually in the DOM.
+   *
+   * This used to be `requestAnimationFrame(() => formRef.current?.submit())`
+   * straight after setCheckout. rAF fires after the next paint, which is
+   * USUALLY after React has committed the form -- but not guaranteed, and
+   * inside a transition the commit can land later. When it lost the race
+   * `formRef.current` was null, the optional chain swallowed it, and the
+   * button silently did nothing: no error, no navigation, no console message,
+   * and a payment row already created server-side. It failed roughly half the
+   * time in CI and would have been maddening to chase by hand.
+   *
+   * An effect keyed on `checkout` runs after the DOM is committed, by
+   * definition, so the form is always there.
+   */
+  useEffect(() => {
+    if (checkout) formRef.current?.submit();
+  }, [checkout]);
 
   return (
     <div className="space-y-3">
