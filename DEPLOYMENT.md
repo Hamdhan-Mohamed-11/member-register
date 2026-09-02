@@ -35,19 +35,25 @@ on the current free-tier setup, and neither is blocked by code.
 - [x] **Email (custom SMTP).** Done — HostGator, sending as
       `noreply@pickabook.lk`. Signup confirmation and magic links both
       verified as arriving (1 Sep 2026).
-- [ ] **Auth email now comes from the app, not from Supabase.** Signup
+- [x] **Auth email comes from the app, not from Supabase.** Signup
       confirmation and password reset are one-time codes minted by
       `auth.admin.generateLink` and sent by this process over nodemailer
-      (`src/lib/email/`). This is what closes the old recovery blocker: the
-      `recovery` template that would never deliver is no longer used at all.
-      Set the `SMTP_*` vars in §2, then run `npm run test:mail` on the VPS and
-      walk TESTING.md §1 — neither the codes nor the reset path have been
-      exercised against the production mail server yet.
+      (`src/lib/email/`). **Verified end to end on 2 Sep 2026**: the mail test,
+      a signup code, and a reset code all arrived in the inbox — the first time
+      password reset has ever worked on this system.
       Company invites go the same way -- GoTrue mints the invite link,
       nodemailer sends it -- so **no auth email depends on Supabase's SMTP any
       more**. Invites stay a link rather than a code: the recipient did not ask
       for the mail and has no account yet, so the link is the proof they read
-      the mailbox.
+      the mailbox. That path is still unexercised — see QA-CHECKLIST §6.
+
+      Worth recording why this was worth doing rather than switching provider:
+      the old `recovery` mail was accepted by the same SMTP server, produced no
+      bounce, and never arrived, while messages we composed ourselves reached
+      the inbox from the same host, same credentials, same From address. The
+      fault was inside GoTrue's mailer, so no amount of DNS or provider work
+      would have fixed it. Sending the message ourselves did — HostGator was
+      never the problem, and Brevo proved unnecessary.
 - [x] **PayHere sandbox configured.** Merchant `1237809`, mode `sandbox`, live
       on the VPS — `/api/health` reports `configured (sandbox)`. The domain
       whitelist is the **apex** `pickabook.lk`; PayHere rejects subdomains, and
