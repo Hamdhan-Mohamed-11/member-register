@@ -130,12 +130,22 @@ check("the browser reached PayHere's checkout",
 check("no CSP violation blocked the submission",
   cspViolations.length === 0, JSON.stringify(cspViolations.slice(0, 3)));
 
-// With placeholder credentials PayHere rejects the merchant, which is the
-// expected end of the line here. What matters is that we GOT a PayHere page
-// rather than a browser-blocked navigation.
+// This used to assert that PayHere REJECTED us: with placeholder credentials
+// the reply was "Unauthorized payment request", and reaching that page at
+// least proved the form had submitted. Real credentials landed on 1 Sep 2026
+// and it now returns a genuine checkout, so the old assertion started failing
+// because the thing it was written around got fixed.
+//
+// Assert the real checkout instead, and assert the rejection is ABSENT --
+// "Unauthorized payment request" is what a wrong merchant id OR a bad hash
+// looks like, and it is the failure this whole path exists to catch.
 const atPayHere = await visibleText(page).catch(() => "");
-check("PayHere responded (merchant rejected, as expected with test credentials)",
-  /payment request|merchant/i.test(atPayHere ?? ""), atPayHere?.slice(0, 160));
+check("PayHere returned a real checkout page, not an authorisation rejection",
+  /sandbox/i.test(atPayHere ?? "") && !/unauthoriz/i.test(atPayHere ?? ""),
+  atPayHere?.slice(0, 160));
+check("the checkout is in SANDBOX, not live",
+  /payments are not actually processed/i.test(atPayHere ?? ""),
+  atPayHere?.slice(0, 160));
 
 await browser.close();
 
