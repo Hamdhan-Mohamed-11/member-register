@@ -167,9 +167,11 @@ Everything a secretary can do, plus the following.
 
 ### Join requests
 
-- [ ] Sanduni Fernando is waiting in `/admin/join-requests`
-- [ ] Approve her → she leaves the queue
-- [ ] `/admin/members` shows her **active**, with a renewal date
+- [ ] `/admin/join-requests` lists whoever is waiting — as of 2 Sep 2026 that
+      is `hamdhanm30@gmail.com`, a real signup, not a fixture
+- [ ] Approve them → they leave the queue
+- [ ] `/admin/members` shows them **active**, with a renewal date
+- [ ] Their **name** shows in the queue, not just an email (the 0017 fix)
 - [ ] Reject a different applicant → they are told, and cannot reach `/feed`
 
 ### Members
