@@ -1,117 +1,144 @@
 # Pick a Book — sign-off walkthrough
 
-Go through the portal as each kind of person who will actually use it, and
-confirm it works. This is the last gate before real members.
+Go through the portal as each kind of person who will use it. This is the last
+gate before real members.
 
 **Site:** https://member.pickabook.lk
-**Password for `@test.pickabook.lk` accounts:** `PickABook!2026`
+**Password for every `@test.pickabook.lk` account:** `PickABook!2026`
 
-QA-CHECKLIST.md lists every feature exhaustively. **This document is different
-on purpose**: it follows five people through the journeys they actually take,
-end to end, because bugs live in the joins between features rather than inside
-them. Today's two worst bugs — every signup losing its name, and a member
-being able to rewrite the points rules — were both invisible to feature-level
-checks and obvious the moment someone walked a whole path.
-
-Work through it in order. Later personas depend on earlier ones.
-
-**How to report a problem:** the URL, which account, what you expected, what
-happened. A screenshot beats a description.
+QA-CHECKLIST.md lists features exhaustively. **This is different on purpose**:
+it follows five people through the journeys they actually take, with the real
+names and numbers that are in the database right now, so you can tell at a
+glance whether something is wrong. Bugs live in the joins between features —
+today's worst two (every signup losing its name; a member able to rewrite the
+points rules) were invisible to feature checks and obvious on a full path.
 
 ---
 
-## Before you start
+## The data you are testing against
 
-- [ ] You can log into your own super admin account
-      (`kimivibecode@gmail.com`) — use "Forgot password?" if needed; it works now
-- [ ] You have **two browsers** open (or one plus incognito). Half of this is
-      "can A see B's data", which is miserable to test by logging in and out
-- [ ] You have a **real email address you can read** that is not already
-      registered — you will need it for the signup and invite journeys
+Accurate as of 2 Sep 2026. If what you see differs, that itself is the finding.
+
+**Clubs**
+
+| Club | Fee | Term |
+|---|---|---|
+| Pick a Book Public Club | **LKR 4,750** (global default) | 12 months |
+| Colombo Poetry Circle | **LKR 2,000** | 12 months |
+
+**People**
+
+| Login | Name | Role | Club | Renews |
+|---|---|---|---|---|
+| `member@test.pickabook.lk` | Nimali Perera | member | Pick a Book Public | **1 Mar 2028** |
+| `member2@test.pickabook.lk` | Ruwan Silva | member | Pick a Book Public | 1 Mar 2027 |
+| `poet@test.pickabook.lk` | Tharindu Bandara | member | **Colombo Poetry** | 1 Mar 2027 |
+| `secretary@test.pickabook.lk` | Ishara Weerasinghe | **secretary** | Pick a Book Public | 1 Mar 2027 |
+| `kimivibecode@gmail.com` | Hamdhan Mohamed | **super admin** | Pick a Book Public | 25 Aug 2027 |
+| `applicant@test.pickabook.lk` | Sanduni Fernando | member | Pick a Book Public | 1 Sep 2027 |
+| `maryam.457ad@gmail.com` | Maiza Fathima | member | **Colombo Poetry** | 1 Sep 2027 |
+
+**Sessions**
+
+| Title | Club | Date | Price |
+|---|---|---|---|
+| Demo August book night | Pick a Book Public | 17 Aug 2026 | free |
+| Demo Poetry evening | **Colombo Poetry** | 4 Sep 2026 | **LKR 1,200** guest fee |
+
+**Other:** 13,129 books · 171 borrowable · 1 video awaiting review · no pending
+join requests (so §1 creates the one you approve in §6).
+
+**Two accounts you can ignore:** `hamdhanm30@gmail.com` is stranded from the
+old signup flow (confirmed, but never applied to a club — it predates the code
+step). `hamdhan.dstsi@gmail.com` is an abandoned signup, unconfirmed, and
+should **not** be able to log in.
+
+Use **two browsers**, or one plus incognito. Half of this is "can A see B's
+data", which is miserable to test by logging in and out.
+
+**Reporting:** URL, account, what you expected, what happened. A screenshot
+beats a description.
 
 ---
 
-# 1. A stranger who wants to join
+# 1. A stranger joining
 
-The public signup path. Do this in an incognito window, with a real address.
-
-### Finding the club
+Incognito window. Use a **real address you can read** that is not registered.
 
 - [ ] `/` loads and looks right — also narrow, like a phone
-- [ ] `/join` lists **public clubs only**. Company clubs must never appear here
-- [ ] `/feed` typed directly → bounced to `/login`, and `?next=/feed` survives
-
-### Signing up
-
-- [ ] `/join` → pick a club, fill in first and last name, email, password
+- [ ] `/join` lists **exactly two** clubs: Pick a Book Public Club and Colombo
+      Poetry Circle. A company club appearing here is a serious bug
+- [ ] `/feed` typed directly → bounced to `/login`, `?next=/feed` preserved
+- [ ] Fill in first name, last name, email, password → submit
 - [ ] A password under 10 characters is refused
-- [ ] Submit → the **code step** appears, naming the address you typed
-- [ ] A numeric code **arrives** — check spam; a code in spam is a lost member
-- [ ] A **wrong** code is refused clearly, and you can try again
-- [ ] **Resend** is disabled briefly, then sends a fresh code
-- [ ] After a resend, the **old** code no longer works
-- [ ] The right code lands you on `/pending`
-- [ ] `/pending` explains an admin must approve you
-- [ ] `/feed` typed directly → still blocked; you are not a member yet
+- [ ] The **code step** appears, naming the address you typed
+- [ ] A numeric code arrives — **check spam**; a code in spam is a lost member
+- [ ] A wrong code is refused clearly, and you can retry
+- [ ] **Resend** sends a fresh code, and the previous one stops working
+- [ ] The right code lands you on `/pending`, which explains an admin must approve
+- [ ] `/feed` typed directly → still blocked
 
-### The bit that was broken until 1 Sep
+**Leave this account pending — you approve it in §6.**
 
-- [ ] Your **name**, not your email address, is what the admin sees in §4/§5
+Then, in the same incognito window:
 
-### Things that must fail
+- [ ] Log out, then log in with that email and password → **works** (you
+      confirmed, you just are not approved yet), and lands back on `/pending`
+- [ ] Try to register the same address again → "there's already an account"
 
-- [ ] Signing up again with the same address → "there's already an account"
-- [ ] Abandon signup at the code step, then try to log in with that password →
-      **refused**. If it succeeds, Confirm email is off and anyone can register
+**The one that matters most:** start a *second* signup with a different address,
+stop at the code step, then try to log in as it.
+
+- [ ] **Refused.** If it succeeds, Confirm email is off and anyone can register
       an address they do not own. Stop and tell me — that is serious
 
 ---
 
-# 2. An approved public member
+# 2. An ordinary member
 
-Log in as `member@test.pickabook.lk`. This is the everyday experience.
+Log in as `member@test.pickabook.lk` (Nimali Perera).
 
-### First impressions
+### Feed and profile
 
-- [ ] `/feed` greets you **by name**, and shows club, points and renewal date
-- [ ] `/me` shows your club membership and renewal status
-
-### Their profile
-
-- [ ] `/me/edit` — change name and bio, save; the change sticks after a reload
-- [ ] Upload a **photo** → it resizes, appears in the top bar and on `/me`
+- [ ] `/feed` greets you as **Nimali** — a greeting with a blank name means the
+      signup name bug is back
+- [ ] It shows **Pick a Book Public Club** and renewal **1 Mar 2028**
+- [ ] `/me/edit` — change the bio, save, reload; it stuck
+- [ ] Upload a photo → it resizes and appears in the top bar and on `/me`
 - [ ] Upload a non-image → refused
 - [ ] Upload something over 2 MB → refused
 
-  *Nobody has ever uploaded a photo on this system — the storage bucket is
-  empty. This is a genuinely untested path, not a formality.*
+  *Nobody has ever uploaded a photo on this system. The storage bucket is
+  empty. This is genuinely untested, not a formality.*
 
 ### Reading and points
 
-- [ ] `/me/reading` — three sections with books in each
+- [ ] `/me/reading` — three sections with books in them
 - [ ] Add a book → appears immediately
 - [ ] **Mark read** → moves to Read, with a date
-- [ ] Remove a book → gone, and still gone after a reload
-- [ ] `/me/points` — the ledger explains where each point came from
-- [ ] The total matches what `/feed` says
+- [ ] Remove a book → gone, still gone after reload
+- [ ] `/me/points` — the ledger says where each point came from, and the total
+      matches `/feed`
 
-### Seeing other people
+### Who they can see — the club boundary
 
-- [ ] `/directory` shows **only your own club** — Ishara and Ruwan, **not
-      Tharindu**
-- [ ] Open a member → their club, current reading, books read
-- [ ] `/members/<Tharindu's id>` typed directly → **404**, not "forbidden".
-      A 403 confirms the person exists; a 404 tells a stranger nothing
+- [ ] `/directory` lists **Ruwan Silva, Ishara Weerasinghe, Sanduni Fernando**
+      and **Hamdhan Mohamed**
+- [ ] It does **NOT** list **Tharindu Bandara** or **Maiza Fathima** — both are
+      Colombo Poetry Circle. Either one appearing is a data leak
+- [ ] Open Ruwan → his club, current reading, books read
+- [ ] Open Tharindu's profile by editing the URL → **404**, not "forbidden".
+      A 403 confirms he exists; a 404 tells a stranger nothing
 
 ### Sessions, books, videos
 
-- [ ] `/sessions` — "Demo August book night" is **free** to you
-- [ ] "Demo Poetry evening" quotes **LKR 1,200** — you are a guest there
+- [ ] `/sessions` — **Demo August book night** is **free** to you (your club)
+- [ ] **Demo Poetry evening** quotes **LKR 1,200** — you are a guest there
 - [ ] Book the free session → confirmation, and it shows as booked
-- [ ] `/books` — 13,129 books; search `Ishiguro`; filter a category; page 2 —
-      **filters survive paging**
+- [ ] `/books` — **13,129** books; search `Ishiguro`; filter a category; go to
+      page 2 → **the filter survives paging**
 - [ ] Open a book → member price, shop price struck through, "you save …"
-- [ ] `/library` — 171 borrowable titles
+- [ ] `/library` — **171** titles
 - [ ] `/videos/submit` a normal YouTube link → "sent for review"
 - [ ] `/me/videos` → **Awaiting review**; `/videos` → not public yet
 - [ ] You can withdraw your own pending video
@@ -120,77 +147,68 @@ Log in as `member@test.pickabook.lk`. This is the everyday experience.
 
 ---
 
-# 3. A member of a different club
+# 3. A member of the other club
 
-Log in as `poet@test.pickabook.lk`, ideally beside §2 in another browser.
-This is the leak test: clubs must not see each other.
+Log in as `poet@test.pickabook.lk` (Tharindu Bandara), ideally beside §2 in a
+second browser. This is the mirror image, and the leak test.
 
-- [ ] `/directory` shows **nobody** from the public club
-- [ ] `/sessions` — the poetry evening is **free** for you
-- [ ] `/sessions` — the August book night is visibly another club's
-- [ ] `/members/<member@'s id>` typed directly → **404**
-- [ ] You cannot see the other club's videos, reading lists or points
-- [ ] `/renew` offers the public club as one you *could* join
+- [ ] `/feed` greets **Tharindu**, club **Colombo Poetry Circle**
+- [ ] `/directory` lists **Maiza Fathima** and nobody from the public club —
+      no Nimali, no Ruwan, no Ishara
+- [ ] `/sessions` — **Demo Poetry evening** is **free** for you
+- [ ] **Demo August book night** is visibly another club's
+- [ ] Nimali's profile by URL → **404**
+- [ ] `/renew` offers **Pick a Book Public Club** as one you *could* join, at
+      **LKR 4,750**
 
 ---
 
-# 4. A company signing up its staff
+# 4. A company onboarding its staff
 
-The company path, from the admin creating it to an employee getting in. **The
-acceptance half has never been done end to end** — the invite email only
-started coming from this app on 2 Sep 2026.
+**Never done end to end by anyone.** The invite email only started coming from
+this app on 2 Sep 2026, and the "accepted" tracking was fixed the same day.
 
-Do the first half as **super admin**.
+First half as **super admin** (`kimivibecode@gmail.com`).
 
-### Creating the company
+### Creating it
 
-- [ ] `/admin/companies` → add a company
+- [ ] `/admin/companies` → add a company, e.g. "Test Corp"
 - [ ] A **private club is created for it automatically**
-- [ ] `/join` **signed out** does **not** offer that club
-- [ ] A public member's `/renew` does **not** offer it either
+- [ ] `/join` **signed out** shows still only the two public clubs — not this one
+- [ ] As `member@test.pickabook.lk`, `/renew` does **not** offer it either
 
-### Inviting employees
+### Inviting
 
-- [ ] Paste two or three addresses — **use one real address you can read**
-- [ ] Invite rows are created, listed as **unaccepted / pending**
+- [ ] Paste 2–3 addresses, **one of them real and readable by you**
+- [ ] Invite rows are created and listed as **still unaccepted**
+
+  *This was broken until today — invites were marked accepted the instant they
+  were sent, so the count was always zero. If it says unaccepted, the fix holds.*
+
 - [ ] Inviting an address that already has an account is refused
-- [ ] Inviting the same address twice does not create a duplicate
+- [ ] Inviting the same address twice does not duplicate it
 
-  **Known bug — expect this one.** Invites are marked `accepted` the moment
-  they are sent, before the recipient has touched anything. Cause:
-  `generateLink({type:"invite"})` creates the auth user, which fires
-  `on_auth_user_created`, which finds the pending invite and marks it accepted.
+### Accepting — incognito window
 
-  It is **not** an access hole — the account has no password until the invite
-  link is used, so nobody can log in early. But it means the list cannot tell
-  you who has actually accepted, so treat "unaccepted" as unreliable here and
-  judge acceptance by whether the person can log in. Worth fixing before you
-  invite a real company; tell me when you want it done.
-
-### Being invited — do this in an incognito window
-
-- [ ] The invite email **arrives** at the real address
-- [ ] It is from `noreply@pickabook.lk` and names the club
-- [ ] Following the link lets you set a password
+- [ ] The invite email **arrives**, from `noreply@pickabook.lk`, naming the club
+- [ ] The link lets you set a password
 - [ ] You land **active immediately** — invited people skip the approval queue
-- [ ] Your **name** is set from what you entered
-- [ ] `/feed` shows the **company club**, and it is your primary club
+- [ ] `/feed` shows the **company club** as your club
+- [ ] Back in the admin view, that invite now reads **accepted** and the others
+      still say unaccepted
 
 ### That the company club is genuinely private
 
 - [ ] Your `/directory` shows **only colleagues**
-- [ ] Back as `member@test.pickabook.lk`, `/directory` does **not** show you
-- [ ] Your `/sessions` shows the company club's sessions only
-- [ ] An unused invite link cannot be used twice
+- [ ] As `member@test.pickabook.lk`, `/directory` does **not** show you
+- [ ] The invite link cannot be used a second time
 
 ---
 
 # 5. A secretary running a session
 
-Log in as `secretary@test.pickabook.lk`. This is the person using the app
-under pressure, in a room, with members waiting.
-
-### What they may reach
+Log in as `secretary@test.pickabook.lk` (Ishara Weerasinghe). This is someone
+using the app under pressure, in a room, with members waiting.
 
 - [ ] `/admin` shows **Join requests, Sessions, Videos**; Book orders and
       Borrow requests greyed out
@@ -202,120 +220,114 @@ under pressure, in a room, with members waiting.
 
 - [ ] `/admin/sessions/new` — create one
 - [ ] Choosing **paid** reveals the guest-fee field
-- [ ] Saving a paid session with no fee is **refused**
+- [ ] Saving a paid session with **no** fee is refused
 - [ ] Edit it → changes stick
 
 ### The attendance recorder — the live screen
 
-- [ ] `/admin/sessions/…/attendance` lists your club's members
-- [ ] Tick **Presented** + **Attended** for one person → running total **+30**
+- [ ] `/admin/sessions/…/attendance` lists your club's members (Nimali, Ruwan,
+      Sanduni, Hamdhan — **not** Tharindu or Maiza)
+- [ ] Tick **Presented** + **Attended** for Ruwan → running total **+30**
 - [ ] Save → confirmation
-- [ ] Untick one, save again → the total drops correctly
-- [ ] As that member, `/me/points` matches exactly
-- [ ] **Save twice → their points do not double**
+- [ ] Untick Presented, save again → total drops to **+10**
+- [ ] Log in as Ruwan → `/me/points` matches exactly
+- [ ] **Save the same screen twice → his points do NOT double**
 
 ### Videos and applications
 
-- [ ] `/admin/videos` — publish one → it appears in `/videos` for everyone
+- [ ] `/admin/videos` — one submission is queued
+- [ ] Publish it → it appears in `/videos` for everyone
 - [ ] Reject one **with a reason** → the submitter sees that reason
 - [ ] Rejecting with no reason is refused
-- [ ] `/admin/join-requests` shows applicants **by name**, with their club
-- [ ] Approve one → it leaves the queue and they become active
+- [ ] `/admin/join-requests` shows your §1 applicant **by name**, not by email
 
 ---
 
 # 6. Super admin
 
-Your own account. Everything above, plus the things that can break the club.
+Your own account. Everything above, plus what can break the club.
+
+### The §1 applicant
+
+- [ ] `/admin/join-requests` shows them, **with the name they typed**
+- [ ] Approve → they leave the queue
+- [ ] `/admin/members` shows them **active** with a renewal date
+- [ ] They can now reach `/feed`, which greets them by name
 
 ### Members
 
 - [ ] `/admin/members` — search by name and by email
-- [ ] Open someone → change role to **Secretary**; it saves
-- [ ] They see the admin area on next login; change back → it disappears
-- [ ] Add a club to a member → appears with its own renewal date
-- [ ] Suspend a member → they cannot reach `/feed`; un-suspend → they can
-- [ ] **Demote yourself → must be REFUSED**, you are the last super admin
+- [ ] Change Ruwan's role to **Secretary** → saves; he sees the admin area next
+      login; change him back → it disappears
+- [ ] Add Colombo Poetry Circle to Ruwan → appears with its own renewal date
+- [ ] Suspend Ruwan → he cannot reach `/feed`; un-suspend → he can
+- [ ] **Demote yourself → REFUSED**, you are the last super admin
 
 ### Settings
 
-- [ ] `/admin/settings` — set book discount to `20`
-- [ ] `/books` prices reflect 20%; set it back to `25`
+- [ ] `/admin/settings` — set the book discount to `20`
+- [ ] `/books` prices reflect 20%; set it back to **25**
 - [ ] Change a points value → the note says **future sessions only**
-- [ ] Past entries in `/me/points` are unchanged by that edit
+- [ ] Ruwan's existing `/me/points` entries are unchanged by that edit
 
-### Join requests and payments
+### Payments
 
-- [ ] Approve the real pending signup from §1 — **their name shows**
-- [ ] `/admin/payments` reports **sandbox**, not "not configured"
-- [ ] "Record as paid" demands a **reason**, and marks the payment **manual**
-      rather than success
+- [ ] `/admin/payments` reports **sandbox**
+- [ ] The 2 Sep payment `MB-47FC2D3721` is listed as **success**, LKR 4,750
+- [ ] "Record as paid" on a pending payment demands a **reason**
+- [ ] It is marked **manual**, not success
 - [ ] That action appears in the audit log
 
 ---
 
-# 7. Payments — do this one first, before the rest
+# 7. Payments — ✅ done 2 Sep 2026
 
-Sandbox: no money moves. Cards are PayHere's own test numbers.
+Verified: order `MB-47FC2D3721`, LKR 4,750, PayHere id `320032649576`,
+`signature_ok` and `applied` both true, membership extended 1 Mar 2027 →
+1 Mar 2028.
 
-| Card | Number | Result |
-|---|---|---|
-| Visa | `4916217501611292` | **Success** |
-| Visa | `4024007194349121` | **Declined** |
+Still worth doing the unhappy paths, as `member2@test.pickabook.lk`:
 
-Watch the webhook arrive while you pay:
-```bash
-ssh root@162.35.112.114
-journalctl -u pab-member -f | grep -i payhere
-```
-
-- [ ] `/renew` → click Join or Renew
-- [ ] The checkout shows the **right club and amount**
-- [ ] It carries the orange **Sandbox Mode** notice — if not, **STOP**, you are live
-- [ ] Pay with the success card → you return to `/renew/result`
-- [ ] The result page settles to **paid on its own**, without a reload
-- [ ] `/me` and `/feed` show the renewal pushed out one term
-
-**Then tell me** — I will confirm `payment_events` shows `applied = true` and
-`payments` recorded PayHere's id. A payment that looks paid in the browser
-while `applied` is false means settlement is silently broken, and that is the
-single worst failure mode in this application.
-
-- [ ] Declined card → payment ends `failed`, renewal date does **not** move
+- [ ] Declined card `4024007194349121` → payment ends `failed`, and Ruwan's
+      renewal stays **1 Mar 2027**
 - [ ] **Back to Site** on the checkout → `/renew?cancelled=1`, nothing changed
-- [ ] Pay a **session guest fee** → the quoted fee is what PayHere charges
-- [ ] Renew **early** → the term is added to the existing expiry, not restarted
+- [ ] Pay the **Demo Poetry evening** guest fee (LKR 1,200) as a public-club
+      member → the quoted fee is what PayHere charges
+- [ ] Renew early → the term is **added** to the existing expiry, not restarted
+
+Success card: `4916217501611292`, any name, any future expiry, any CVV.
+**Every checkout must show the orange Sandbox notice.** If one does not, stop.
 
 ---
 
-# 8. After payment is signed off
-
-Only once §7 passes.
+# 8. After sign-off
 
 - [ ] Rotate `LEGACY_MYSQL_PASSWORD` (cPanel → MySQL Databases), update
-      `/srv/apps/member-register/.env.local`, restart `pab-member`, and confirm
-      `/books` still loads — it was exposed in a chat transcript
+      `/srv/apps/member-register/.env.local`, `systemctl restart pab-member`,
+      confirm `/books` still loads — it was exposed in a chat transcript
 - [ ] Confirm a nightly backup ran unattended:
-      `ls -l /srv/backups/member-db/` and `tail /var/log/member-db-backup.log`
-- [ ] Pull one backup copy off the VPS and keep it somewhere else
-- [ ] Keep the Supabase cloud project until roughly 16 Sep 2026 as a rollback,
-      then delete it
+      `tail /var/log/member-db-backup.log`
+- [ ] Pull one backup copy off the VPS and keep it elsewhere
+- [ ] Delete the Supabase cloud project (rollback window ends ~16 Sep 2026)
 - [ ] Revoke Claude's SSH key:
       `sed -i '/claude-code@member-register/d' /root/.ssh/authorized_keys`
-- [ ] Have every `@test.pickabook.lk` and fixture account removed, plus the
-      demo clubs, sessions, reading rows and videos
+- [ ] Have every test account and demo row removed before real members arrive
 
 ---
 
-## What is genuinely unverified going in
+## Known issues — expect these
 
-Not a to-do list — context for where to look hardest.
-
-| Path | Why it matters |
+| Thing | Status |
 |---|---|
-| **Company invite acceptance** (§4) | Never done end to end by anyone. The invite mail only started coming from this app on 2 Sep |
-| **Photo upload** (§2) | The storage bucket is empty; nobody has uploaded one, ever |
-| **PayHere settlement** (§7) | PayHere has never called the webhook for a real payment |
-| **Session booking and guest fees** (§2, §7) | Priced and displayed, but never paid for |
+| `e2e-admin` crashes on the self-demotion edge case | Test flake; the UI control works. **It leaves `adm1/adm2/mem1@adm.test` behind on every run, and `adm2` is a super admin** — delete them after any full suite run |
+| `hamdhanm30@gmail.com` stranded | Pre-dates the code step; confirmed but never applied to a club |
+| `PAYHERE_MODE` is `sandbox` | Going live needs a live merchant account — a commercial step, not a code one |
 
-Everything else has at least automated coverage. These four have none.
+## Still with no automated coverage
+
+Where to look hardest, because nothing else is watching:
+
+- **Company invite acceptance** (§4)
+- **Photo upload** (§2) — the bucket is empty; nobody has ever uploaded one
+- **Session guest-fee payment** (§7)
+- **The attendance recorder's double-save** (§5) — points are money-adjacent
