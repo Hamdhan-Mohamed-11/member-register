@@ -84,17 +84,19 @@ relaxTimeouts(browser);
 
 // --- 1. applicant signs up via /join ------------------------------------
 //
-// Supabase's BUILT-IN mailer allows roughly two sends an hour, and a signup
-// consumes one.
+// Signup is now two steps: the form creates the account server-side and emails
+// a 6-digit code, and a second screen takes that code. This suite stops at the
+// code screen -- it has no mailbox, and faking the code would mean reaching
+// into GoTrue's token store to verify a path no member takes.
 //
-// An earlier version PROBED the limit with a throwaway signup first, which was
-// self-defeating: the probe spent a send, so whenever exactly one remained the
-// probe succeeded and the real signup then failed. That is what made this
-// suite fail intermittently when run after the others.
+// So what is checked here is everything up to the code: the account exists,
+// unconfirmed, and the app is asking for the code. Confirmation is then done
+// through the admin API further down, exactly as it was when the mailer was
+// rate limited. Delivery itself is `npm run test:mail`, which does have an
+// inbox to look in.
 //
-// Now there is one attempt. If it is rate limited, the form says so and the
-// suite reports a SKIP rather than a failure -- the limit is an ops condition,
-// not a defect. Once custom SMTP is configured this branch simply runs.
+// No SMTP configured means the send throws and no code screen appears. That is
+// an ops condition, not a defect, so it SKIPs.
 let signupExercised = false;
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -112,20 +114,31 @@ let signupExercised = false;
   await page.fill('input[name="password"]', PW);
   await page.selectOption('select[name="club_id"]', pubClub.id);
   await page.click('button[type="submit"]');
-  await settle(page, "/pending");
 
-  const after = await visibleText(page);
+  const codeField = await page
+    .waitForSelector('input[name="code"]', { timeout: 15_000 })
+    .catch(() => null);
+
   const created = await j(await admin("/auth/v1/admin/users?per_page=200"));
-  const exists = (created.users ?? []).some((u) => u.email === APPLICANT);
+  const account = (created.users ?? []).find((u) => u.email === APPLICANT);
 
-  if (exists) {
+  if (codeField) {
     signupExercised = true;
-    check("signup either lands on /pending or asks for email confirmation",
-      page.url().includes("/pending") || /confirm your address/i.test(after ?? ""),
-      page.url());
+    await page.screenshot({ path: `${SHOT}e2e-join-code.png`, fullPage: true });
+    check("signup asks for the emailed code", true, "");
+    check("the account exists after step one", Boolean(account?.id), "");
+    // The point of the whole change: nothing is usable until the code is
+    // entered. A confirmed account here would mean the code proved nothing.
+    check("the account is NOT yet confirmed",
+      Boolean(account) && !account.email_confirmed_at,
+      String(account?.email_confirmed_at));
+    check("no join request exists before the code is entered",
+      (await j(await admin(
+        `/rest/v1/club_join_requests?member_id=eq.${account?.id}&select=id`))).length === 0,
+      "");
   } else {
-    console.log("  SKIP  browser signup -- Supabase auth email rate limit hit.");
-    console.log("        Configure custom SMTP to exercise this path for real.");
+    console.log("  SKIP  browser signup -- no code screen.");
+    console.log("        Usually means SMTP_* is unset; try `npm run test:mail`.");
   }
   await ctx.close();
 }
@@ -133,8 +146,9 @@ let signupExercised = false;
 let applicant = (await j(await admin("/auth/v1/admin/users?per_page=200")))
   .users.find((u) => u.email === APPLICANT);
 
-// Only needed when the signup above was rate limited. Everything downstream --
-// the application, the approval, the membership -- is exercised either way.
+// Only needed when the signup above could not run at all. Everything
+// downstream -- the application, the approval, the membership -- is exercised
+// either way.
 if (!applicant) {
   const created = await j(await admin("/auth/v1/admin/users", {
     method: "POST",
@@ -235,8 +249,8 @@ check("applicant profile is a plain member", profile?.role === "member", JSON.st
 await browser.close();
 if (!signupExercised) {
   console.log("");
-  console.log("NOTE  the browser signup path was NOT exercised this run (mailer");
-  console.log("      rate limit). Everything after it was. See DEPLOYMENT.md §1.");
+  console.log("NOTE  the browser signup path was NOT exercised this run (no code");
+  console.log("      screen -- check SMTP_*). Everything after it was.");
 }
 
 if (!process.env.KEEP) { console.log("Cleaning up..."); await wipe(); }

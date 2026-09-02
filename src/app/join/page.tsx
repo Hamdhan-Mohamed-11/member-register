@@ -5,7 +5,6 @@ import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { getSessionMember } from "@/lib/auth/session";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
-import { getSiteUrl } from "@/lib/supabase/env";
 import { JoinForm, type JoinableClub } from "./JoinForm";
 
 export const metadata: Metadata = { title: "Join a club" };
@@ -34,7 +33,7 @@ export default async function JoinPage() {
         </h1>
         <Card>
           {clubs.length ? (
-            <JoinForm clubs={clubs} siteUrl={getSiteUrl()} />
+            <JoinForm clubs={clubs} />
           ) : (
             <EmptyState
               title="No clubs are open for applications"

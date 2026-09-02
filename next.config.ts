@@ -6,7 +6,10 @@ const isDev = process.env.NODE_ENV !== "production";
 const nextConfig: NextConfig = {
   // mysql2 must not be bundled into the server chunk — it resolves its own
   // native-ish internals at runtime and Turbopack mangles them if it tries.
-  serverExternalPackages: ["mysql2"],
+  //
+  // nodemailer for the same reason: it pulls in Node built-ins and resolves
+  // transport internals dynamically, which the bundler cannot follow.
+  serverExternalPackages: ["mysql2", "nodemailer"],
 
   async headers() {
     return [

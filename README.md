@@ -74,10 +74,12 @@ Things that must be configured in the dashboard, not in code:
 
 - **Auth → URL Configuration → Redirect URLs** must include every origin you use
   (`http://localhost:3001/**` and the production origin). Miss this and every
-  invite and password-reset link 400s.
-- **Custom SMTP.** The built-in auth mailer is capped around 2 emails/hour.
-  Bulk-inviting a company's employees *will* hit it. Configure a real SMTP
-  provider before onboarding the first company club.
+  invite link 400s. Password reset no longer uses a link, so it is unaffected.
+- **Confirm email must be ON.** Signup creates the account before the emailed
+  code is checked, so with it off an unverified account could simply log in.
+- **SMTP is not a dashboard setting any more.** Signup codes, reset codes and
+  invites are all sent by the app itself — see the `SMTP_*` vars in
+  `.env.example`, and `npm run test:mail` to check them.
 - **Minimum password length** — raise it above the default 6. The UI enforces 10.
 
 ## Legacy MySQL (not wired up yet — Phase 6)

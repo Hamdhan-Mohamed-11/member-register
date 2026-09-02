@@ -33,18 +33,36 @@ listed Nimali, who is in another club" can.
 - [ ] `/admin` → bounced to `/login`
 - [ ] `/join` lists **public clubs only** — no company clubs
 - [ ] `/login` with a wrong password → a clear error, not a crash
-- [ ] `/forgot-password` accepts an address and says something sensible
+- [ ] `npm run test:mail -- you@example.com` sends, and the mail arrives
 
 **Sign-up, end to end** — the whole path, with a real address you can read:
 
 - [ ] `/join` → pick a club, fill your name, submit
-- [ ] "Check your email" appears
-- [ ] The confirmation email **arrives**
-- [ ] Its link lands on `/pending` saying your email is confirmed
-- [ ] The URL is **not** `localhost` and the page is not an error
+- [ ] The code step appears, naming the address you typed
+- [ ] A numeric code **arrives** (check spam — a code in spam is a lost member)
+- [ ] A wrong code is refused with a clear message and you can try again
+- [ ] "Resend code" is disabled for 30s, then sends a fresh code; the old one
+      stops working
+- [ ] The right code lands on `/pending`
 - [ ] `/pending` explains that an admin must approve you
 - [ ] **Your name — not your email — appears** in the admin queue later (§5).
       This was broken until 1 Sep 2026; every signup lost its name
+- [ ] Signing up again with the same address → "there's already an account"
+- [ ] Abandon a signup at the code step, then log in with that password →
+      **refused**. Succeeding means Confirm email is off in the dashboard, and
+      anyone can register an address they do not own
+
+**Password reset** — until 2 Sep 2026 there was no working version of this:
+
+- [ ] `/forgot-password` with a registered address → the code step appears
+- [ ] The reset code **arrives**
+- [ ] An unregistered address shows the **same** screen and sends nothing —
+      the form must never reveal which addresses have accounts
+- [ ] The right code lands on `/auth/reset-password`
+- [ ] The new password saves and logs you in
+- [ ] Reusing that same code is refused
+- [ ] Requesting four codes for one address in a row → throttled, and the
+      screen still looks the same
 
 ---
 
@@ -219,8 +237,12 @@ The company side, end to end. Company clubs are private and must never leak.
 
 **Accepting an invite** — never yet tested end to end:
 
-- [ ] The invited person receives the email
+- [ ] The invited person receives the email — sent by the app now, not by
+      Supabase, so this exercises the same SMTP as the signup codes
+- [ ] It arrives as a **link**, not a code (invites stay links on purpose)
 - [ ] Following the link, they can set a password and sign in
+- [ ] If any invite in a batch reports a send failure, the admin screen names
+      **which address** failed rather than failing the whole batch
 - [ ] They land **active**, with no approval step (invites skip the queue)
 - [ ] Their name is set from what they entered
 - [ ] They are in the **company club**, and it is their primary club

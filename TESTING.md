@@ -33,15 +33,28 @@ list, points from a past session, one pending video, one pending application.
 - [ ] Looks right on a phone as well as a laptop
 - [ ] `/feed` while logged out → bounced to `/login`, with `?next=/feed` kept
 - [ ] `/admin` while logged out → bounced to `/login`
-- [ ] `/login` → "Forgot password?" sends an email that arrives
+- [ ] `npm run test:mail -- you@example.com` — the mailer connects and sends
 - [ ] `/join` → lists **only public clubs** (no company clubs)
 
-**Sign-up, end to end** — the path that was broken and is now fixed:
+**Sign-up, end to end** — with a real address you can read:
 
-- [ ] `/join` with a real address you can read → "check your email"
-- [ ] The confirmation email arrives
-- [ ] Clicking the link lands on `/pending` saying "Your email is confirmed"
-- [ ] It does **not** get stuck, and the URL is not `localhost`
+- [ ] `/join` → fill in details, submit → the code step appears
+- [ ] A numeric code arrives by email (check spam)
+- [ ] A wrong code → "that code is wrong or has expired", and you can retry
+- [ ] The right code lands on `/pending`
+- [ ] Your **name** shows in the admin queue afterwards, not just the email
+- [ ] Abandon a signup at the code step, then try to log in with that password
+      → refused. If it succeeds, **Confirm email is off** in the dashboard and
+      anyone can register an address they do not own (DEPLOYMENT.md §1)
+
+**Password reset** — the path that had no working version at all:
+
+- [ ] `/forgot-password` with a registered address → the code step appears
+- [ ] The reset code arrives
+- [ ] An **unregistered** address gives the same screen — no hint either way
+- [ ] The right code lands on `/auth/reset-password`
+- [ ] The new password saves, and logging in with it works
+- [ ] The same code a second time is refused
 
 ---
 
@@ -148,6 +161,8 @@ Everything a secretary can do, plus:
 - [ ] `/admin/companies` — add a company; a private club is created automatically
 - [ ] Paste two or three employee emails → invite rows are created
 - [ ] Those invites are listed as unaccepted
+- [ ] The invite email arrives — sent by the app now, over the same SMTP as
+      the signup codes — and its link sets a password
 - [ ] `/join` (logged out) does **not** offer the company club
 
 **Payments:**

@@ -6,7 +6,9 @@ import { useRouter } from "next/navigation";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browserClient";
 import { Button } from "@/components/ui/Button";
 import { Field, Notice } from "@/components/ui/Field";
+import { OtpStep } from "@/components/auth/OtpStep";
 import { useHydrated } from "@/lib/useHydrated";
+import { requestSignupCode } from "./actions";
 
 export type JoinableClub = {
   id: string;
@@ -16,17 +18,32 @@ export type JoinableClub = {
 
 const MIN_LENGTH = 10;
 
-export function JoinForm({
-  clubs,
-  siteUrl,
-}: {
-  clubs: JoinableClub[];
-  siteUrl: string;
-}) {
+type Pending = {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  clubId: string;
+};
+
+/**
+ * Two-step signup: details, then the code emailed to that address.
+ *
+ * The account is created by requestSignupCode on the server (unconfirmed), and
+ * verifyOtp here is what confirms the address and returns the session. Only
+ * then is the club application filed -- request_club_join runs under the
+ * member's own session, so an address nobody verified can never end up in the
+ * approval queue.
+ *
+ * The typed details stay in component state across the two steps rather than
+ * in sessionStorage: the password is among them, and the flow never leaves
+ * this page, so there is nothing to persist for.
+ */
+export function JoinForm({ clubs }: { clubs: JoinableClub[] }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const hydrated = useHydrated();
-  const [needsConfirm, setNeedsConfirm] = useState(false);
+  const [pending, setPending] = useState<Pending | null>(null);
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -34,82 +51,76 @@ export function JoinForm({
     setError(null);
 
     const form = new FormData(event.currentTarget);
-    const email = String(form.get("email") ?? "").trim();
-    const password = String(form.get("password") ?? "");
-    const firstName = String(form.get("first_name") ?? "").trim();
-    const lastName = String(form.get("last_name") ?? "").trim();
-    const clubId = String(form.get("club_id") ?? "");
+    const details: Pending = {
+      email: String(form.get("email") ?? "").trim(),
+      password: String(form.get("password") ?? ""),
+      firstName: String(form.get("first_name") ?? "").trim(),
+      lastName: String(form.get("last_name") ?? "").trim(),
+      clubId: String(form.get("club_id") ?? ""),
+    };
 
-    if (password.length < MIN_LENGTH) {
+    if (details.password.length < MIN_LENGTH) {
       setError(`Please use a password of at least ${MIN_LENGTH} characters.`);
       return;
     }
-    if (!clubId) {
+    if (!details.clubId) {
       setError("Please choose a club to join.");
       return;
     }
 
     setBusy(true);
+    const result = await requestSignupCode(details);
+    setBusy(false);
+
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+    setPending(details);
+  }
+
+  async function verify(code: string): Promise<string | null> {
+    if (!pending) return "Please start again.";
+
     const supabase = getBrowserSupabaseClient();
-
-    // Client-side signUp rather than a service-role createUser: this is what
-    // makes Supabase send the confirmation email natively. Names go in
-    // `data` purely as profile convenience -- nothing security-relevant is
-    // ever read from user metadata (see handle_new_user).
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${siteUrl}/auth/callback?next=/pending`,
-        data: { first_name: firstName, last_name: lastName },
-      },
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      email: pending.email,
+      token: code,
+      type: "signup",
     });
 
-    if (signUpError) {
-      setError(
-        signUpError.message.toLowerCase().includes("already")
-          ? "There's already an account with that email. Try logging in instead."
-          : "We couldn't create your account. Please check your details and try again.",
-      );
-      setBusy(false);
-      return;
+    if (verifyError) {
+      return "That code is wrong or has expired. Check the code, or send yourself a new one.";
     }
 
-    // No session means email confirmation is on: the club application has to
-    // wait until they confirm and sign in, so tell them that plainly rather
-    // than silently dropping their club choice.
-    if (!data.session) {
-      window.sessionStorage.setItem("pab:pending-club", clubId);
-      setNeedsConfirm(true);
-      setBusy(false);
-      return;
-    }
-
-    await supabase
-      .from("profiles")
-      .update({ first_name: firstName, last_name: lastName })
-      .eq("id", data.user!.id);
-
+    // Confirmed and signed in. The club application is the last step, and it
+    // is the only one that needs a session.
     const { error: joinError } = await supabase.rpc("request_club_join", {
-      p_club_id: clubId,
+      p_club_id: pending.clubId,
     });
-
-    if (joinError) {
-      setError(joinError.message);
-      setBusy(false);
-      return;
-    }
+    if (joinError) return joinError.message;
 
     router.replace("/pending");
     router.refresh();
+    return null;
   }
 
-  if (needsConfirm) {
+  async function resend(): Promise<string | null> {
+    if (!pending) return "Please start again.";
+    const result = await requestSignupCode(pending);
+    return result.ok ? null : result.error;
+  }
+
+  if (pending) {
     return (
-      <Notice tone="success">
-        Check your email to confirm your address. Once you&apos;ve confirmed and
-        logged in, your club application goes to the club admins for approval.
-      </Notice>
+      <OtpStep
+        email={pending.email}
+        submitLabel="Confirm and apply"
+        onVerify={verify}
+        onResend={resend}
+        onBack={() => setPending(null)}
+        backLabel="Change my details"
+      />
     );
   }
 
@@ -129,6 +140,7 @@ export function JoinForm({
         autoComplete="email"
         required
         placeholder="you@example.com"
+        hint="We'll email you a one-time code to confirm this address."
       />
       <Field
         label="Password"
@@ -167,7 +179,7 @@ export function JoinForm({
       </div>
 
       <Button type="submit" disabled={busy || !hydrated} className="w-full">
-        {busy ? "Creating your account…" : "Apply to join"}
+        {busy ? "Sending your code…" : "Send my code"}
       </Button>
 
       <p className="text-sm text-ink-muted">

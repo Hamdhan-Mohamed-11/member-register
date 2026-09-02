@@ -2,6 +2,8 @@ import "server-only";
 
 import { getServiceSupabaseClient } from "@/lib/supabase/serverClient";
 import { getSiteUrl } from "@/lib/supabase/env";
+import { sendMail } from "@/lib/email/mailer";
+import { inviteEmail } from "@/lib/email/templates";
 
 export type InviteSendResult = {
   email: string;
@@ -10,36 +12,61 @@ export type InviteSendResult = {
 };
 
 /**
- * Sends the Supabase Auth invite email for an invite row that has already been
- * created by the create_invite RPC.
+ * Sends the invite email for an invite row that has already been created by
+ * the create_invite RPC.
  *
- * This is one of only three places allowed to use the service-role client:
- * auth.admin.inviteUserByEmail has no SQL equivalent, so the authorisation
- * check lives in the RPC and the send lives here. Callers MUST have already
- * gone through create_invite, which is where the super-admin check actually
- * happens -- this function trusts its caller.
+ * Mail is composed and sent by this app (nodemailer), like every other auth
+ * email. GoTrue still creates the invited user and mints the link -- that is
+ * what `generateLink` does, and it is the same link inviteUserByEmail would
+ * have sent; only delivery moved. Nothing here depends on GoTrue's SMTP being
+ * configured any more.
+ *
+ * Still service-role, and still one of the sanctioned uses: generateLink has
+ * no SQL equivalent, so the authorisation check lives in the RPC and the send
+ * lives here. Callers MUST have already gone through create_invite, which is
+ * where the super-admin check actually happens -- this function trusts its
+ * caller.
  */
 export async function sendInviteEmail(email: string): Promise<InviteSendResult> {
   const supabase = getServiceSupabaseClient();
 
-  const { error } = await supabase.auth.admin.inviteUserByEmail(email, {
-    redirectTo: `${getSiteUrl()}/auth/accept-invite`,
+  const { data, error } = await supabase.auth.admin.generateLink({
+    type: "invite",
+    email,
+    options: { redirectTo: `${getSiteUrl()}/auth/accept-invite` },
   });
 
   if (error) {
     return { email, ok: false, error: error.message };
   }
+
+  const actionLink = data?.properties?.action_link;
+  if (!actionLink) {
+    return { email, ok: false, error: "Auth returned no invite link." };
+  }
+
+  try {
+    await sendMail(inviteEmail({ to: email, actionLink }));
+  } catch (sendError) {
+    // The user and the invite row exist but the mail did not go. Report it per
+    // address so the admin sees which ones to resend, rather than a whole
+    // batch failing or silently half-working.
+    const message = sendError instanceof Error ? sendError.message : String(sendError);
+    return { email, ok: false, error: `Invite created but email failed: ${message}` };
+  }
+
   return { email, ok: true };
 }
 
 /**
- * Supabase's built-in mailer is rate limited (2/hour by default, and modest
- * even with custom SMTP). A company onboarding of 40 employees sent in a tight
- * loop will trip it partway through and leave half the invites created but
- * unsent -- which looks like nothing happened.
+ * Serial, with a gap, and reported per address.
  *
- * So: send serially with a small gap, report per-address, and let the caller
- * show which ones failed rather than failing the whole batch.
+ * The old reason was Supabase's built-in mailer and its 2/hour cap. That cap
+ * is gone with the mail, but the shape is still right: a company onboarding of
+ * 40 employees hitting one SMTP relay in a tight loop is exactly what gets a
+ * sender throttled or graylisted, and a batch that fails halfway leaves
+ * invites created but unsent -- which looks like nothing happened. So the
+ * caller gets per-address results and can show which ones need resending.
  */
 export async function sendInviteEmails(
   emails: string[],

@@ -2,42 +2,82 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browserClient";
 import { Button } from "@/components/ui/Button";
-import { Field, Notice } from "@/components/ui/Field";
+import { Field } from "@/components/ui/Field";
+import { OtpStep } from "@/components/auth/OtpStep";
 import { useHydrated } from "@/lib/useHydrated";
+import { requestPasswordResetCode } from "./actions";
 
-export function ForgotPasswordForm({ siteUrl }: { siteUrl: string }) {
-  const [sent, setSent] = useState(false);
+/**
+ * Password recovery by emailed code rather than emailed link.
+ *
+ * The link version never worked in production -- GoTrue's `recovery` mail was
+ * the one template that would not deliver over the club's SMTP, which left
+ * anyone who forgot a password with no way back in. Codes are minted the same
+ * way but sent by this app's own mailer, so recovery now uses the same path as
+ * every other email we send.
+ */
+export function ForgotPasswordForm() {
+  const router = useRouter();
   const hydrated = useHydrated();
+  const [email, setEmail] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
 
-    const form = new FormData(event.currentTarget);
-    const email = String(form.get("email") ?? "").trim();
+    const typed = String(new FormData(event.currentTarget).get("email") ?? "").trim();
+    await requestPasswordResetCode(typed);
 
-    const supabase = getBrowserSupabaseClient();
-    await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${siteUrl}/auth/callback?next=/auth/reset-password`,
-    });
-
-    // Always report success, even when the address is unknown or the call
-    // failed. Telling the visitor whether an address exists turns this form
-    // into an account-enumeration oracle.
-    setSent(true);
+    // Move on regardless of what happened server-side. The action reports
+    // nothing back for a reason: whether that address has an account is not
+    // something this form may reveal.
+    setEmail(typed);
     setBusy(false);
   }
 
-  if (sent) {
+  async function verify(code: string): Promise<string | null> {
+    if (!email) return "Please start again.";
+
+    const supabase = getBrowserSupabaseClient();
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token: code,
+      type: "recovery",
+    });
+
+    if (error) {
+      // Also what an unregistered address gets, since no code was ever sent
+      // for it -- deliberately the same message.
+      return "That code is wrong or has expired. Check the code, or send yourself a new one.";
+    }
+
+    // Verified: there is now a recovery session, which is exactly what
+    // /auth/reset-password needs to accept a new password.
+    router.replace("/auth/reset-password");
+    router.refresh();
+    return null;
+  }
+
+  async function resend(): Promise<string | null> {
+    if (!email) return "Please start again.";
+    await requestPasswordResetCode(email);
+    return null;
+  }
+
+  if (email) {
     return (
       <div className="space-y-4">
-        <Notice tone="success">
-          If that email is registered, a reset link is on its way. It expires
-          after an hour.
-        </Notice>
+        <OtpStep
+          email={email}
+          submitLabel="Check code"
+          onVerify={verify}
+          onResend={resend}
+          onBack={() => setEmail(null)}
+        />
         <Link href="/login" className="block text-sm text-brand-600 hover:underline">
           Back to log in
         </Link>
@@ -54,9 +94,10 @@ export function ForgotPasswordForm({ siteUrl }: { siteUrl: string }) {
         autoComplete="email"
         required
         placeholder="you@example.com"
+        hint="If that address has an account, we'll email you a one-time code."
       />
       <Button type="submit" disabled={busy || !hydrated} className="w-full">
-        {busy ? "Sending…" : "Send reset link"}
+        {busy ? "Sending…" : "Send reset code"}
       </Button>
       <Link href="/login" className="block text-sm text-brand-600 hover:underline">
         Back to log in

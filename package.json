@@ -20,13 +20,15 @@
     "test:payments": "node --env-file=.env.local scripts/payments-test.mjs",
     "test:videos": "node --env-file=.env.local scripts/videos-test.mjs",
     "test:videos:e2e": "node --env-file=.env.local scripts/e2e-videos.mjs",
-    "test:payments:e2e": "node --env-file=.env.local scripts/e2e-payments.mjs"
+    "test:payments:e2e": "node --env-file=.env.local scripts/e2e-payments.mjs",
+    "test:mail": "node --env-file=.env.local scripts/mail-test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.3",
     "mysql2": "^3.23.4",
     "next": "16.3.1",
+    "nodemailer": "^9.1.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "server-only": "^0.0.1",
@@ -35,6 +37,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/nodemailer": "^8.0.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { AppShell } from "@/components/shell/AppShell";
 import { Card } from "@/components/ui/Card";
-import { getSiteUrl } from "@/lib/supabase/env";
 import { ForgotPasswordForm } from "./ForgotPasswordForm";
 
 export const metadata: Metadata = { title: "Reset your password" };
@@ -14,7 +13,7 @@ export default function ForgotPasswordPage() {
           Reset your password
         </h1>
         <Card>
-          <ForgotPasswordForm siteUrl={getSiteUrl()} />
+          <ForgotPasswordForm />
         </Card>
       </div>
     </AppShell>

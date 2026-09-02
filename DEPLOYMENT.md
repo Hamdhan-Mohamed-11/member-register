@@ -35,12 +35,19 @@ on the current free-tier setup, and neither is blocked by code.
 - [x] **Email (custom SMTP).** Done — HostGator, sending as
       `noreply@pickabook.lk`. Signup confirmation and magic links both
       verified as arriving (1 Sep 2026).
-- [ ] **Password reset email does not arrive.** Signup confirmation and magic
-      link deliver over the same SMTP; `recovery` specifically does not —
-      including when triggered from the Supabase dashboard. So it is not
-      deliverability in general but something specific to the recovery
-      template or flow. **Real members who forget a password currently have no
-      way back in.** TESTING.md §1 has the failing check.
+- [ ] **Auth email now comes from the app, not from Supabase.** Signup
+      confirmation and password reset are one-time codes minted by
+      `auth.admin.generateLink` and sent by this process over nodemailer
+      (`src/lib/email/`). This is what closes the old recovery blocker: the
+      `recovery` template that would never deliver is no longer used at all.
+      Set the `SMTP_*` vars in §2, then run `npm run test:mail` on the VPS and
+      walk TESTING.md §1 — neither the codes nor the reset path have been
+      exercised against the production mail server yet.
+      Company invites go the same way -- GoTrue mints the invite link,
+      nodemailer sends it -- so **no auth email depends on Supabase's SMTP any
+      more**. Invites stay a link rather than a code: the recipient did not ask
+      for the mail and has no account yet, so the link is the proof they read
+      the mailbox.
 - [x] **PayHere sandbox configured.** Merchant `1237809`, mode `sandbox`, live
       on the VPS — `/api/health` reports `configured (sandbox)`. The domain
       whitelist is the **apex** `pickabook.lk`; PayHere rejects subdomains, and
@@ -66,8 +73,10 @@ Dashboard → Authentication.
 
 | Setting | Development | Production | Why it matters |
 |---|---|---|---|
-| **Confirm email** | **off** | **ON** | Off lets anyone sign up with an address they do not own. It is off only because the built-in mailer is capped at ~2 sends/hour, which makes the signup path untestable. **This is the single most important line in this file.** |
-| Custom SMTP | none | **configured** | The built-in mailer's cap (`rate_limit_email_sent: 2`) is not a rate to design around — it is a development stub. Bulk-inviting one company's employees exceeds it immediately. Resend and Brevo both have free tiers that comfortably cover ~300 members. |
+| **Confirm email** | **ON** | **ON** | Off lets anyone sign up with an address they do not own — and the join form now creates the account *before* the code is checked, so with this off an unverified account could simply log in. **This is the single most important line in this file.** `supabase/config.toml` sets it for local; the dashboard setting is what counts in production. |
+| Custom SMTP | none | not needed | Every auth email — signup code, reset code, invite — is sent by the app over the `SMTP_*` settings in §2. GoTrue's own mailer, and its ~2/hour cap, is out of the picture. |
+| **OTP length** | 6 (`config.toml`) | whatever the project issues | Not the same in both: the local config says 6 and the live project issues 8. Nothing in the app assumes a length — the code box accepts 4–12 digits and Auth decides. Do not "fix" this by hardcoding one. |
+| **Confirm email OTP expiry** | 600s | 600s | `otp_expiry` in `supabase/config.toml`. The email tells the member "10 minutes" from `OTP_EXPIRY_MINUTES` in `src/lib/auth/otp.ts` — change the two together or the message lies. |
 | Site URL | `http://localhost:3001` | production origin | |
 | Redirect URLs | `http://localhost:3001/**` | production origin + `/**` | **If this is empty or wrong, every invite and password-reset link 400s** with no useful error. It was empty on first setup — check it. |
 | Min password length | 10 | 10 | Must match the 10 the UI enforces, or the UI accepts passwords Auth then rejects. |
@@ -87,7 +96,20 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 NEXT_PUBLIC_SITE_URL=https://<production origin>
+
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASSWORD=
+SMTP_FROM=noreply@pickabook.lk
+SMTP_FROM_NAME=Pick a Book
 ```
+
+Without the `SMTP_*` vars the app cannot send a signup or reset code, so
+**nobody can register and nobody can recover an account** — the mailer throws
+on the first send rather than starting up degraded. Port 465 is implicit TLS;
+on any other port the server must offer STARTTLS or the send is refused,
+because the message carries a one-time code.
 
 `NEXT_PUBLIC_SITE_URL` is baked into the client bundle at build time. Changing
 it means rebuilding, not restarting.
