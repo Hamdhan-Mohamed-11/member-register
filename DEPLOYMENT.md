@@ -111,6 +111,28 @@ on the first send rather than starting up degraded. Port 465 is implicit TLS;
 on any other port the server must offer STARTTLS or the send is refused,
 because the message carries a one-time code.
 
+**Quote `SMTP_PASSWORD`.** Node's `--env-file` parser is not the shell's, and
+it silently truncated an unquoted 16-character password to 12 — so nodemailer
+authenticated with a wrong password and the server answered
+`535 Incorrect authentication data`, which reads exactly like a wrong password
+rather than a parsing bug. Anything reading the file directly (a Python test,
+`grep`) saw all 16 characters and worked, which made it look like nodemailer
+was at fault. Write it as:
+
+```
+SMTP_PASSWORD='the-actual-password'
+```
+
+Check what the process actually receives, rather than what the file contains:
+
+```bash
+node --env-file=.env.local -e 'console.log(process.env.SMTP_PASSWORD.length)'
+```
+
+These are server-only vars, so changing them needs a `systemctl restart
+pab-member` — not a rebuild. But it *does* need the restart: the running
+process keeps whatever it parsed at startup.
+
 `NEXT_PUBLIC_SITE_URL` is baked into the client bundle at build time. Changing
 it means rebuilding, not restarting.
 
