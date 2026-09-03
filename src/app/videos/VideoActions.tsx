@@ -35,12 +35,14 @@ function useVideoAction() {
 export function WithdrawVideo({ videoId }: { videoId: string }) {
   const { pending, error, run } = useVideoAction();
 
+  // Right-aligned and `secondary`, not `ghost`: as bare text it read as a
+  // label rather than something you could press, and people could not find it.
   return (
-    <div>
+    <div className="flex flex-col items-end gap-2">
       {error ? <Notice>{error}</Notice> : null}
       <Button
         size="sm"
-        variant="ghost"
+        variant="secondary"
         disabled={pending}
         onClick={() => run(deleteVideo, { videoId })}
       >

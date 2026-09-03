@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { AppShell } from "@/components/shell/AppShell";
 import { Card } from "@/components/ui/Card";
+import { buttonClassName } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { BookCard } from "@/components/books/BookCard";
 import { CatalogueFilters, CataloguePager } from "@/components/books/CatalogueFilters";
@@ -66,13 +68,23 @@ export default async function BooksPage({
         avatarUrl: avatarUrl(member.userId, member.avatarPath),
       }}
     >
-      <div className="mb-4">
-        <h1 className="font-display text-3xl text-ink">Books</h1>
-        <p className="text-sm text-ink-muted">
-          {discount > 0
-            ? `Members pay ${discount}% less than the shop price.`
-            : "The Pick a Book catalogue."}
-        </p>
+      {/*
+        The bottom bar has no room for /library, so this is the only link to
+        it. Without it the borrowing catalogue is reachable only by typing the
+        URL, which is how it went unnoticed.
+      */}
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h1 className="font-display text-3xl text-ink">Books</h1>
+          <p className="text-sm text-ink-muted">
+            {discount > 0
+              ? `Members pay ${discount}% less than the shop price.`
+              : "The Pick a Book catalogue."}
+          </p>
+        </div>
+        <Link href="/library" className={`${buttonClassName("secondary", "sm")} shrink-0`}>
+          Borrow a book
+        </Link>
       </div>
 
       <div className="space-y-4">

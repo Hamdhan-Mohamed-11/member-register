@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { AppShell } from "@/components/shell/AppShell";
 import { Card } from "@/components/ui/Card";
+import { buttonClassName } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SessionCard } from "@/components/sessions/SessionCard";
 import { activeMemberships, requireActiveMember } from "@/lib/auth/session";
@@ -36,12 +38,22 @@ export default async function SessionsPage() {
         avatarUrl: avatarUrl(member.userId, member.avatarPath),
       }}
     >
-      <div className="mb-4">
-        <h1 className="font-display text-3xl text-ink">Sessions</h1>
-        <p className="text-sm text-ink-muted">
-          Your clubs&apos; sessions are free. You can book other clubs&apos;
-          paid sessions as a guest.
-        </p>
+      {/*
+        The bottom bar highlights "Sessions" for /videos too, but nothing here
+        linked there -- so the recordings were reachable only from a page that
+        was itself unlinked. This is the way in.
+      */}
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h1 className="font-display text-3xl text-ink">Sessions</h1>
+          <p className="text-sm text-ink-muted">
+            Your clubs&apos; sessions are free. You can book other clubs&apos;
+            paid sessions as a guest.
+          </p>
+        </div>
+        <Link href="/videos" className={`${buttonClassName("secondary", "sm")} shrink-0`}>
+          Recordings
+        </Link>
       </div>
 
       {sessions.length === 0 ? (

@@ -48,10 +48,11 @@ export function SetPasswordForm({
     const { error: updateError } = await supabase.auth.updateUser({ password });
 
     if (updateError) {
-      // Usually means the recovery/invite link already expired, so the session
-      // the callback established is gone.
+      // An expired code is the common cause, but a slow or dropped connection
+      // lands here too, and blaming the code for that sends people off to
+      // request another one when retrying would have worked. Say both.
       setError(
-        "We couldn't set your password. Your link may have expired — request a new one and try again.",
+        "We couldn't set your password. Try again — and if it still fails, your code has probably expired, so request a new one.",
       );
       setBusy(false);
       return;

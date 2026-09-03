@@ -93,10 +93,28 @@ export default async function MyProfilePage() {
             </ul>
           )}
 
+          {/*
+            These four are the only way in to /renew, /me/points and
+            /me/videos. The bottom bar is capped at five items, so those pages
+            hang off their section instead -- and until now nothing linked to
+            them at all, which made them reachable only by typing the URL.
+          */}
           <div className="px-4 py-3 border-t border-line flex flex-wrap gap-2">
-            <Link href="/directory" className={buttonClassName("secondary", "sm")}>
+            <Link href="/renew" className={buttonClassName("secondary", "sm")}>
+              Renew or join a club
+            </Link>
+            <Link href="/me/points" className={buttonClassName("ghost", "sm")}>
+              My points
+            </Link>
+            <Link href="/me/videos" className={buttonClassName("ghost", "sm")}>
+              My videos
+            </Link>
+            <Link href="/directory" className={buttonClassName("ghost", "sm")}>
               Browse members
             </Link>
+          </div>
+
+          <div className="px-4 py-3 border-t border-line">
             <form action="/auth/signout" method="post">
               <Button type="submit" variant="ghost" size="sm">
                 Sign out

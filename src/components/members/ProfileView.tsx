@@ -58,11 +58,26 @@ export function ProfileView({
               </div>
             ) : null}
 
+            {/*
+              On your own profile the points total links to the ledger. It was
+              already styled like a link and was not one, which reads as a
+              broken control. On someone else's profile it stays plain text --
+              their ledger is not yours to read.
+            */}
             <p className="text-xs text-ink-faint mt-2">
               Member since {formatDate(profile.joinedOn)} ·{" "}
-              <span className="text-brand-600 font-medium">
-                {profile.pointsBalance} points
-              </span>
+              {isSelf ? (
+                <Link
+                  href="/me/points"
+                  className="text-brand-600 font-medium hover:underline"
+                >
+                  {profile.pointsBalance} points
+                </Link>
+              ) : (
+                <span className="text-brand-600 font-medium">
+                  {profile.pointsBalance} points
+                </span>
+              )}
             </p>
           </div>
 
