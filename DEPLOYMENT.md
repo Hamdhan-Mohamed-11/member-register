@@ -15,6 +15,29 @@
 `pickabook.lk` itself is **untouched** on HostGator (`192.254.185.29`). Only two
 new DNS A records were added; no existing record was changed.
 
+### Getting on the box
+
+`ssh pab` — the alias is in `~/.ssh/config` on the maintainer's machine, using
+the key at `~/.ssh/id_ed25519`. Password auth is still enabled on the server as
+a fallback.
+
+**Secrets are not kept in this repo, and not in `.env` either.** Where each one
+lives:
+
+| | |
+|---|---|
+| SSH key | `~/.ssh/id_ed25519` (the standard store; `~/.ssh/config` names it) |
+| Root password | the maintainer's password manager |
+| App secrets (Supabase, PayHere, SMTP, MySQL) | `/srv/apps/member-register/.env.local` on the VPS |
+| Self-hosted stack secrets | `/srv/supabase/member-db/.env` on the VPS |
+| Supabase database password | `/root/.supabase-pw` on the VPS, mode 600 |
+
+A private key or a login password in a project `.env` is worse than leaving it
+where it is: env files are loaded into the process environment and inherited by
+every child process, so an `env` dump, a crash reporter or a stray `cat`
+prints it. Two credentials reached a chat transcript that way during this
+project — see the `SMTP_PASSWORD` note in §2 and the MySQL rotation item.
+
 ### Logs
 
 ```bash
