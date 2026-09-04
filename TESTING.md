@@ -273,6 +273,18 @@ expect the `@rlstest.local` fixtures that `rls-test.mjs` seeds and then deletes
 on exit. Called in the wrong order every login fails and fifteen tests go red,
 which looks exactly like a broken deployment. The runner handles the ordering.
 
+### The suites can throttle themselves
+
+`sendSignupCode` and `sendPasswordResetCode` are rate limited: **3 per email
+and 10 per IP per 15 minutes**. Running `e2e-onboarding` several times in a row
+exhausts the IP budget, later codes are silently not sent, and the suite fails
+from "the account exists after step one" onwards — which looks exactly like a
+broken signup path.
+
+Seen on 4 Sep 2026: 21/0, then 14/7 on an immediate re-run, then 21/0 again a
+few minutes later. If a signup or reset suite fails right after another one
+passed, wait fifteen minutes before believing it.
+
 ### Known failures that are not bugs
 
 Three checks in `rls-test` fail for a data reason rather than a defect: the
