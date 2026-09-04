@@ -34,7 +34,7 @@ export function TopBar({
           className="shrink-0 rounded-lg py-1"
           aria-label="Pick a Book — home"
         >
-          <Logo className="h-7 w-auto sm:h-8" preload />
+          <Logo className="h-9 w-auto sm:h-11" preload />
         </Link>
 
         {member ? (

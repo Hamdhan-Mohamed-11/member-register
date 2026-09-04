@@ -27,9 +27,10 @@ export function Logo({
       height={216}
       preload={preload}
       // The intrinsic file is 720px wide and it is never displayed above
-      // ~120px, so telling the optimizer the real ceiling stops it generating
-      // and serving a 720px variant to every phone.
-      sizes="120px"
+      // ~150px (h-11 at 10:3), so telling the optimizer the real ceiling stops
+      // it generating and serving a 720px variant to every phone. Raise this
+      // if the header height changes, or the mark goes soft on retina.
+      sizes="160px"
       className={className}
     />
   );
