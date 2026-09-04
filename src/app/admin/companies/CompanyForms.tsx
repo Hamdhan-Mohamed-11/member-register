@@ -111,8 +111,13 @@ export function InviteEmployeesForm({
     });
   }
 
+  // data-club-id identifies WHICH company's form this is. Every company on the
+  // page renders one, identical apart from the club it posts to, so without it
+  // nothing in the DOM tells two of them apart -- and a page-wide selector
+  // silently picks the first, which is how the e2e suite once invited its
+  // fixtures into a real company's club.
   return (
-    <form onSubmit={onSubmit} className="space-y-3">
+    <form onSubmit={onSubmit} className="space-y-3" data-club-id={clubId}>
       {error ? <Notice>{error}</Notice> : null}
 
       {outcome ? (

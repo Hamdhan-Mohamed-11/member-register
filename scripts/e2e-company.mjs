@@ -127,14 +127,14 @@ const pasted = `  ${EMPLOYEES[0]}
 Grace Hopper <${EMPLOYEES[1]}>, ${EMPLOYEES[2]}
 ${EMPLOYEES[0]}  `;
 
-// Scope to THIS company's card. Both fills used to be page-wide, which meant
-// the first "Send invites" on the page won -- and once a real company existed
-// above this one, the test happily invited its three employees into someone
-// else's club and then found nothing under its own club_id. The failure looked
-// exactly like "invites are no longer being created".
-const card = page.locator("section,div").filter({ hasText: COMPANY }).last();
-await card.locator('textarea[name="emails"]').fill(pasted);
-await card.locator('button:has-text("Send invites")').click();
+// Target THIS company's form by club id. Every company on the page renders an
+// identical invite form, so the old page-wide selector picked the first one --
+// and once a real company existed above the fixture, the test invited its
+// three employees into that company's club and then found nothing under its
+// own club_id. It looked like the app had stopped creating invites.
+const form = page.locator(`form[data-club-id="${coClub.id}"]`);
+await form.locator('textarea[name="emails"]').fill(pasted);
+await form.locator('button:has-text("Send invites")').click();
 await page.waitForTimeout(6000);
 
 const invites = await j(await admin(
