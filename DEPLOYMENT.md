@@ -208,7 +208,24 @@ location / {
     # Server Actions and the PayHere webhook are POSTs. A redirect here turns
     # them into GETs and drops the body.
     proxy_redirect off;
+
+    # Supabase auth cookies are large, and a browser signed into several
+    # accounts carries several sets. The reply headers then outgrow nginx's
+    # default 4k buffer and nginx answers **502 without ever reaching the
+    # app** -- which stays healthy the whole time, so `systemctl status` and a
+    # local curl to :3001 both look fine and tell you nothing.
+    proxy_buffer_size        16k;
+    proxy_buffers            8 16k;
+    proxy_busy_buffers_size  32k;
 }
+```
+
+That 502 is worth recognising on sight. It hit on 4 Sep 2026 after a testing
+session across many accounts, and the giveaway is in the nginx error log, not
+the app's:
+
+```
+upstream sent too big header while reading response header from upstream
 ```
 
 Do **not** add a `www` → non-`www` redirect (or the reverse) in front of
