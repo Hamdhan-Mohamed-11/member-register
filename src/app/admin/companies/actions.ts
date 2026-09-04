@@ -109,8 +109,17 @@ export async function inviteEmployees(formData: FormData): Promise<ActionResult<
     else created.push(email);
   }
 
+  // Name the club in the email. Without it the message says only "your
+  // employer", which reads like phishing to someone who was not expecting it.
+  // Read under the caller's own session, so RLS still decides what is visible.
+  const { data: club } = await supabase
+    .from("clubs")
+    .select("name")
+    .eq("id", parsed.data.clubId)
+    .maybeSingle();
+
   // Only mail the ones whose invite row exists.
-  const sends = await sendInviteEmails(created);
+  const sends = await sendInviteEmails(created, club?.name ?? undefined);
   const invited: string[] = [];
   for (const send of sends) {
     if (send.ok) invited.push(send.email);

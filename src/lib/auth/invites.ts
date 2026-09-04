@@ -27,13 +27,26 @@ export type InviteSendResult = {
  * where the super-admin check actually happens -- this function trusts its
  * caller.
  */
-export async function sendInviteEmail(email: string): Promise<InviteSendResult> {
+export async function sendInviteEmail(
+  email: string,
+  clubName?: string,
+): Promise<InviteSendResult> {
   const supabase = getServiceSupabaseClient();
 
   const { data, error } = await supabase.auth.admin.generateLink({
     type: "invite",
     email,
-    options: { redirectTo: `${getSiteUrl()}/auth/accept-invite` },
+    // Via /auth/callback, NOT straight to /auth/accept-invite.
+    //
+    // GoTrue returns the session in the URL fragment, and a fragment never
+    // reaches the server -- only CallbackHandler reads it and calls setSession.
+    // Landing directly on accept-invite left the tokens sitting unconsumed in
+    // the address bar, so the page rendered fine, the password form submitted,
+    // and updateUser failed with no session. The invitee then could not log in
+    // with the password they had just chosen, because it was never set.
+    options: {
+      redirectTo: `${getSiteUrl()}/auth/callback?next=${encodeURIComponent("/auth/accept-invite")}`,
+    },
   });
 
   if (error) {
@@ -46,7 +59,7 @@ export async function sendInviteEmail(email: string): Promise<InviteSendResult> 
   }
 
   try {
-    await sendMail(inviteEmail({ to: email, actionLink }));
+    await sendMail(inviteEmail({ to: email, actionLink, clubName }));
   } catch (sendError) {
     // The user and the invite row exist but the mail did not go. Report it per
     // address so the admin sees which ones to resend, rather than a whole
@@ -70,12 +83,13 @@ export async function sendInviteEmail(email: string): Promise<InviteSendResult> 
  */
 export async function sendInviteEmails(
   emails: string[],
+  clubName?: string,
   gapMs = 400,
 ): Promise<InviteSendResult[]> {
   const results: InviteSendResult[] = [];
 
   for (const [index, email] of emails.entries()) {
-    results.push(await sendInviteEmail(email));
+    results.push(await sendInviteEmail(email, clubName));
     if (index < emails.length - 1) {
       await new Promise((resolve) => setTimeout(resolve, gapMs));
     }

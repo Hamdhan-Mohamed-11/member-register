@@ -79,12 +79,24 @@ export function signupCodeEmail(args: {
  * Making forty new employees each type a code from a mail they were not
  * expecting buys nothing.
  */
-export function inviteEmail(args: { to: string; actionLink: string }): Mail {
+export function inviteEmail(args: {
+  to: string;
+  actionLink: string;
+  /**
+   * Naming the club is what makes this recognisable. Without it the message
+   * says only "your employer", which reads like a phishing attempt to someone
+   * who did not know it was coming -- and they are the majority of recipients.
+   */
+  clubName?: string;
+}): Mail {
+  const club = args.clubName?.trim();
+  const joining = club ? `${club}, a ${BRAND} club` : `a ${BRAND} club`;
+
   return {
     to: args.to,
-    subject: `You're invited to ${BRAND}`,
+    subject: club ? `You're invited to ${club}` : `You're invited to ${BRAND}`,
     text: [
-      `Your employer has set up a ${BRAND} club membership for you.`,
+      `Your employer has set up a membership for you at ${joining}.`,
       "",
       "Open this link to choose a password and finish setting up your account:",
       args.actionLink,
@@ -93,8 +105,8 @@ export function inviteEmail(args: { to: string; actionLink: string }): Mail {
       "can ignore this email.",
     ].join("\n"),
     html: layout(
-      "You're invited",
-      `<p style="margin:0 0 20px;font-size:15px;line-height:1.6;">Your employer has set up a ${BRAND} club membership for you. Choose a password and your account is ready.</p>
+      club ? `You're invited to ${escapeHtml(club)}` : "You're invited",
+      `<p style="margin:0 0 20px;font-size:15px;line-height:1.6;">Your employer has set up a membership for you at <strong>${escapeHtml(joining)}</strong>. Choose a password and your account is ready.</p>
       <p style="margin:0 0 20px;">
         <a href="${escapeHtml(args.actionLink)}" style="display:inline-block;background:#1f3a5f;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:8px;font-size:15px;font-weight:600;">Set up my account</a>
       </p>

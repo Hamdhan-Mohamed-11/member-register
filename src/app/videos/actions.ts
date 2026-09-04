@@ -82,6 +82,17 @@ export async function moderateVideo(formData: FormData): Promise<ActionResult> {
   });
   if (!parsed.success) return { ok: false, error: "Invalid moderation request." };
 
+  // A rejection MUST say why. The note is the only thing the submitter is
+  // shown, so rejecting without one tells them their video is gone and
+  // nothing else -- and they cannot fix what they were not told about.
+  // Approving needs no note.
+  if (parsed.data.status === "rejected" && !parsed.data.note) {
+    return {
+      ok: false,
+      error: "Please give a reason. The member sees it, and it is all they see.",
+    };
+  }
+
   const supabase = await getActionSupabase();
   const { error } = await supabase.rpc("moderate_video", {
     p_video_id: parsed.data.videoId,
