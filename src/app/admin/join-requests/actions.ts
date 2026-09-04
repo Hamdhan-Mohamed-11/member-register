@@ -37,7 +37,13 @@ export async function approveJoinRequest(formData: FormData): Promise<ActionResu
 
   if (error) return { ok: false, error: error.message };
 
+  // Approving does not only empty the queue: it activates the member and
+  // creates their club membership, so the admin members list and the member
+  // directory are both stale until these are revalidated too. Without them an
+  // admin approves someone, opens /admin/members, and does not see them.
   revalidatePath("/admin/join-requests");
+  revalidatePath("/admin/members");
+  revalidatePath("/directory");
   return { ok: true };
 }
 
@@ -59,5 +65,6 @@ export async function rejectJoinRequest(formData: FormData): Promise<ActionResul
   if (error) return { ok: false, error: error.message };
 
   revalidatePath("/admin/join-requests");
+  revalidatePath("/admin/members");
   return { ok: true };
 }

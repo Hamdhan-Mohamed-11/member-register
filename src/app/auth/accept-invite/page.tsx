@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { AppShell } from "@/components/shell/AppShell";
 import { Card } from "@/components/ui/Card";
-import { SetPasswordForm } from "@/components/auth/SetPasswordForm";
+import { AcceptInviteForm } from "@/components/auth/AcceptInviteForm";
 
 export const metadata: Metadata = { title: "Set up your account" };
 
@@ -13,10 +13,10 @@ export default function AcceptInvitePage() {
           Welcome to Pick a Book
         </h1>
         <p className="text-sm text-ink-muted text-center mt-2 mb-5">
-          Pick a password and your account is ready.
+          Tell us your name, pick a password, and your account is ready.
         </p>
         <Card>
-          <SetPasswordForm submitLabel="Set password and continue" redirectTo="/feed" />
+          <AcceptInviteForm />
         </Card>
       </div>
     </AppShell>
