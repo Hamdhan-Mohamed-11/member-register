@@ -7,39 +7,13 @@ import { Button } from "@/components/ui/Button";
 import { Notice } from "@/components/ui/Field";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browserClient";
 import { setAvatarPath } from "./actions";
+import { AvatarCropper } from "./AvatarCropper";
 
-const MAX_DIMENSION = 512;
+// Downscaling and WebP encoding now happen in AvatarCropper, which has to draw
+// to a canvas anyway to apply the crop. Phone cameras produce 4-8MB JPEGs; the
+// cropper's 512px square output keeps them well under the bucket's 2MB cap,
+// and the original never leaves the device either way.
 const TARGET_TYPE = "image/webp";
-const QUALITY = 0.85;
-
-/**
- * Downscales and re-encodes to WebP in the browser before upload.
- *
- * Phone cameras produce 4-8MB JPEGs, which would blow past the bucket's 2MB
- * limit and waste storage on an image rendered at 80px. Doing it client-side
- * also means the original never leaves the device.
- */
-async function shrink(file: File): Promise<Blob> {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
-  const width = Math.round(bitmap.width * scale);
-  const height = Math.round(bitmap.height * scale);
-
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("canvas unavailable");
-  ctx.drawImage(bitmap, 0, 0, width, height);
-  bitmap.close();
-
-  const blob = await new Promise<Blob | null>((resolve) =>
-    canvas.toBlob(resolve, TARGET_TYPE, QUALITY),
-  );
-  if (!blob) throw new Error("could not encode image");
-  return blob;
-}
 
 export function AvatarUpload({
   userId,
@@ -58,17 +32,24 @@ export function AvatarUpload({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [picked, setPicked] = useState<File | null>(null);
 
-  async function onPick(event: React.ChangeEvent<HTMLInputElement>) {
+  function onPick(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
+    if (inputRef.current) inputRef.current.value = "";
     if (!file) return;
+    setError(null);
+    // Crop first. Uploading straight from the picker gave whatever aspect the
+    // camera produced, and the circular avatar then cut it wherever CSS liked.
+    setPicked(file);
+  }
 
+  async function onCropped(blob: Blob) {
+    setPicked(null);
     setError(null);
     setBusy(true);
 
     try {
-      const blob = await shrink(file);
-
       // Timestamped filename rather than a fixed one: overwriting the same key
       // leaves browsers and the CDN serving the old photo from cache, which
       // looks like the upload silently failed.
@@ -104,6 +85,19 @@ export function AvatarUpload({
   }
 
   const working = busy || pending;
+
+  if (picked) {
+    return (
+      <div className="space-y-3">
+        {error ? <Notice>{error}</Notice> : null}
+        <AvatarCropper
+          file={picked}
+          onCancel={() => setPicked(null)}
+          onDone={onCropped}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
