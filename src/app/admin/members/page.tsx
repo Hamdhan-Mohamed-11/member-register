@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AppShell } from "@/components/shell/AppShell";
+import { Badge, type BadgeTone } from "@/components/ui/Badge";
+import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Notice } from "@/components/ui/Field";
+import { Notice, controlClassName } from "@/components/ui/Field";
 import { requireSuperAdmin } from "@/lib/auth/session";
-import { avatarUrl } from "@/lib/members/queries";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 
 export const metadata: Metadata = { title: "Members · Admin" };
@@ -16,11 +17,11 @@ const ROLE_LABEL: Record<string, string> = {
   super_admin: "Super admin",
 };
 
-const STATUS_TONE: Record<string, string> = {
-  active: "text-success-600",
-  pending: "text-warning-600",
-  suspended: "text-danger-600",
-  rejected: "text-ink-faint",
+const STATUS_TONE: Record<string, BadgeTone> = {
+  active: "success",
+  pending: "warning",
+  suspended: "danger",
+  rejected: "neutral",
 };
 
 function formatDate(value: string | null): string {
@@ -37,7 +38,7 @@ export default async function AdminMembersPage({
 }: {
   searchParams: Promise<{ q?: string }>;
 }) {
-  const admin = await requireSuperAdmin();
+  await requireSuperAdmin();
   const { q } = await searchParams;
   const supabase = await getServerComponentSupabase();
 
@@ -57,18 +58,10 @@ export default async function AdminMembersPage({
   const members = data ?? [];
 
   return (
-    <AppShell
-      member={{
-        firstName: admin.firstName,
-        lastName: admin.lastName,
-        avatarUrl: avatarUrl(admin.userId, admin.avatarPath),
-      }}
-    >
+    <AppShell>
       <div className="mb-4">
-        <Link href="/admin" className="text-sm text-brand-600 hover:underline">
-          ← Admin
-        </Link>
-        <h1 className="font-display text-3xl text-ink mt-1">Members</h1>
+        <BackLink href="/admin">Admin</BackLink>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Members</h1>
         <p className="text-sm text-ink-muted">
           {members.length} {members.length === 1 ? "account" : "accounts"}.
         </p>
@@ -82,7 +75,7 @@ export default async function AdminMembersPage({
           name="q"
           defaultValue={q ?? ""}
           placeholder="Search by name or email…"
-          className="w-full min-h-11 rounded-lg border border-line bg-surface px-3 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-brand-600"
+          className={controlClassName}
         />
       </form>
 
@@ -113,9 +106,9 @@ export default async function AdminMembersPage({
                         <p className="font-medium text-ink truncate">
                           {name || m.email}
                           {m.role !== "member" ? (
-                            <span className="ml-2 text-xs font-medium text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">
+                            <Badge tone="brand" className="ml-2">
                               {ROLE_LABEL[m.role ?? "member"]}
-                            </span>
+                            </Badge>
                           ) : null}
                         </p>
                         <p className="text-sm text-ink-muted truncate">{m.email}</p>
@@ -126,13 +119,12 @@ export default async function AdminMembersPage({
                           {formatDate(m.next_renewal)}
                         </p>
                       </div>
-                      <span
-                        className={`shrink-0 text-sm font-medium ${
-                          STATUS_TONE[m.status ?? ""] ?? "text-ink-muted"
-                        }`}
+                      <Badge
+                        tone={STATUS_TONE[m.status ?? ""] ?? "neutral"}
+                        className="shrink-0"
                       >
                         {m.status}
-                      </span>
+                      </Badge>
                     </div>
                   </Link>
                 </li>

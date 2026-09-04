@@ -1,33 +1,24 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { AppShell } from "@/components/shell/AppShell";
+import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { VideoCard } from "@/components/videos/VideoCard";
 import { ModerateVideo } from "@/app/videos/VideoActions";
 import { requireSecretary } from "@/lib/auth/session";
-import { avatarUrl } from "@/lib/members/queries";
 import { listForModeration } from "@/lib/videos/queries";
 
 export const metadata: Metadata = { title: "Videos · Admin" };
 
 export default async function AdminVideosPage() {
-  const admin = await requireSecretary();
+  await requireSecretary();
   const { pending, recent } = await listForModeration();
 
   return (
-    <AppShell
-      member={{
-        firstName: admin.firstName,
-        lastName: admin.lastName,
-        avatarUrl: avatarUrl(admin.userId, admin.avatarPath),
-      }}
-    >
+    <AppShell>
       <div className="mb-4">
-        <Link href="/admin" className="text-sm text-brand-600 hover:underline">
-          ← Admin
-        </Link>
-        <h1 className="font-display text-3xl text-ink mt-1">Videos</h1>
+        <BackLink href="/admin">Admin</BackLink>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Videos</h1>
         <p className="text-sm text-ink-muted">
           Member submissions are visible only to them until published here.
         </p>

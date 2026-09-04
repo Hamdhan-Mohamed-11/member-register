@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import { Icon } from "@/components/ui/Icon";
 import type { SessionSummary } from "@/lib/sessions/queries";
 
 export function formatWhen(iso: string): string {
@@ -37,7 +39,7 @@ export function SessionCard({
   const past = new Date(session.heldAt) < new Date();
 
   const inner = (
-    <Card className="h-full hover:shadow-raised transition-shadow">
+    <Card className="h-full" interactive={Boolean(href)}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-medium text-ink">{session.title}</p>
@@ -50,26 +52,29 @@ export function SessionCard({
         </div>
 
         {session.status === "cancelled" ? (
-          <span className="shrink-0 text-xs font-medium text-danger-600 bg-danger-100 rounded-full px-2 py-0.5">
+          <Badge tone="danger" className="shrink-0">
             Cancelled
-          </span>
+          </Badge>
         ) : fee === undefined ? null : fee === 0 ? (
-          <span className="shrink-0 text-xs font-medium text-success-600 bg-success-100 rounded-full px-2 py-0.5">
+          <Badge tone="success" className="shrink-0">
             Free
-          </span>
+          </Badge>
         ) : (
-          <span className="shrink-0 text-xs font-medium text-warning-600 bg-warning-100 rounded-full px-2 py-0.5">
+          <Badge tone="warning" className="shrink-0">
             {formatLkr(fee)}
-          </span>
+          </Badge>
         )}
       </div>
 
-      <p className="text-sm text-ink-muted mt-2">
-        {formatWhen(session.heldAt)}
-        {past ? " · past" : ""}
+      <p className="mt-3 flex items-center gap-1.5 text-sm text-ink-muted">
+        <Icon name="calendar" className="size-4 shrink-0 text-ink-faint" />
+        <span className="min-w-0 truncate">
+          {formatWhen(session.heldAt)}
+          {past ? " · past" : ""}
+        </span>
       </p>
 
-      <p className="text-xs text-ink-faint mt-1">
+      <p className="text-xs text-ink-faint mt-1.5">
         {session.hostClub?.name ?? "Unknown club"}
         {session.presenter
           ? ` · presented by ${`${session.presenter.firstName} ${session.presenter.lastName}`.trim()}`

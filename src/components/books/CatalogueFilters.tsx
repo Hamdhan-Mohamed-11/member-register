@@ -1,8 +1,7 @@
 import Link from "next/link";
 import type { LegacyCategory } from "@/lib/legacy/types";
+import { controlClassName, selectClassName } from "@/components/ui/Field";
 
-const selectClass =
-  "min-h-11 rounded-lg border border-line bg-surface px-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand-600";
 
 /**
  * Search and filters as a plain GET form.
@@ -34,11 +33,11 @@ export function CatalogueFilters({
         name="q"
         defaultValue={current.search ?? ""}
         placeholder="Search by title, author or ISBN…"
-        className={`${selectClass} w-full`}
+        className={`${controlClassName} w-full`}
       />
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        <select name="category" defaultValue={current.category ?? ""} className={selectClass}>
+        <select name="category" defaultValue={current.category ?? ""} className={selectClassName}>
           <option value="">All categories</option>
           {categories.map((c) => (
             <option key={c.id} value={c.id}>
@@ -47,7 +46,7 @@ export function CatalogueFilters({
           ))}
         </select>
 
-        <select name="language" defaultValue={current.language ?? ""} className={selectClass}>
+        <select name="language" defaultValue={current.language ?? ""} className={selectClassName}>
           <option value="">All languages</option>
           <option value="tamil">Tamil</option>
           <option value="sinhala">Sinhala</option>
@@ -57,7 +56,7 @@ export function CatalogueFilters({
           <select
             name="availability"
             defaultValue={current.availability ?? ""}
-            className={selectClass}
+            className={selectClassName}
           >
             <option value="">Stock and pre-order</option>
             <option value="in_stock">In stock only</option>

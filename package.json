@@ -21,7 +21,8 @@
     "test:videos": "node --env-file=.env.local scripts/videos-test.mjs",
     "test:videos:e2e": "node --env-file=.env.local scripts/e2e-videos.mjs",
     "test:payments:e2e": "node --env-file=.env.local scripts/e2e-payments.mjs",
-    "test:mail": "node --env-file=.env.local scripts/mail-test.mjs"
+    "test:mail": "node --env-file=.env.local scripts/mail-test.mjs",
+    "shots": "node --env-file=.env.local scripts/ui-shots.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

@@ -6,7 +6,6 @@ import { BookCard } from "@/components/books/BookCard";
 import { CatalogueFilters, CataloguePager } from "@/components/books/CatalogueFilters";
 import { CatalogueUnavailable } from "@/components/books/CatalogueUnavailable";
 import { requireActiveMember } from "@/lib/auth/session";
-import { avatarUrl } from "@/lib/members/queries";
 import { listBooks, listCategories } from "@/lib/legacy/books";
 import type { BookQuery } from "@/lib/legacy/types";
 
@@ -20,7 +19,7 @@ export default async function LibraryPage({
 }: {
   searchParams: Promise<Search>;
 }) {
-  const member = await requireActiveMember();
+  await requireActiveMember();
   const sp = await searchParams;
 
   const query: BookQuery = {
@@ -36,15 +35,9 @@ export default async function LibraryPage({
   const categories = categoriesResult.ok ? categoriesResult.data : [];
 
   return (
-    <AppShell
-      member={{
-        firstName: member.firstName,
-        lastName: member.lastName,
-        avatarUrl: avatarUrl(member.userId, member.avatarPath),
-      }}
-    >
+    <AppShell>
       <div className="mb-4">
-        <h1 className="font-display text-3xl text-ink">Library</h1>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink">Library</h1>
         <p className="text-sm text-ink-muted">
           Books you can borrow rather than buy.
         </p>

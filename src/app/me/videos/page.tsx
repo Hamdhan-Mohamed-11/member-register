@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AppShell } from "@/components/shell/AppShell";
+import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { buttonClassName } from "@/components/ui/Button";
 import { VideoCard } from "@/components/videos/VideoCard";
 import { WithdrawVideo } from "@/app/videos/VideoActions";
 import { requireActiveMember } from "@/lib/auth/session";
-import { avatarUrl } from "@/lib/members/queries";
 import { listMyVideos } from "@/lib/videos/queries";
 
 export const metadata: Metadata = { title: "My videos" };
@@ -17,19 +17,11 @@ export default async function MyVideosPage() {
   const videos = await listMyVideos(member.userId);
 
   return (
-    <AppShell
-      member={{
-        firstName: member.firstName,
-        lastName: member.lastName,
-        avatarUrl: avatarUrl(member.userId, member.avatarPath),
-      }}
-    >
+    <AppShell>
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <Link href="/me" className="text-sm text-brand-600 hover:underline">
-            ← My profile
-          </Link>
-          <h1 className="font-display text-3xl text-ink mt-1">My videos</h1>
+          <BackLink href="/me">My profile</BackLink>
+          <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">My videos</h1>
           <p className="text-sm text-ink-muted">
             Only you and the club admins can see anything still awaiting review.
           </p>

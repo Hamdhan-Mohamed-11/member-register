@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { AppShell } from "@/components/shell/AppShell";
+import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Notice } from "@/components/ui/Field";
@@ -20,7 +20,7 @@ type RequestRow = {
 };
 
 export default async function JoinRequestsPage() {
-  const member = await requireSecretary();
+  await requireSecretary();
   const supabase = await getServerComponentSupabase();
 
   // The `!club_join_requests_member_id_fkey` hint is REQUIRED, not decoration:
@@ -40,18 +40,10 @@ export default async function JoinRequestsPage() {
   const requests = (data ?? []) as unknown as RequestRow[];
 
   return (
-    <AppShell
-      member={{
-        firstName: member.firstName,
-        lastName: member.lastName,
-        avatarUrl: null,
-      }}
-    >
+    <AppShell>
       <div className="mb-4">
-        <Link href="/admin" className="text-sm text-brand-600 hover:underline">
-          ← Admin
-        </Link>
-        <h1 className="font-display text-3xl text-ink mt-1">Join requests</h1>
+        <BackLink href="/admin">Admin</BackLink>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Join requests</h1>
         <p className="text-sm text-ink-muted">
           Approving adds the member to the club and activates their account.
         </p>

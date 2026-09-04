@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { AppShell } from "@/components/shell/AppShell";
+import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Notice } from "@/components/ui/Field";
@@ -31,7 +31,7 @@ type CompanyRow = {
 };
 
 export default async function CompaniesPage() {
-  const member = await requireSuperAdmin();
+  await requireSuperAdmin();
   const supabase = await getServerComponentSupabase();
 
   const { data, error } = await supabase
@@ -60,18 +60,10 @@ export default async function CompaniesPage() {
   }
 
   return (
-    <AppShell
-      member={{
-        firstName: member.firstName,
-        lastName: member.lastName,
-        avatarUrl: null,
-      }}
-    >
+    <AppShell>
       <div className="mb-4">
-        <Link href="/admin" className="text-sm text-brand-600 hover:underline">
-          ← Admin
-        </Link>
-        <h1 className="font-display text-3xl text-ink mt-1">Companies</h1>
+        <BackLink href="/admin">Admin</BackLink>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Companies</h1>
         <p className="text-sm text-ink-muted">
           Each company gets one private club. Employees join by invite only —
           they never appear in the public member directory.

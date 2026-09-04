@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
+import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { requireActiveMember } from "@/lib/auth/session";
-import { avatarUrl } from "@/lib/members/queries";
 import { feeForMember, getSession, myBooking } from "@/lib/sessions/queries";
 import { formatWhen } from "@/components/sessions/SessionCard";
 import { parseVideoUrl } from "@/lib/sessions/video";
@@ -39,17 +39,9 @@ export default async function SessionPage({
   const video = parseVideoUrl(session.videoUrl);
 
   return (
-    <AppShell
-      member={{
-        firstName: member.firstName,
-        lastName: member.lastName,
-        avatarUrl: avatarUrl(member.userId, member.avatarPath),
-      }}
-    >
+    <AppShell>
       <div className="mb-4">
-        <Link href="/sessions" className="text-sm text-brand-600 hover:underline">
-          ← Sessions
-        </Link>
+        <BackLink href="/sessions">Sessions</BackLink>
       </div>
 
       <div className="space-y-4">

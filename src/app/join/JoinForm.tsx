@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browserClient";
 import { Button } from "@/components/ui/Button";
-import { Field, Notice } from "@/components/ui/Field";
+import { Field, Notice, selectClassName } from "@/components/ui/Field";
 import { OtpStep } from "@/components/auth/OtpStep";
 import { useHydrated } from "@/lib/useHydrated";
 import { requestSignupCode } from "./actions";
@@ -161,7 +161,7 @@ export function JoinForm({ clubs }: { clubs: JoinableClub[] }) {
           name="club_id"
           required
           defaultValue={clubs.length === 1 ? clubs[0].id : ""}
-          className="w-full min-h-11 rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand-600"
+          className={selectClassName}
         >
           <option value="" disabled>
             Choose a club…

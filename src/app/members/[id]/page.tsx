@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
+import { BackLink } from "@/components/ui/BackLink";
 import { ProfileView } from "@/components/members/ProfileView";
 import { requireActiveMember } from "@/lib/auth/session";
-import { avatarUrl, getMemberProfile } from "@/lib/members/queries";
+import { getMemberProfile } from "@/lib/members/queries";
 
 export async function generateMetadata({
   params,
@@ -40,17 +40,9 @@ export default async function MemberProfilePage({
   if (!profile) notFound();
 
   return (
-    <AppShell
-      member={{
-        firstName: viewer.firstName,
-        lastName: viewer.lastName,
-        avatarUrl: avatarUrl(viewer.userId, viewer.avatarPath),
-      }}
-    >
+    <AppShell>
       <div className="mb-4">
-        <Link href="/directory" className="text-sm text-brand-600 hover:underline">
-          ← Members
-        </Link>
+        <BackLink href="/directory">Members</BackLink>
       </div>
 
       <ProfileView profile={profile} />

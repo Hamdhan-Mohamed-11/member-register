@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
+import { BackLink } from "@/components/ui/BackLink";
 import { requireActiveMember } from "@/lib/auth/session";
-import { avatarUrl, getMemberProfile } from "@/lib/members/queries";
+import { getMemberProfile } from "@/lib/members/queries";
 import { ReadingList } from "./ReadingList";
 
 export const metadata: Metadata = { title: "My reading" };
@@ -17,18 +17,10 @@ export default async function MyReadingPage() {
   if (!profile) notFound();
 
   return (
-    <AppShell
-      member={{
-        firstName: member.firstName,
-        lastName: member.lastName,
-        avatarUrl: avatarUrl(member.userId, member.avatarPath),
-      }}
-    >
+    <AppShell>
       <div className="mb-4">
-        <Link href="/me" className="text-sm text-brand-600 hover:underline">
-          ← My profile
-        </Link>
-        <h1 className="font-display text-3xl text-ink mt-1">My reading</h1>
+        <BackLink href="/me">My profile</BackLink>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">My reading</h1>
       </div>
 
       <ReadingList items={profile.reading} />

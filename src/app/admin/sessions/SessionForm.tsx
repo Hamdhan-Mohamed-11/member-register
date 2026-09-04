@@ -3,7 +3,12 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import { Field, Notice, TextareaField } from "@/components/ui/Field";
+import {
+  Field,
+  Notice,
+  TextareaField,
+  selectClassName,
+} from "@/components/ui/Field";
 import { saveSession } from "./actions";
 
 export type ClubOption = { id: string; name: string };
@@ -26,8 +31,6 @@ export type SessionDefaults = {
   videoUrl: string;
 };
 
-const selectClass =
-  "w-full min-h-11 rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand-600";
 
 export function SessionForm({
   clubs,
@@ -73,7 +76,7 @@ export function SessionForm({
           name="hostClubId"
           required
           defaultValue={defaults.hostClubId}
-          className={selectClass}
+          className={selectClassName}
         >
           {clubs.map((c) => (
             <option key={c.id} value={c.id}>
@@ -118,7 +121,7 @@ export function SessionForm({
           id="presenter"
           name="presenter"
           defaultValue={defaults.presenter}
-          className={selectClass}
+          className={selectClassName}
         >
           <option value="">Not decided yet</option>
           {members.map((m) => (
@@ -139,7 +142,7 @@ export function SessionForm({
             name="pricingKind"
             value={pricing}
             onChange={(e) => setPricing(e.target.value as "free" | "paid")}
-            className={selectClass}
+            className={selectClassName}
           >
             <option value="free">Free for everyone</option>
             <option value="paid">Paid for guests from other clubs</option>
@@ -179,7 +182,7 @@ export function SessionForm({
             id="status"
             name="status"
             defaultValue={defaults.status}
-            className={selectClass}
+            className={selectClassName}
           >
             <option value="scheduled">Scheduled</option>
             <option value="completed">Completed</option>

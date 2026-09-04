@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { AppShell } from "@/components/shell/AppShell";
+import { Badge, type BadgeTone } from "@/components/ui/Badge";
+import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Notice } from "@/components/ui/Field";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatLkr } from "@/components/sessions/SessionCard";
 import { membershipState, requireActiveMember } from "@/lib/auth/session";
-import { avatarUrl } from "@/lib/members/queries";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import { isPayHereConfigured } from "@/lib/payments/payhere";
 import { startClubPayment } from "./actions";
@@ -24,11 +24,11 @@ function formatDate(value: string | null): string {
 }
 
 const STATE_COPY = {
-  active: { tone: "text-success-600", label: "Active" },
-  expiring_soon: { tone: "text-warning-600", label: "Expiring soon" },
-  expired: { tone: "text-danger-600", label: "Expired" },
-  none: { tone: "text-ink-faint", label: "No renewal date" },
-} as const;
+  active: { tone: "success", label: "Active" },
+  expiring_soon: { tone: "warning", label: "Expiring soon" },
+  expired: { tone: "danger", label: "Expired" },
+  none: { tone: "neutral", label: "No renewal date" },
+} as const satisfies Record<string, { tone: BadgeTone; label: string }>;
 
 export default async function RenewPage({
   searchParams,
@@ -88,18 +88,10 @@ export default async function RenewPage({
   const configured = isPayHereConfigured();
 
   return (
-    <AppShell
-      member={{
-        firstName: member.firstName,
-        lastName: member.lastName,
-        avatarUrl: avatarUrl(member.userId, member.avatarPath),
-      }}
-    >
+    <AppShell>
       <div className="mb-4">
-        <Link href="/me" className="text-sm text-brand-600 hover:underline">
-          ← My profile
-        </Link>
-        <h1 className="font-display text-3xl text-ink mt-1">Membership</h1>
+        <BackLink href="/me">My profile</BackLink>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Membership</h1>
         <p className="text-sm text-ink-muted">
           Each club is paid for separately and renews on its own date.
         </p>
@@ -151,9 +143,9 @@ export default async function RenewPage({
                           {formatLkr(feeOf(club))} for {termOf(club)} months
                         </p>
                       </div>
-                      <span className={`shrink-0 text-sm font-medium ${copy.tone}`}>
+                      <Badge tone={copy.tone} className="shrink-0">
                         {copy.label}
-                      </span>
+                      </Badge>
                     </div>
 
                     {configured ? (

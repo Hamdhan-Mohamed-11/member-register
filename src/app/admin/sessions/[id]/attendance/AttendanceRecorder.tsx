@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Notice } from "@/components/ui/Field";
+import { Notice, controlClassName } from "@/components/ui/Field";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { saveAttendance } from "@/app/admin/sessions/actions";
 
@@ -147,7 +147,7 @@ export function AttendanceRecorder({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Find a member…"
-          className="w-full min-h-11 rounded-lg border border-line bg-surface px-3 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-brand-600"
+          className={controlClassName}
         />
       ) : null}
 

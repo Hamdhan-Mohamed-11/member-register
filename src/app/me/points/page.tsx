@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AppShell } from "@/components/shell/AppShell";
+import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { requireActiveMember } from "@/lib/auth/session";
-import { avatarUrl } from "@/lib/members/queries";
 import { myActivities } from "@/lib/sessions/queries";
 
 export const metadata: Metadata = { title: "My points" };
@@ -16,18 +16,10 @@ export default async function MyPointsPage() {
   const ledgerTotal = activities.reduce((sum, a) => sum + a.points, 0);
 
   return (
-    <AppShell
-      member={{
-        firstName: member.firstName,
-        lastName: member.lastName,
-        avatarUrl: avatarUrl(member.userId, member.avatarPath),
-      }}
-    >
+    <AppShell>
       <div className="mb-4">
-        <Link href="/me" className="text-sm text-brand-600 hover:underline">
-          ← My profile
-        </Link>
-        <h1 className="font-display text-3xl text-ink mt-1">My points</h1>
+        <BackLink href="/me">My profile</BackLink>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">My points</h1>
       </div>
 
       <div className="space-y-4">

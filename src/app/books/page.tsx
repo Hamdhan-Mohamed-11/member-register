@@ -8,7 +8,6 @@ import { BookCard } from "@/components/books/BookCard";
 import { CatalogueFilters, CataloguePager } from "@/components/books/CatalogueFilters";
 import { CatalogueUnavailable } from "@/components/books/CatalogueUnavailable";
 import { requireActiveMember } from "@/lib/auth/session";
-import { avatarUrl } from "@/lib/members/queries";
 import { listBooks, listCategories } from "@/lib/legacy/books";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import type { BookQuery } from "@/lib/legacy/types";
@@ -32,7 +31,7 @@ export default async function BooksPage({
 }: {
   searchParams: Promise<Search>;
 }) {
-  const member = await requireActiveMember();
+  await requireActiveMember();
   const sp = await searchParams;
 
   const query: BookQuery = {
@@ -61,13 +60,7 @@ export default async function BooksPage({
   const categories = categoriesResult.ok ? categoriesResult.data : [];
 
   return (
-    <AppShell
-      member={{
-        firstName: member.firstName,
-        lastName: member.lastName,
-        avatarUrl: avatarUrl(member.userId, member.avatarPath),
-      }}
-    >
+    <AppShell>
       {/*
         The bottom bar has no room for /library, so this is the only link to
         it. Without it the borrowing catalogue is reachable only by typing the
@@ -75,7 +68,7 @@ export default async function BooksPage({
       */}
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl text-ink">Books</h1>
+          <h1 className="font-display text-2xl sm:text-3xl text-ink">Books</h1>
           <p className="text-sm text-ink-muted">
             {discount > 0
               ? `Members pay ${discount}% less than the shop price.`

@@ -32,15 +32,9 @@ export default async function AdminPage() {
   const areas = AREAS.filter((a) => !a.superOnly || isSuper);
 
   return (
-    <AppShell
-      member={{
-        firstName: member.firstName,
-        lastName: member.lastName,
-        avatarUrl: null,
-      }}
-    >
+    <AppShell>
       <div className="mb-4">
-        <h1 className="font-display text-3xl text-ink">Club admin</h1>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink">Club admin</h1>
         <p className="text-sm text-ink-muted">
           Signed in as {member.role === "super_admin" ? "super admin" : "secretary"}.
         </p>
@@ -50,7 +44,7 @@ export default async function AdminPage() {
         {areas.map((area) =>
           area.ready ? (
             <Link key={area.href} href={area.href} className="block">
-              <Card className="h-full hover:shadow-raised transition-shadow">
+              <Card interactive className="h-full">
                 <CardHeader title={area.label} description={area.desc} />
               </Card>
             </Link>

@@ -13,11 +13,14 @@ export default async function LoginPage() {
   if (await getSessionMember()) redirect("/feed");
 
   return (
-    <AppShell member={null}>
-      <div className="max-w-sm mx-auto pt-6">
-        <h1 className="font-display text-3xl text-ink text-center mb-5">
-          Log in to Pick a Book
-        </h1>
+    <AppShell signedOut>
+      <div className="max-w-sm mx-auto pt-4 sm:pt-10">
+        <div className="text-center mb-6">
+          <h1 className="font-display text-2xl sm:text-3xl text-ink">Welcome back</h1>
+          <p className="mt-1.5 text-sm text-ink-muted">
+            Log in to your Pick a Book account.
+          </p>
+        </div>
         <Card>
           {/* LoginForm calls useSearchParams(), which requires a Suspense
               boundary or the whole route opts out of static rendering. */}

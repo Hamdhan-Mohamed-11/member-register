@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
+import { BackLink } from "@/components/ui/BackLink";
 import { requireSecretary } from "@/lib/auth/session";
 import { avatarUrl } from "@/lib/members/queries";
 import { getSession } from "@/lib/sessions/queries";
@@ -20,7 +20,7 @@ export default async function AttendancePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const admin = await requireSecretary();
+  await requireSecretary();
   const { id } = await params;
 
   const session = await getSession(id);
@@ -114,21 +114,10 @@ export default async function AttendancePage({
   const rules = (rulesData ?? []) as Rule[];
 
   return (
-    <AppShell
-      member={{
-        firstName: admin.firstName,
-        lastName: admin.lastName,
-        avatarUrl: avatarUrl(admin.userId, admin.avatarPath),
-      }}
-    >
+    <AppShell>
       <div className="mb-3">
-        <Link
-          href={`/admin/sessions/${id}`}
-          className="text-sm text-brand-600 hover:underline"
-        >
-          ← Session
-        </Link>
-        <h1 className="font-display text-3xl text-ink mt-1">{session.title}</h1>
+        <BackLink href={`/admin/sessions/${id}`}>Session</BackLink>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">{session.title}</h1>
         <p className="text-sm text-ink-muted">
           {formatWhen(session.heldAt)} · {session.hostClub.name}
         </p>

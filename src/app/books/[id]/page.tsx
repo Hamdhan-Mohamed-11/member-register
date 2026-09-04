@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
+import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { CatalogueUnavailable } from "@/components/books/CatalogueUnavailable";
 import { requireActiveMember } from "@/lib/auth/session";
-import { avatarUrl } from "@/lib/members/queries";
 import { getBook } from "@/lib/legacy/books";
 import { formatLkrCents, priceLine } from "@/lib/pricing";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
@@ -27,7 +26,7 @@ export default async function BookPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const member = await requireActiveMember();
+  await requireActiveMember();
   const { id } = await params;
 
   const bookId = Number(id);
@@ -41,19 +40,11 @@ export default async function BookPage({
 
   const discount = Number(settings?.book_discount_percent ?? 0);
 
-  const shell = {
-    firstName: member.firstName,
-    lastName: member.lastName,
-    avatarUrl: avatarUrl(member.userId, member.avatarPath),
-  };
-
   if (!result.ok) {
     return (
-      <AppShell member={shell}>
+      <AppShell>
         <div className="mb-4">
-          <Link href="/books" className="text-sm text-brand-600 hover:underline">
-            ← Books
-          </Link>
+          <BackLink href="/books">Books</BackLink>
         </div>
         <CatalogueUnavailable reason={result.reason} />
       </AppShell>
@@ -66,11 +57,9 @@ export default async function BookPage({
   const { listCents, memberCents, savedCents } = priceLine(book.priceLkr, discount);
 
   return (
-    <AppShell member={shell}>
+    <AppShell>
       <div className="mb-4">
-        <Link href="/books" className="text-sm text-brand-600 hover:underline">
-          ← Books
-        </Link>
+        <BackLink href="/books">Books</BackLink>
       </div>
 
       <div className="grid sm:grid-cols-[220px_1fr] gap-4">

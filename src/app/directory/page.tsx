@@ -19,15 +19,9 @@ export default async function DirectoryPage() {
   const others = everyone.filter((m) => m.id !== member.userId);
 
   return (
-    <AppShell
-      member={{
-        firstName: member.firstName,
-        lastName: member.lastName,
-        avatarUrl: avatarUrl(member.userId, member.avatarPath),
-      }}
-    >
+    <AppShell>
       <div className="mb-4">
-        <h1 className="font-display text-3xl text-ink">Members</h1>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink">Members</h1>
         <p className="text-sm text-ink-muted">
           {clubs.length
             ? `Everyone in ${clubs.map((c) => c.clubName).join(" and ")}.`
@@ -47,12 +41,12 @@ export default async function DirectoryPage() {
           />
         </Card>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {others.map((person) => {
             const name = `${person.firstName} ${person.lastName}`.trim() || "Member";
             return (
               <Link key={person.id} href={`/members/${person.id}`} className="block">
-                <Card className="h-full hover:shadow-raised transition-shadow">
+                <Card interactive className="h-full">
                   <div className="flex items-start gap-3">
                     <Avatar
                       src={avatarUrl(person.id, person.avatarPath)}

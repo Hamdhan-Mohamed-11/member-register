@@ -1,24 +1,38 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
+import { AccountList } from "@/components/shell/AccountList";
 import { Card, CardHeader } from "@/components/ui/Card";
-import { Button, buttonClassName } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
 import { ProfileView } from "@/components/members/ProfileView";
 import {
   activeMemberships,
+  isAdmin,
   membershipState,
   requireActiveMember,
 } from "@/lib/auth/session";
-import { avatarUrl, getMemberProfile } from "@/lib/members/queries";
+import { getMemberProfile } from "@/lib/members/queries";
 
 export const metadata: Metadata = { title: "My profile" };
 
 const STATE_COPY = {
-  active: { tone: "text-success-600", label: "Active" },
-  expiring_soon: { tone: "text-warning-600", label: "Expiring soon" },
-  expired: { tone: "text-danger-600", label: "Expired" },
-  none: { tone: "text-ink-faint", label: "No renewal date" },
+  active: {
+    label: "Active",
+    className: "bg-success-100 text-success-600",
+  },
+  expiring_soon: {
+    label: "Expiring soon",
+    className: "bg-warning-100 text-warning-600",
+  },
+  expired: {
+    label: "Expired",
+    className: "bg-danger-100 text-danger-600",
+  },
+  none: {
+    label: "No renewal date",
+    className: "bg-canvas-deep text-ink-faint",
+  },
 } as const;
 
 function formatDate(value: string): string {
@@ -37,13 +51,7 @@ export default async function MyProfilePage() {
   const clubs = activeMemberships(member);
 
   return (
-    <AppShell
-      member={{
-        firstName: member.firstName,
-        lastName: member.lastName,
-        avatarUrl: avatarUrl(member.userId, member.avatarPath),
-      }}
-    >
+    <AppShell>
       <div className="space-y-4">
         <ProfileView profile={profile} isSelf />
 
@@ -64,8 +72,7 @@ export default async function MyProfilePage() {
           ) : (
             <ul className="divide-y divide-line">
               {clubs.map((club) => {
-                const state = membershipState(club.renewalDate);
-                const copy = STATE_COPY[state];
+                const copy = STATE_COPY[membershipState(club.renewalDate)];
                 return (
                   <li
                     key={club.membershipId}
@@ -84,7 +91,15 @@ export default async function MyProfilePage() {
                           : "No renewal date"}
                       </p>
                     </div>
-                    <span className={`text-sm font-medium shrink-0 ${copy.tone}`}>
+                    {/*
+                      A pill rather than coloured text. Colour alone carried the
+                      whole status, which leaves nothing for anyone who cannot
+                      separate the green from the red -- the shape and the
+                      background now say "status" before the colour says which.
+                    */}
+                    <span
+                      className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${copy.className}`}
+                    >
                       {copy.label}
                     </span>
                   </li>
@@ -92,35 +107,36 @@ export default async function MyProfilePage() {
               })}
             </ul>
           )}
+        </Card>
 
-          {/*
-            These four are the only way in to /renew, /me/points and
-            /me/videos. The bottom bar is capped at five items, so those pages
-            hang off their section instead -- and until now nothing linked to
-            them at all, which made them reachable only by typing the URL.
-          */}
-          <div className="px-4 py-3 border-t border-line flex flex-wrap gap-2">
-            <Link href="/renew" className={buttonClassName("secondary", "sm")}>
-              Renew or join a club
-            </Link>
-            <Link href="/me/points" className={buttonClassName("ghost", "sm")}>
-              My points
-            </Link>
-            <Link href="/me/videos" className={buttonClassName("ghost", "sm")}>
-              My videos
-            </Link>
-            <Link href="/directory" className={buttonClassName("ghost", "sm")}>
-              Browse members
-            </Link>
+        {/*
+          Points, videos, renewal and the members directory used to be a loose
+          row of small buttons wedged under the memberships list, where a link
+          styled as a button sat next to a real one and nothing indicated which
+          were navigation. They are a proper list now, and the same items are
+          also in the avatar menu on every page.
+        */}
+        <Card flush>
+          <div className="px-4 pt-4 pb-1">
+            <CardHeader title="Your account" />
           </div>
+          <AccountList
+            isAdmin={isAdmin(member)}
+            pointsBalance={member.pointsBalance}
+          />
+        </Card>
 
-          <div className="px-4 py-3 border-t border-line">
-            <form action="/auth/signout" method="post">
-              <Button type="submit" variant="ghost" size="sm">
-                Sign out
-              </Button>
-            </form>
-          </div>
+        <Card flush>
+          <form action="/auth/signout" method="post" className="p-2">
+            <Button
+              type="submit"
+              variant="ghost"
+              className="w-full justify-start text-danger-600 hover:bg-danger-100 hover:text-danger-600"
+            >
+              <Icon name="power" className="size-[18px]" />
+              Sign out
+            </Button>
+          </form>
         </Card>
       </div>
     </AppShell>

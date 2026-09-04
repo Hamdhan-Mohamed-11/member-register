@@ -1,25 +1,25 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { AppShell } from "@/components/shell/AppShell";
+import { Badge, type BadgeTone } from "@/components/ui/Badge";
+import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Notice } from "@/components/ui/Field";
 import { formatLkr } from "@/components/sessions/SessionCard";
 import { requireSuperAdmin } from "@/lib/auth/session";
-import { avatarUrl } from "@/lib/members/queries";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import { getPayHereMode, isPayHereConfigured } from "@/lib/payments/payhere";
 import { MarkPaid } from "./MarkPaid";
 
 export const metadata: Metadata = { title: "Payments" };
 
-const STATUS_TONE: Record<string, string> = {
-  success: "text-success-600",
-  manual: "text-success-600",
-  pending: "text-warning-600",
-  failed: "text-danger-600",
-  cancelled: "text-ink-faint",
-  chargedback: "text-danger-600",
+const STATUS_TONE: Record<string, BadgeTone> = {
+  success: "success",
+  manual: "success",
+  pending: "warning",
+  failed: "danger",
+  cancelled: "neutral",
+  chargedback: "danger",
 };
 
 const PURPOSE_LABEL: Record<string, string> = {
@@ -43,7 +43,7 @@ type PaymentRow = {
 };
 
 export default async function PaymentsPage() {
-  const admin = await requireSuperAdmin();
+  await requireSuperAdmin();
   const supabase = await getServerComponentSupabase();
 
   const [{ data, error }, { data: events }] = await Promise.all([
@@ -68,18 +68,10 @@ export default async function PaymentsPage() {
   const configured = isPayHereConfigured();
 
   return (
-    <AppShell
-      member={{
-        firstName: admin.firstName,
-        lastName: admin.lastName,
-        avatarUrl: avatarUrl(admin.userId, admin.avatarPath),
-      }}
-    >
+    <AppShell>
       <div className="mb-4">
-        <Link href="/admin" className="text-sm text-brand-600 hover:underline">
-          ← Admin
-        </Link>
-        <h1 className="font-display text-3xl text-ink mt-1">Payments</h1>
+        <BackLink href="/admin">Admin</BackLink>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Payments</h1>
         <p className="text-sm text-ink-muted">
           {configured
             ? `PayHere is connected in ${getPayHereMode()} mode.`
@@ -142,13 +134,12 @@ export default async function PaymentsPage() {
                           <p className="text-xs text-ink-muted mt-1 italic">{p.note}</p>
                         ) : null}
                       </div>
-                      <span
-                        className={`shrink-0 text-sm font-medium ${
-                          STATUS_TONE[p.status] ?? "text-ink-muted"
-                        }`}
+                      <Badge
+                        tone={STATUS_TONE[p.status] ?? "neutral"}
+                        className="shrink-0"
                       >
                         {p.status}
-                      </span>
+                      </Badge>
                     </div>
 
                     {!settled ? <MarkPaid paymentId={p.id} /> : null}
@@ -178,17 +169,14 @@ export default async function PaymentsPage() {
                   <span className="min-w-0 truncate text-ink-muted">
                     {e.provider_order_ref} · code {e.status_code} · {e.outcome}
                   </span>
-                  <span
-                    className={`shrink-0 text-xs font-medium ${
-                      !e.signature_ok
-                        ? "text-danger-600"
-                        : e.applied
-                          ? "text-success-600"
-                          : "text-ink-faint"
-                    }`}
+                  <Badge
+                    tone={
+                      !e.signature_ok ? "danger" : e.applied ? "success" : "neutral"
+                    }
+                    className="shrink-0"
                   >
                     {!e.signature_ok ? "bad signature" : e.applied ? "applied" : "ignored"}
-                  </span>
+                  </Badge>
                 </li>
               ))}
             </ul>

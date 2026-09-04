@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import { Field, Notice } from "@/components/ui/Field";
+import { Field, Notice, selectClassName } from "@/components/ui/Field";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { ReadingItem } from "@/lib/members/queries";
@@ -83,7 +83,7 @@ export function ReadingList({ items }: { items: ReadingItem[] }) {
               id="status"
               name="status"
               defaultValue="reading"
-              className="w-full min-h-11 rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand-600"
+              className={selectClassName}
             >
               <option value="reading">Currently reading</option>
               <option value="want_to_read">Want to read</option>

@@ -24,7 +24,7 @@ export default async function AuthCallbackPage({
     next && next.startsWith("/") && !next.startsWith("//") ? next : "/feed";
 
   return (
-    <AppShell member={null}>
+    <AppShell signedOut>
       <div className="max-w-sm mx-auto pt-10">
         <Card>
           <CallbackHandler next={target} />

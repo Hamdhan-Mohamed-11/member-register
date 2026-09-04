@@ -2,32 +2,45 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Avatar } from "@/components/ui/Avatar";
+import { buttonClassName } from "@/components/ui/Button";
+import { AccountMenu } from "./AccountMenu";
+import { Logo } from "./Logo";
+import { NotificationBell } from "./NotificationBell";
 import { MEMBER_NAV, isActive } from "./navItems";
 
 export type TopBarMember = {
   firstName: string;
   lastName: string;
+  email: string;
   avatarUrl: string | null;
+  pointsBalance: number;
+  isAdmin: boolean;
 };
 
-export function TopBar({ member }: { member: TopBarMember | null }) {
+export function TopBar({
+  member,
+  unreadNotifications = 0,
+}: {
+  member: TopBarMember | null;
+  unreadNotifications?: number;
+}) {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 bg-surface/95 backdrop-blur border-b border-line">
-      <div className="mx-auto max-w-5xl px-4 h-14 flex items-center gap-4">
+    <header className="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-line">
+      <div className="mx-auto max-w-6xl px-4 h-16 flex items-center gap-3">
         <Link
           href={member ? "/feed" : "/"}
-          className="text-lg font-semibold text-brand-600 tracking-tight shrink-0"
+          className="shrink-0 rounded-lg py-1"
+          aria-label="Pick a Book — home"
         >
-          Pick a Book
+          <Logo className="h-7 w-auto sm:h-8" preload />
         </Link>
 
         {member ? (
           <>
             {/* Desktop links. On mobile these live in the bottom bar instead. */}
-            <nav aria-label="Primary" className="hidden md:block ml-2">
+            <nav aria-label="Primary" className="hidden md:block ml-3">
               <ul className="flex items-center gap-1">
                 {MEMBER_NAV.map((item) => {
                   const active = isActive(item, pathname);
@@ -36,7 +49,7 @@ export function TopBar({ member }: { member: TopBarMember | null }) {
                       <Link
                         href={item.href}
                         aria-current={active ? "page" : undefined}
-                        className={`inline-flex items-center min-h-9 px-3 rounded-lg text-sm ${
+                        className={`relative inline-flex items-center min-h-9 px-3 rounded-lg text-sm transition-colors ${
                           active
                             ? "bg-brand-50 text-brand-700 font-medium"
                             : "text-ink-muted hover:bg-canvas-deep hover:text-ink"
@@ -50,19 +63,18 @@ export function TopBar({ member }: { member: TopBarMember | null }) {
               </ul>
             </nav>
 
-            <Link href="/me" className="ml-auto shrink-0" aria-label="Your profile">
-              <Avatar
-                src={member.avatarUrl}
-                firstName={member.firstName}
-                lastName={member.lastName}
-                size="sm"
-              />
-            </Link>
+            <div className="ml-auto flex items-center gap-1">
+              <NotificationBell unread={unreadNotifications} />
+              <AccountMenu member={member} />
+            </div>
           </>
-        ) : (
+        ) : pathname === "/login" ? null : (
+          // No "Log in" button on the log-in page. It was rendering a primary
+          // button that navigates to the page you are already on, one line
+          // above a form headed "Welcome back".
           <Link
             href="/login"
-            className="ml-auto text-sm font-medium text-brand-600"
+            className={`${buttonClassName("primary", "sm")} ml-auto`}
           >
             Log in
           </Link>

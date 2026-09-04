@@ -1,34 +1,26 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AppShell } from "@/components/shell/AppShell";
+import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { buttonClassName } from "@/components/ui/Button";
 import { SessionCard } from "@/components/sessions/SessionCard";
 import { requireSecretary } from "@/lib/auth/session";
-import { avatarUrl } from "@/lib/members/queries";
 import { listAllSessions } from "@/lib/sessions/queries";
 
 export const metadata: Metadata = { title: "Sessions · Admin" };
 
 export default async function AdminSessionsPage() {
-  const admin = await requireSecretary();
+  await requireSecretary();
   const sessions = await listAllSessions();
 
   return (
-    <AppShell
-      member={{
-        firstName: admin.firstName,
-        lastName: admin.lastName,
-        avatarUrl: avatarUrl(admin.userId, admin.avatarPath),
-      }}
-    >
+    <AppShell>
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <Link href="/admin" className="text-sm text-brand-600 hover:underline">
-            ← Admin
-          </Link>
-          <h1 className="font-display text-3xl text-ink mt-1">Sessions</h1>
+          <BackLink href="/admin">Admin</BackLink>
+          <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Sessions</h1>
           <p className="text-sm text-ink-muted">
             Create sessions and record attendance as they happen.
           </p>

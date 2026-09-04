@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import { Notice } from "@/components/ui/Field";
+import { Notice, selectClassName } from "@/components/ui/Field";
 import {
   addClubMembership,
   setMemberRole,
@@ -11,8 +11,7 @@ import {
   setMembership,
 } from "../actions";
 
-const selectClass =
-  "min-h-11 rounded-lg border border-line bg-surface px-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand-600";
+
 
 type Result = { ok: boolean; error?: string };
 
@@ -79,7 +78,7 @@ export function RoleAndStatus({
             id="role"
             defaultValue={role}
             disabled={pending}
-            className={`${selectClass} w-full`}
+            className={`${selectClassName} w-full`}
             onChange={(e) => run(setMemberRole, { memberId, role: e.target.value })}
           >
             <option value="member">Member</option>
@@ -96,7 +95,7 @@ export function RoleAndStatus({
             id="status"
             defaultValue={status}
             disabled={pending}
-            className={`${selectClass} w-full`}
+            className={`${selectClassName} w-full`}
             onChange={(e) => run(setMemberStatus, { memberId, status: e.target.value })}
           >
             <option value="active">Active</option>
@@ -148,7 +147,7 @@ export function MembershipRow({
           <select
             defaultValue={status}
             disabled={pending}
-            className={selectClass}
+            className={selectClassName}
             onChange={(e) =>
               run(setMembership, { memberId, membershipId, status: e.target.value })
             }
@@ -167,7 +166,7 @@ export function MembershipRow({
             type="date"
             defaultValue={renewalDate ?? ""}
             disabled={pending}
-            className={selectClass}
+            className={selectClassName}
             onChange={(e) =>
               e.target.value &&
               run(setMembership, {
@@ -218,7 +217,7 @@ export function AddClubForm({
           <select
             value={clubId}
             onChange={(e) => setClubId(e.target.value)}
-            className={`${selectClass} w-full`}
+            className={`${selectClassName} w-full`}
           >
             {clubs.map((c) => (
               <option key={c.id} value={c.id}>
@@ -236,7 +235,7 @@ export function AddClubForm({
             value={months}
             placeholder="default"
             onChange={(e) => setMonths(e.target.value)}
-            className={`${selectClass} w-24`}
+            className={`${selectClassName} w-24`}
           />
         </div>
 

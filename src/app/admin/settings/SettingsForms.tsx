@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import { Field, Notice } from "@/components/ui/Field";
+import { Field, Notice, controlClassName } from "@/components/ui/Field";
 import { updatePointsRule, updateSettings } from "./actions";
 
 export type Settings = {
@@ -156,7 +156,7 @@ export function PointsRulesForm({ rules }: { rules: PointsRule[] }) {
               type="number"
               min={0}
               defaultValue={rule.points}
-              className="w-24 min-h-11 rounded-lg border border-line bg-surface px-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand-600"
+              className={`${controlClassName} w-24`}
               onBlur={(e) => {
                 if (Number(e.target.value) !== rule.points) {
                   save(rule.code, e.target.value);

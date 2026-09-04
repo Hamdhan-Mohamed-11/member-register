@@ -63,7 +63,7 @@ export default async function PendingPage() {
     };
 
   return (
-    <AppShell member={null}>
+    <AppShell signedOut>
       <div className="max-w-sm mx-auto pt-8 text-center">
         <Card>
           {canApply ? (

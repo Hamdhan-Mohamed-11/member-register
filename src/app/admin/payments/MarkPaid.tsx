@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import { Notice } from "@/components/ui/Field";
+import { Notice, controlClassName } from "@/components/ui/Field";
 import { markPaid } from "./actions";
 
 export function MarkPaid({ paymentId }: { paymentId: string }) {
@@ -46,7 +46,7 @@ export function MarkPaid({ paymentId }: { paymentId: string }) {
         value={reason}
         onChange={(e) => setReason(e.target.value)}
         placeholder="Why is this being settled by hand?"
-        className="w-full min-h-11 rounded-lg border border-line bg-surface px-3 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-brand-600"
+        className={controlClassName}
       />
       <div className="flex gap-2">
         <Button size="sm" disabled={pending || reason.trim().length < 3} onClick={submit}>

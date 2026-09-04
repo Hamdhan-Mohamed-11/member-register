@@ -6,7 +6,6 @@ import { buttonClassName } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SessionCard } from "@/components/sessions/SessionCard";
 import { activeMemberships, requireActiveMember } from "@/lib/auth/session";
-import { avatarUrl } from "@/lib/members/queries";
 import { listSessions } from "@/lib/sessions/queries";
 
 export const metadata: Metadata = { title: "Sessions" };
@@ -31,13 +30,7 @@ export default async function SessionsPage() {
   }
 
   return (
-    <AppShell
-      member={{
-        firstName: member.firstName,
-        lastName: member.lastName,
-        avatarUrl: avatarUrl(member.userId, member.avatarPath),
-      }}
-    >
+    <AppShell>
       {/*
         The bottom bar highlights "Sessions" for /videos too, but nothing here
         linked there -- so the recordings were reachable only from a page that
@@ -45,7 +38,7 @@ export default async function SessionsPage() {
       */}
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl text-ink">Sessions</h1>
+          <h1 className="font-display text-2xl sm:text-3xl text-ink">Sessions</h1>
           <p className="text-sm text-ink-muted">
             Your clubs&apos; sessions are free. You can book other clubs&apos;
             paid sessions as a guest.

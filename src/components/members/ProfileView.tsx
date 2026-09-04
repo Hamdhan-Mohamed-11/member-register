@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Avatar } from "@/components/ui/Avatar";
+import { Badge } from "@/components/ui/Badge";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { buttonClassName } from "@/components/ui/Button";
@@ -48,12 +49,9 @@ export function ProfileView({
             {profile.clubs.length ? (
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {profile.clubs.map((club) => (
-                  <span
-                    key={club.id}
-                    className="text-xs bg-brand-50 text-brand-700 rounded-full px-2 py-0.5"
-                  >
+                  <Badge key={club.id} tone="brand">
                     {club.name}
-                  </span>
+                  </Badge>
                 ))}
               </div>
             ) : null}
@@ -97,14 +95,17 @@ export function ProfileView({
             <p className="text-xs font-medium uppercase tracking-wide text-ink-faint mb-1.5">
               Currently learning
             </p>
+            {/*
+              These were `bg-accent-100`, a colour token that does not exist --
+              Tailwind emitted nothing for it, so the tags had a transparent
+              background and read as loose words. Gold is the accent the design
+              actually defines.
+            */}
             <div className="flex flex-wrap gap-1.5">
               {profile.learningTags.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-xs bg-accent-100 text-warning-600 rounded-full px-2 py-0.5"
-                >
+                <Badge key={tag} tone="gold">
                   {tag}
-                </span>
+                </Badge>
               ))}
             </div>
           </div>
@@ -126,6 +127,8 @@ export function ProfileView({
         </div>
         {reading.length === 0 ? (
           <EmptyState
+            compact
+            icon="inbox"
             title={isSelf ? "Nothing on the go" : `${profile.firstName} isn't reading anything right now`}
             description={isSelf ? "Add a book to show it on your profile." : undefined}
           />
@@ -148,7 +151,7 @@ export function ProfileView({
           <CardHeader title={`Books read (${read.length})`} />
         </div>
         {read.length === 0 ? (
-          <EmptyState title="No finished books yet" />
+          <EmptyState compact title="No finished books yet" />
         ) : (
           <ul className="divide-y divide-line">
             {read.map((item) => (

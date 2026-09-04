@@ -76,7 +76,7 @@ export default async function Home() {
   if (await getSessionMember()) redirect("/feed");
 
   return (
-    <AppShell member={null} wide>
+    <AppShell signedOut wide>
       <div className="max-w-5xl mx-auto space-y-4 pb-6">
         {/* ---- Hero ------------------------------------------------------ */}
         <section className="rounded-panel bg-cream border border-cream-deep overflow-hidden">
@@ -106,10 +106,10 @@ export default async function Home() {
             </p>
 
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link href="/join" className={buttonClassName("primary")}>
+              <Link href="/join" className={buttonClassName("primary", "lg")}>
                 Join a club
               </Link>
-              <Link href="/login" className={buttonClassName("secondary")}>
+              <Link href="/login" className={buttonClassName("secondary", "lg")}>
                 Log in
               </Link>
             </div>
@@ -150,7 +150,7 @@ export default async function Home() {
             {/* The one place gold is used structurally. */}
             <span className="block w-10 h-0.5 bg-gold-500 mt-2.5" aria-hidden="true" />
 
-            <h2 className="font-display text-3xl text-ink mt-5 leading-[1.15]">
+            <h2 className="font-display text-2xl sm:text-3xl text-ink mt-5 leading-[1.15]">
               Books are better when we read together.
             </h2>
             <p className="mt-4 text-ink-muted leading-relaxed">
@@ -159,7 +159,7 @@ export default async function Home() {
             </p>
 
             <div className="mt-6">
-              <Link href="/join" className={buttonClassName("primary")}>
+              <Link href="/join" className={buttonClassName("primary", "lg")}>
                 Find or join a club
               </Link>
             </div>

@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { AppShell } from "@/components/shell/AppShell";
+import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Notice } from "@/components/ui/Field";
 import { requireSuperAdmin } from "@/lib/auth/session";
-import { avatarUrl } from "@/lib/members/queries";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import {
   PointsRulesForm,
@@ -16,7 +15,7 @@ import {
 export const metadata: Metadata = { title: "Settings" };
 
 export default async function SettingsPage() {
-  const admin = await requireSuperAdmin();
+  await requireSuperAdmin();
   const supabase = await getServerComponentSupabase();
 
   const [{ data: settingsRow, error: settingsError }, { data: ruleRows }] =
@@ -47,18 +46,10 @@ export default async function SettingsPage() {
   const rules = (ruleRows ?? []) as PointsRule[];
 
   return (
-    <AppShell
-      member={{
-        firstName: admin.firstName,
-        lastName: admin.lastName,
-        avatarUrl: avatarUrl(admin.userId, admin.avatarPath),
-      }}
-    >
+    <AppShell>
       <div className="mb-4">
-        <Link href="/admin" className="text-sm text-brand-600 hover:underline">
-          ← Admin
-        </Link>
-        <h1 className="font-display text-3xl text-ink mt-1">Settings</h1>
+        <BackLink href="/admin">Admin</BackLink>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Settings</h1>
         <p className="text-sm text-ink-muted">
           Defaults used across the portal. Individual clubs can override the fee
           and term.

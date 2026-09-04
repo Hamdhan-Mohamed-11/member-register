@@ -7,9 +7,9 @@ export const metadata: Metadata = { title: "Set up your account" };
 
 export default function AcceptInvitePage() {
   return (
-    <AppShell member={null}>
+    <AppShell signedOut>
       <div className="max-w-sm mx-auto pt-6">
-        <h1 className="font-display text-3xl text-ink text-center">
+        <h1 className="font-display text-2xl sm:text-3xl text-ink text-center">
           Welcome to Pick a Book
         </h1>
         <p className="text-sm text-ink-muted text-center mt-2 mb-5">

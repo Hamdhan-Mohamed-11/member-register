@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
+import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -55,17 +56,9 @@ export default async function AdminMemberPage({
   const name = `${profile.first_name} ${profile.last_name}`.trim() || profile.email;
 
   return (
-    <AppShell
-      member={{
-        firstName: admin.firstName,
-        lastName: admin.lastName,
-        avatarUrl: avatarUrl(admin.userId, admin.avatarPath),
-      }}
-    >
+    <AppShell>
       <div className="mb-4">
-        <Link href="/admin/members" className="text-sm text-brand-600 hover:underline">
-          ← Members
-        </Link>
+        <BackLink href="/admin/members">Members</BackLink>
       </div>
 
       <div className="space-y-4">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { formatLkrCents, priceLine } from "@/lib/pricing";
 import type { LegacyBook } from "@/lib/legacy/types";
@@ -24,7 +25,7 @@ export function BookCard({
 
   return (
     <Link href={href} className="block h-full">
-      <Card flush className="h-full overflow-hidden hover:shadow-raised transition-shadow flex flex-col">
+      <Card flush interactive className="h-full overflow-hidden flex flex-col">
         <div className="relative aspect-3/4 bg-canvas">
           {book.imageUrl ? (
             /*
@@ -48,9 +49,9 @@ export function BookCard({
           )}
 
           {!book.inStock ? (
-            <span className="absolute top-2 left-2 text-[11px] font-medium bg-warning-100 text-warning-600 rounded-full px-2 py-0.5">
+            <Badge tone="warning" className="absolute top-2 left-2 shadow-card">
               Pre-order
-            </span>
+            </Badge>
           ) : null}
         </div>
 

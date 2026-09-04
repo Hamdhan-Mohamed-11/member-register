@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import type { VideoItem } from "@/lib/videos/queries";
 
-const STATUS_STYLE: Record<string, string> = {
-  pending: "text-warning-600 bg-warning-100",
-  rejected: "text-danger-600 bg-danger-100",
-  approved: "text-success-600 bg-success-100",
+const STATUS_TONE: Record<string, BadgeTone> = {
+  pending: "warning",
+  rejected: "danger",
+  approved: "success",
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -53,13 +54,9 @@ export function VideoCard({
         <div className="flex items-start justify-between gap-3">
           <p className="font-medium text-ink min-w-0">{video.title}</p>
           {showStatus ? (
-            <span
-              className={`shrink-0 text-xs font-medium rounded-full px-2 py-0.5 ${
-                STATUS_STYLE[video.status] ?? ""
-              }`}
-            >
+            <Badge tone={STATUS_TONE[video.status] ?? "neutral"} className="shrink-0">
               {STATUS_LABEL[video.status] ?? video.status}
-            </span>
+            </Badge>
           ) : null}
         </div>
 

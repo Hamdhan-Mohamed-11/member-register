@@ -1,7 +1,13 @@
 const sizes = {
   sm: "size-8 text-xs",
   md: "size-10 text-sm",
-  lg: "size-20 text-xl",
+  // Responsive on purpose. A fixed 80px avatar next to a name and an Edit
+  // button leaves about 200px for the name at 360px wide, which truncates
+  // most real ones. The two size utilities have to live in the SAME string --
+  // a `sm:size-20` passed in via className would collide with `size-20` here
+  // at equal specificity, and which one wins would come down to stylesheet
+  // order rather than intent.
+  lg: "size-16 text-lg sm:size-20 sm:text-xl",
 } as const;
 
 export type AvatarSize = keyof typeof sizes;
