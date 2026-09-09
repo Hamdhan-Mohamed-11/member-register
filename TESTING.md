@@ -79,6 +79,8 @@ list, points from a past session, one pending video, one pending application.
 - [ ] `/directory` — shows Ishara and Ruwan, and **also Tharindu** (Colombo
       Poetry Circle is under the same Public Clubs type); shows **no** company
       members
+- [ ] A session set for 1 presenter greys out **Presented** on everyone else
+      once one is ticked; **Attended** stays available
 - [ ] `/leaderboard` — opens on **This month**; Year and All time change the
       ranking; your own row is marked; equal scores share a place
 - [ ] The people ranked are the same people `/directory` shows

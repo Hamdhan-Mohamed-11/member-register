@@ -258,7 +258,9 @@ using the app under pressure, in a room, with members waiting.
 - [ ] `/admin/sessions/new` — create one
 - [ ] Choosing **paid** reveals the guest-fee field
 - [ ] Saving a paid session with **no** fee is refused
-- [ ] Edit it → changes stick
+- [ ] Set **How many are presenting** to **1**
+- [ ] Edit it → changes stick, and the presenter number survives the edit
+- [ ] Clear the presenter field and save → the limit is removed, not kept
 
 ### The attendance recorder — the live screen
 
@@ -269,6 +271,20 @@ using the app under pressure, in a room, with members waiting.
 - [ ] Untick Presented, save again → total drops to **+10**
 - [ ] Log in as Ruwan → `/me/points` matches exactly
 - [ ] **Save the same screen twice → his points do NOT double**
+
+**The presenter limit** — this is the anti-farming rule, so test it properly.
+The session above is set for 1 presenter.
+
+- [ ] The header reads **1/1 presenting** once Ruwan is ticked
+- [ ] **Presented** on everybody else is now greyed and unclickable, and a
+      notice says why. **Attended** stays clickable for all of them
+- [ ] Ruwan's own **Presented** stays clickable — you must be able to swap one
+      presenter for another without clearing the row first
+- [ ] Untick Ruwan → everyone's Presented comes back
+- [ ] Raise the session to 2 presenters, tick two people, then try to set it
+      back to 1 → **refused**, saying two are already recorded
+- [ ] A session with the presenter field **blank** behaves as before, with no
+      limit and nothing greyed
 
 ### Videos and applications
 
