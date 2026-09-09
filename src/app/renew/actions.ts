@@ -123,3 +123,57 @@ export async function startBookingPayment(formData: FormData): Promise<ActionRes
     },
   };
 }
+
+
+/**
+ * Pays for the borrowing add-on.
+ *
+ * Lives here beside the other two rather than in /library/actions, because
+ * everything a PayHere checkout needs -- the configured check, buildCheckout,
+ * the CheckoutPayload shape the PayButton expects -- is already here, and a
+ * second copy would be a second place for the return and notify URLs to drift.
+ *
+ * The amount is not a parameter. start_library_addon_payment reads it from
+ * app_settings and returns it, so the client never states a price.
+ */
+export async function startLibraryAddonPayment(): Promise<ActionResult> {
+  const member = await requireActiveMember();
+
+  if (!isPayHereConfigured()) {
+    return {
+      ok: false,
+      error:
+        "Online payment isn't set up yet. Please contact the club to pay another way.",
+    };
+  }
+
+  const supabase = await getActionSupabase();
+  const { data, error } = await supabase.rpc("start_library_addon_payment");
+  if (error) return { ok: false, error: error.message };
+
+  const row = Array.isArray(data) ? data[0] : undefined;
+  if (!row) return { ok: false, error: "Couldn't start the payment." };
+
+  const siteUrl = getSiteUrl();
+  const checkout = buildCheckout({
+    orderRef: row.order_ref as string,
+    amount: row.amount as number,
+    itemDescription: "Library borrowing add-on",
+    returnUrl: `${siteUrl}/renew/result?ref=${row.order_ref}`,
+    cancelUrl: `${siteUrl}/library?cancelled=1`,
+    notifyUrl: `${siteUrl}/api/payhere/notify`,
+    firstName: member.firstName,
+    lastName: member.lastName,
+    email: member.email,
+  });
+
+  return {
+    ok: true,
+    data: {
+      action: checkout.action,
+      fields: checkout.fields,
+      orderRef: row.order_ref as string,
+      amount: checkout.fields.amount,
+    },
+  };
+}

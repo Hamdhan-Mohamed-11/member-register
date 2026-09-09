@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
@@ -15,17 +16,35 @@ export function BookCard({
   book,
   discountPercent,
   href,
+  hidePrice = false,
+  actions,
 }: {
   book: LegacyBook;
   discountPercent: number;
   href: string;
+  /** The borrowing catalogue shows no price -- there is nothing to pay. */
+  hidePrice?: boolean;
+  /**
+   * Buttons rendered BELOW the link, never inside it.
+   *
+   * A <button> nested in an <a> is invalid HTML, and in practice the tap
+   * navigates instead of acting. So the Link covers the cover and the title,
+   * and these sit outside it -- which is also why `interactive` is dropped
+   * once there are actions: the card stops being a single target, and a hover
+   * lift would promise a click that does nothing.
+   */
+  actions?: ReactNode;
 }) {
   const { listCents, memberCents, savedCents } = priceLine(book.priceLkr, discountPercent);
   const discounted = savedCents > 0;
 
   return (
-    <Link href={href} className="block h-full">
-      <Card flush interactive className="h-full overflow-hidden flex flex-col">
+    <Card
+      flush
+      interactive={!actions}
+      className="h-full overflow-hidden flex flex-col"
+    >
+      <Link href={href} className="block flex-1 flex flex-col">
         <div className="relative aspect-3/4 bg-canvas">
           {book.imageUrl ? (
             /*
@@ -62,7 +81,7 @@ export function BookCard({
           ) : null}
 
           <div className="mt-auto pt-2">
-            {discounted ? (
+            {hidePrice ? null : discounted ? (
               <>
                 <p className="text-sm font-semibold text-brand-600">
                   {formatLkrCents(memberCents)}
@@ -79,7 +98,11 @@ export function BookCard({
             )}
           </div>
         </div>
-      </Card>
-    </Link>
+      </Link>
+
+      {actions ? (
+        <div className="px-3 pb-3 pt-0 flex flex-wrap items-start gap-1.5">{actions}</div>
+      ) : null}
+    </Card>
   );
 }

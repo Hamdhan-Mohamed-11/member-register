@@ -4,12 +4,21 @@ import { AppShell } from "@/components/shell/AppShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { CatalogueUnavailable } from "@/components/books/CatalogueUnavailable";
+import { BorrowButton, WishlistButton } from "@/components/books/BookActions";
 import { requireActiveMember } from "@/lib/auth/session";
+import {
+  getLibraryAccess,
+  getOpenBorrowBookIds,
+  getWishlistedIds,
+} from "@/lib/library/queries";
 import { getBook } from "@/lib/legacy/books";
 import { formatLkrCents, priceLine } from "@/lib/pricing";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 
-export const revalidate = 300;
+// Was `revalidate = 300`. The page now shows per-member state -- what this
+// member has wishlisted, and whether they already asked to borrow it -- and a
+// shared cache would hand one member another's buttons.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -26,16 +35,19 @@ export default async function BookPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireActiveMember();
+  const member = await requireActiveMember();
   const { id } = await params;
 
   const bookId = Number(id);
   if (!Number.isFinite(bookId) || bookId <= 0) notFound();
 
   const supabase = await getServerComponentSupabase();
-  const [{ data: settings }, result] = await Promise.all([
+  const [{ data: settings }, result, wishlisted, openBorrows, access] = await Promise.all([
     supabase.from("app_settings").select("book_discount_percent").eq("id", 1).maybeSingle(),
     getBook(bookId),
+    getWishlistedIds(),
+    getOpenBorrowBookIds(),
+    getLibraryAccess(member.userId),
   ]);
 
   const discount = Number(settings?.book_discount_percent ?? 0);
@@ -116,6 +128,39 @@ export default async function BookPage({
                   <span className="text-ink-muted"> · also in the lending library</span>
                 ) : null}
               </p>
+            </div>
+
+            {/*
+              Buy lands with the bookshop; saving for later works now, and is
+              what tells the club which books people actually want.
+
+              Borrow only appears when the book is genuinely lendable AND the
+              member has the add-on. Showing a Borrow button that then errors
+              would advertise the add-on by frustrating people, which is a poor
+              way to sell it -- the pitch lives on /library instead.
+            */}
+            <div className="mt-4 flex flex-wrap items-start gap-2">
+              <WishlistButton
+                book={{ id: book.id, title: book.title, author: book.author }}
+                kind="buy"
+                saved={wishlisted.buy.has(book.id)}
+                labels={{ add: "Save to buy", added: "Saved to buy" }}
+              />
+
+              {book.lendable && access.active ? (
+                <>
+                  <BorrowButton
+                    book={{ id: book.id, title: book.title, author: book.author }}
+                    alreadyOpen={openBorrows.has(book.id)}
+                  />
+                  <WishlistButton
+                    book={{ id: book.id, title: book.title, author: book.author }}
+                    kind="borrow"
+                    saved={wishlisted.borrow.has(book.id)}
+                    labels={{ add: "Borrow later", added: "Saved to borrow" }}
+                  />
+                </>
+              ) : null}
             </div>
 
             <dl className="mt-4 space-y-1.5 text-sm">

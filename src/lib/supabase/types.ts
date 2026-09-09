@@ -91,6 +91,8 @@ export type Database = {
           currency: string
           expiring_soon_days: number
           id: number
+          library_addon_fee_lkr: number
+          library_addon_term_months: number
           membership_fee_lkr: number
           membership_term_months: number
           renewal_grace_days: number
@@ -102,6 +104,8 @@ export type Database = {
           currency?: string
           expiring_soon_days?: number
           id?: number
+          library_addon_fee_lkr?: number
+          library_addon_term_months?: number
           membership_fee_lkr?: number
           membership_term_months?: number
           renewal_grace_days?: number
@@ -113,6 +117,8 @@ export type Database = {
           currency?: string
           expiring_soon_days?: number
           id?: number
+          library_addon_fee_lkr?: number
+          library_addon_term_months?: number
           membership_fee_lkr?: number
           membership_term_months?: number
           renewal_grace_days?: number
@@ -177,6 +183,125 @@ export type Database = {
           tier?: number
         }
         Relationships: []
+      }
+      book_wishlist: {
+        Row: {
+          author: string
+          book_id: number
+          created_at: string
+          id: string
+          kind: string
+          member_id: string
+          title: string
+        }
+        Insert: {
+          author?: string
+          book_id: number
+          created_at?: string
+          id?: string
+          kind: string
+          member_id: string
+          title?: string
+        }
+        Update: {
+          author?: string
+          book_id?: number
+          created_at?: string
+          id?: string
+          kind?: string
+          member_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_wishlist_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_wishlist_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      borrow_requests: {
+        Row: {
+          author: string
+          book_id: number
+          decided_at: string | null
+          decided_by: string | null
+          due_on: string | null
+          id: string
+          member_id: string
+          note: string | null
+          requested_at: string
+          returned_at: string | null
+          status: string
+          title: string
+        }
+        Insert: {
+          author?: string
+          book_id: number
+          decided_at?: string | null
+          decided_by?: string | null
+          due_on?: string | null
+          id?: string
+          member_id: string
+          note?: string | null
+          requested_at?: string
+          returned_at?: string | null
+          status?: string
+          title?: string
+        }
+        Update: {
+          author?: string
+          book_id?: number
+          decided_at?: string | null
+          decided_by?: string | null
+          due_on?: string | null
+          id?: string
+          member_id?: string
+          note?: string | null
+          requested_at?: string
+          returned_at?: string | null
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "borrow_requests_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "borrow_requests_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "borrow_requests_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "borrow_requests_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       club_join_requests: {
         Row: {
@@ -907,6 +1032,7 @@ export type Database = {
           joined_on: string
           last_name: string
           learning_tags: string[]
+          library_expires_on: string | null
           phone: string | null
           points_balance: number
           role: string
@@ -923,6 +1049,7 @@ export type Database = {
           joined_on?: string
           last_name?: string
           learning_tags?: string[]
+          library_expires_on?: string | null
           phone?: string | null
           points_balance?: number
           role?: string
@@ -939,6 +1066,7 @@ export type Database = {
           joined_on?: string
           last_name?: string
           learning_tags?: string[]
+          library_expires_on?: string | null
           phone?: string | null
           points_balance?: number
           role?: string
@@ -1290,6 +1418,7 @@ export type Database = {
       }
       book_session: { Args: { p_session_id: string }; Returns: string }
       can_view_member: { Args: { p_member_id: string }; Returns: boolean }
+      cancel_borrow_request: { Args: { p_id: string }; Returns: undefined }
       cancel_session_booking: {
         Args: { p_booking_id: string }
         Returns: undefined
@@ -1335,9 +1464,11 @@ export type Database = {
       }
       current_club_ids: { Args: never; Returns: string[] }
       current_member_has_active_club: { Args: never; Returns: boolean }
+      current_member_has_library: { Args: never; Returns: boolean }
       current_member_is_active: { Args: never; Returns: boolean }
       current_member_role: { Args: never; Returns: string }
       delete_video: { Args: { p_video_id: string }; Returns: undefined }
+      has_library_access: { Args: { p_member_id: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       is_public_club: { Args: { p_club_id: string }; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }
@@ -1391,6 +1522,10 @@ export type Database = {
         Args: { p_reason?: string; p_request_id: string }
         Returns: undefined
       }
+      request_borrow: {
+        Args: { p_author?: string; p_book_id: number; p_title?: string }
+        Returns: string
+      }
       request_club_join: {
         Args: { p_club_id: string; p_message?: string }
         Returns: string
@@ -1407,6 +1542,15 @@ export type Database = {
         Args: { p_member_id: string; p_session_id: string }
         Returns: number
       }
+      set_borrow_status: {
+        Args: {
+          p_due_on?: string
+          p_id: string
+          p_note?: string
+          p_status: string
+        }
+        Returns: undefined
+      }
       set_member_role: {
         Args: { p_member_id: string; p_role: string }
         Returns: undefined
@@ -1422,6 +1566,15 @@ export type Database = {
         Returns: {
           amount: number
           club_name: string
+          is_renewal: boolean
+          order_ref: string
+          payment_id: string
+        }[]
+      }
+      start_library_addon_payment: {
+        Args: never
+        Returns: {
+          amount: number
           is_renewal: boolean
           order_ref: string
           payment_id: string
