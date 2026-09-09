@@ -27,6 +27,7 @@ export type SessionDefaults = {
   pricingKind: "free" | "paid";
   guestFee: string;
   capacity: string;
+  presenterCount: string;
   status: "scheduled" | "completed" | "cancelled";
   videoUrl: string;
 };
@@ -174,6 +175,18 @@ export function SessionForm({
           defaultValue={defaults.capacity}
           hint="Leave blank for no limit."
         />
+        <Field
+          label="How many are presenting?"
+          name="presenterCount"
+          type="number"
+          min={1}
+          max={50}
+          defaultValue={defaults.presenterCount}
+          hint="The attendance recorder stops at this many. Blank for no limit."
+        />
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-3">
         <div>
           <label htmlFor="status" className="block text-sm font-medium text-ink mb-1.5">
             Status

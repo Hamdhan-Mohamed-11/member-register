@@ -103,6 +103,8 @@ export default async function AdminSessionPage({
               pricingKind: session.pricingKind,
               guestFee: session.guestFeeLkr != null ? String(session.guestFeeLkr) : "",
               capacity: session.capacity != null ? String(session.capacity) : "",
+              presenterCount:
+                session.presenterCount != null ? String(session.presenterCount) : "",
               status: session.status,
               videoUrl: session.videoUrl ?? "",
             }}

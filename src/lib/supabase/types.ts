@@ -855,6 +855,7 @@ export type Database = {
         Row: {
           code: string
           is_active: boolean
+          is_presenting: boolean
           label: string
           points: number
           updated_at: string
@@ -863,6 +864,7 @@ export type Database = {
         Insert: {
           code: string
           is_active?: boolean
+          is_presenting?: boolean
           label: string
           points: number
           updated_at?: string
@@ -871,6 +873,7 @@ export type Database = {
         Update: {
           code?: string
           is_active?: boolean
+          is_presenting?: boolean
           label?: string
           points?: number
           updated_at?: string
@@ -1060,6 +1063,7 @@ export type Database = {
           id: string
           location: string | null
           notes: string | null
+          presenter_count: number | null
           presenter_member_id: string | null
           pricing_kind: string
           status: string
@@ -1079,6 +1083,7 @@ export type Database = {
           id?: string
           location?: string | null
           notes?: string | null
+          presenter_count?: number | null
           presenter_member_id?: string | null
           pricing_kind?: string
           status?: string
@@ -1098,6 +1103,7 @@ export type Database = {
           id?: string
           location?: string | null
           notes?: string | null
+          presenter_count?: number | null
           presenter_member_id?: string | null
           pricing_kind?: string
           status?: string
@@ -1492,6 +1498,7 @@ export type Database = {
           p_location?: string
           p_notes?: string
           p_presenter?: string
+          p_presenter_count?: number
           p_pricing_kind?: string
           p_session_id?: string
           p_status?: string

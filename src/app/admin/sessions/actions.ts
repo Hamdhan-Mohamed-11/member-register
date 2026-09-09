@@ -22,6 +22,7 @@ const sessionSchema = z.object({
   pricingKind: z.enum(["free", "paid"]),
   guestFee: z.coerce.number().min(0).nullable(),
   capacity: z.coerce.number().int().min(1).nullable(),
+  presenterCount: z.coerce.number().int().min(1).max(50).nullable(),
   status: z.enum(["scheduled", "completed", "cancelled"]),
   videoUrl: z.string().trim().max(500),
 });
@@ -49,6 +50,7 @@ export async function saveSession(
     pricingKind: formData.get("pricingKind") ?? "free",
     guestFee: emptyToNull(formData.get("guestFee")),
     capacity: emptyToNull(formData.get("capacity")),
+    presenterCount: emptyToNull(formData.get("presenterCount")),
     status: formData.get("status") ?? "scheduled",
     videoUrl: formData.get("videoUrl") ?? "",
   });
@@ -85,6 +87,10 @@ export async function saveSession(
     p_pricing_kind: d.pricingKind,
     ...(d.pricingKind === "paid" && d.guestFee != null ? { p_guest_fee: d.guestFee } : {}),
     ...(d.capacity != null ? { p_capacity: d.capacity } : {}),
+    // Omitted when blank, and that IS the clear: the SQL default is null, and
+    // the update branch writes null straight to presenter_count. So an empty
+    // field removes the limit rather than leaving the old one behind.
+    p_presenter_count: d.presenterCount ?? undefined,
     p_status: d.status,
     p_video_url: d.videoUrl || undefined,
   });

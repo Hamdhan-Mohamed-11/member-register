@@ -9,7 +9,13 @@ import { Notice, controlClassName } from "@/components/ui/Field";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { saveAttendance } from "@/app/admin/sessions/actions";
 
-export type Rule = { code: string; label: string; points: number };
+export type Rule = {
+  code: string;
+  label: string;
+  points: number;
+  /** Counts towards the session's presenter cap. */
+  is_presenting: boolean;
+};
 
 export type RosterMember = {
   id: string;
@@ -35,10 +41,13 @@ export function AttendanceRecorder({
   sessionId,
   rules,
   roster,
+  presenterCap,
 }: {
   sessionId: string;
   rules: Rule[];
   roster: RosterMember[];
+  /** How many may be marked as presenting. Null = no limit. */
+  presenterCap: number | null;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -65,6 +74,25 @@ export function AttendanceRecorder({
     () => Object.values(state).filter((codes) => codes.length > 0).length,
     [state],
   );
+
+  const presentingCodes = useMemo(
+    () => new Set(rules.filter((r) => r.is_presenting).map((r) => r.code)),
+    [rules],
+  );
+
+  // How many people are currently marked as presenting, counted per MEMBER --
+  // someone ticked for both "presented" and "presented at another club" is one
+  // presenter, not two. The RPC counts it the same way, and the two must agree
+  // or the UI will allow a roster the save then rejects.
+  const presenting = useMemo(
+    () =>
+      Object.values(state).filter((codes) =>
+        codes.some((c) => presentingCodes.has(c)),
+      ).length,
+    [state, presentingCodes],
+  );
+
+  const capReached = presenterCap != null && presenting >= presenterCap;
 
   const dirty = useMemo(
     () =>
@@ -125,6 +153,18 @@ export function AttendanceRecorder({
       {error ? <Notice>{error}</Notice> : null}
       {saved && !dirty ? <Notice tone="success">Attendance saved.</Notice> : null}
 
+      {/*
+        A greyed button with a tooltip explains nothing on a phone, which is
+        where this screen is actually used. Say it in words instead, and only
+        once the limit is actually reached.
+      */}
+      {capReached ? (
+        <Notice tone="info">
+          All {presenterCap} presenter{presenterCap === 1 ? "" : "s"} are marked.
+          To change who presented, untick someone first.
+        </Notice>
+      ) : null}
+
       {/* Sticky summary: the running total is the number said out loud, so it
           must stay on screen while scrolling a long roster. */}
       <div className="sticky top-14 z-30 bg-canvas py-2">
@@ -132,6 +172,14 @@ export function AttendanceRecorder({
           <div>
             <p className="text-sm text-ink-muted">
               {attending} of {roster.length} taking part
+              {presenterCap != null ? (
+                <>
+                  {" · "}
+                  <span className={capReached ? "text-warning-600 font-medium" : ""}>
+                    {presenting}/{presenterCap} presenting
+                  </span>
+                </>
+              ) : null}
             </p>
             <p className="text-2xl font-semibold text-brand-600">{total} points</p>
           </div>
@@ -200,16 +248,33 @@ export function AttendanceRecorder({
                   <div className="mt-3 flex flex-wrap gap-2">
                     {rules.map((rule) => {
                       const on = codes.includes(rule.code);
+                      // Blocked only for someone NOT already presenting. The
+                      // person who is stays clickable, or the Secretary could
+                      // not swap one presenter for another without first
+                      // clearing the whole row.
+                      const blocked =
+                        rule.is_presenting &&
+                        !on &&
+                        capReached &&
+                        !codes.some((c) => presentingCodes.has(c));
                       return (
                         <button
                           key={rule.code}
                           type="button"
                           aria-pressed={on}
+                          disabled={blocked}
+                          title={
+                            blocked
+                              ? `This session is set for ${presenterCap} presenter${presenterCap === 1 ? "" : "s"}. Untick someone else first.`
+                              : undefined
+                          }
                           onClick={() => toggle(m.id, rule.code)}
                           className={`min-h-11 rounded-lg px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 ${
                             on
                               ? "bg-brand-600 text-white"
-                              : "bg-canvas text-ink-muted hover:bg-brand-50"
+                              : blocked
+                                ? "bg-canvas text-ink-faint opacity-50 cursor-not-allowed"
+                                : "bg-canvas text-ink-muted hover:bg-brand-50"
                           }`}
                         >
                           {rule.label}

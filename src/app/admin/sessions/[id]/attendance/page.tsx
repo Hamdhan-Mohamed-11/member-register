@@ -32,7 +32,7 @@ export default async function AttendancePage({
     await Promise.all([
       supabase
         .from("points_rules")
-        .select("code, label, points")
+        .select("code, label, points, is_presenting")
         .eq("is_active", true)
         .order("points", { ascending: false }),
 
@@ -123,7 +123,12 @@ export default async function AttendancePage({
         </p>
       </div>
 
-      <AttendanceRecorder sessionId={id} rules={rules} roster={roster} />
+      <AttendanceRecorder
+        sessionId={id}
+        rules={rules}
+        roster={roster}
+        presenterCap={session.presenterCount}
+      />
     </AppShell>
   );
 }

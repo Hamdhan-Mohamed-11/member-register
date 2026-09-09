@@ -98,6 +98,33 @@ on the current free-tier setup, and neither is blocked by code.
 
       Still sandbox. Switching `PAYHERE_MODE` to `live` needs a live merchant
       account, which is a separate commercial step.
+- [ ] **Go live on PayHere — the last step, deferred deliberately.** The live
+      merchant `254745` and its secret are already in `.env.local`, replacing
+      the sandbox pair, so **sandbox checkout is broken as of 9 Sep 2026** — a
+      live merchant id cannot authenticate against `sandbox.payhere.lk`. That
+      is expected, not a fault.
+
+      Verified on 9 Sep 2026 against the **live** secret, without a card: two
+      synthetic notifications posted to the production webhook with an order
+      ref that cannot exist, so `apply_payhere_notification` was forced down
+      its `unknown_ref` branch and could settle nothing whatever the signature
+      said. The correctly signed one recorded `signature_ok = true`, the
+      tampered one `bad_signature`. Both rows were then deleted. That covers
+      the endpoint being publicly reachable, the proxy not swallowing it, form
+      parsing, the live secret hashing correctly, and rejection actually
+      rejecting.
+
+      Both hash formulas are mode-independent and the CSP already lists both
+      PayHere origins, so no code change is needed. What remains is:
+
+      1. `PAYHERE_MODE=live` in `.env.local`, then **restart** — `PAYHERE_*`
+         are server-side only, so no rebuild.
+      2. One small real payment, on a club whose renewal can be reversed,
+         watched through to `outcome = membership_extended`.
+
+      The domain question does not block it: the whitelist is the apex
+      `pickabook.lk`, which covers `member.` beneath it — see the sandbox entry
+      above, where that was confirmed against the real gateway.
 
 A database migration to the VPS is planned separately — see MIGRATION.md.
 

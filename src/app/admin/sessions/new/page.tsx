@@ -43,6 +43,7 @@ export default async function NewSessionPage() {
               pricingKind: "free",
               guestFee: "",
               capacity: "",
+              presenterCount: "",
               status: "scheduled",
               videoUrl: "",
             }}
