@@ -23,6 +23,16 @@ export type BookQuery = {
   language?: "tamil" | "sinhala";
   availability?: "in_stock" | "pre_order";
   lendableOnly?: boolean;
+  /**
+   * Bounds on the SHOP price -- decimal(10,2) on the legacy side.
+   *
+   * The catalogue displays the discounted MEMBER price, so a page taking a
+   * "max Rs. 1,000" from a member has to convert it before it gets here --
+   * filtering the shop price against a member-price figure returns books that
+   * visibly cost more than the maximum asked for. See memberPriceToShopPrice.
+   */
+  minPriceLkr?: number;
+  maxPriceLkr?: number;
   page?: number;
 };
 

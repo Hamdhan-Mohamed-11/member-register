@@ -50,6 +50,7 @@ export default async function LibraryPage({
             categories={categories}
             current={{ search: sp.q, category: sp.category, language: sp.language }}
             showAvailability={false}
+            showPrice={false}
           />
         </Card>
 

@@ -114,6 +114,23 @@ function buildWhere(q: BookQuery): { sql: string; params: unknown[] } {
   }
   if (q.lendableOnly) clauses.push("b.library = '1'");
 
+  // b.price is decimal(10,2) on the legacy side, so this compares numerically
+  // with no cast -- confirmed against the live catalogue, where cast and
+  // uncast return the same rows. Do not "fix" this by wrapping it in a cast:
+  // LegacyBook.priceLkr is a STRING in TypeScript for float-precision reasons,
+  // which makes the column look like text when it is not, and a cast would
+  // stop any future index on price from being used.
+  // A NULL price fails both comparisons and drops out, which is right: a book
+  // with no price cannot be said to be under a maximum.
+  if (q.minPriceLkr != null) {
+    clauses.push("b.price >= ?");
+    params.push(q.minPriceLkr);
+  }
+  if (q.maxPriceLkr != null) {
+    clauses.push("b.price <= ?");
+    params.push(q.maxPriceLkr);
+  }
+
   return { sql: clauses.join(" and "), params };
 }
 
@@ -124,6 +141,8 @@ function cacheKey(prefix: string, q: BookQuery): string {
     l: q.language ?? "",
     a: q.availability ?? "",
     b: q.lendableOnly ? 1 : 0,
+    lo: q.minPriceLkr ?? "",
+    hi: q.maxPriceLkr ?? "",
     p: q.page ?? 1,
   })}`;
 }
@@ -294,4 +313,25 @@ export async function legacyPing(): Promise<boolean> {
     recordFailure();
     return false;
   }
+}
+
+/**
+ * Converts a member-facing price into the shop price the catalogue stores.
+ *
+ * Members see `shop x (1 - discount)`, so a member typing "under Rs. 1,000"
+ * with a 25% discount means "shop price under Rs. 1,333.33". Filtering their
+ * figure against the shop column directly would hide books they can afford and
+ * show books they cannot.
+ *
+ * Rounded outwards -- up for a maximum, down for a minimum -- so a book priced
+ * exactly at the boundary is included rather than lost to a rounding cent.
+ */
+export function memberPriceToShopPrice(
+  memberPrice: number,
+  discountPercent: number,
+  bound: "min" | "max",
+): number {
+  const factor = 1 - Math.min(Math.max(discountPercent, 0), 99.99) / 100;
+  const shop = memberPrice / factor;
+  return bound === "max" ? Math.ceil(shop * 100) / 100 : Math.floor(shop * 100) / 100;
 }
