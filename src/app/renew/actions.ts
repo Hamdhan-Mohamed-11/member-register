@@ -177,3 +177,60 @@ export async function startLibraryAddonPayment(): Promise<ActionResult> {
     },
   };
 }
+
+const orderSchema = z.string().uuid();
+
+/**
+ * Pays for a book order whose price the club has already confirmed.
+ *
+ * The amount is not a parameter and cannot be. start_book_order_payment reads
+ * `agreed_total_lkr` -- which only an admin RPC can write -- and refuses any
+ * order that is not at status 'agreed'. See migration 0025 for why a
+ * member-supplied price can never reach a checkout.
+ */
+export async function startBookOrderPayment(formData: FormData): Promise<ActionResult> {
+  const member = await requireActiveMember();
+
+  if (!isPayHereConfigured()) {
+    return {
+      ok: false,
+      error:
+        "Online payment isn't set up yet. Please contact the club to pay another way.",
+    };
+  }
+
+  const orderId = orderSchema.safeParse(formData.get("orderId"));
+  if (!orderId.success) return { ok: false, error: "Unknown order." };
+
+  const supabase = await getActionSupabase();
+  const { data, error } = await supabase.rpc("start_book_order_payment", {
+    p_order_id: orderId.data,
+  });
+  if (error) return { ok: false, error: error.message };
+
+  const row = Array.isArray(data) ? data[0] : undefined;
+  if (!row) return { ok: false, error: "Couldn't start the payment." };
+
+  const siteUrl = getSiteUrl();
+  const checkout = buildCheckout({
+    orderRef: row.order_ref as string,
+    amount: row.amount as number,
+    itemDescription: "Pick a Book order",
+    returnUrl: `${siteUrl}/orders/${orderId.data}`,
+    cancelUrl: `${siteUrl}/orders/${orderId.data}?cancelled=1`,
+    notifyUrl: `${siteUrl}/api/payhere/notify`,
+    firstName: member.firstName,
+    lastName: member.lastName,
+    email: member.email,
+  });
+
+  return {
+    ok: true,
+    data: {
+      action: checkout.action,
+      fields: checkout.fields,
+      orderRef: row.order_ref as string,
+      amount: checkout.fields.amount,
+    },
+  };
+}

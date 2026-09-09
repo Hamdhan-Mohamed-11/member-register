@@ -5,12 +5,14 @@ import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { CatalogueUnavailable } from "@/components/books/CatalogueUnavailable";
 import { BorrowButton, WishlistButton } from "@/components/books/BookActions";
+import { AddToCartButton } from "@/app/cart/CartClient";
 import { requireActiveMember } from "@/lib/auth/session";
 import {
   getLibraryAccess,
   getOpenBorrowBookIds,
   getWishlistedIds,
 } from "@/lib/library/queries";
+import { getCartBookIds } from "@/lib/orders/queries";
 import { getBook } from "@/lib/legacy/books";
 import { formatLkrCents, priceLine } from "@/lib/pricing";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
@@ -42,12 +44,14 @@ export default async function BookPage({
   if (!Number.isFinite(bookId) || bookId <= 0) notFound();
 
   const supabase = await getServerComponentSupabase();
-  const [{ data: settings }, result, wishlisted, openBorrows, access] = await Promise.all([
+  const [{ data: settings }, result, wishlisted, openBorrows, access, cartIds] =
+    await Promise.all([
     supabase.from("app_settings").select("book_discount_percent").eq("id", 1).maybeSingle(),
     getBook(bookId),
     getWishlistedIds(),
     getOpenBorrowBookIds(),
     getLibraryAccess(member.userId),
+    getCartBookIds(),
   ]);
 
   const discount = Number(settings?.book_discount_percent ?? 0);
@@ -131,15 +135,16 @@ export default async function BookPage({
             </div>
 
             {/*
-              Buy lands with the bookshop; saving for later works now, and is
-              what tells the club which books people actually want.
-
               Borrow only appears when the book is genuinely lendable AND the
               member has the add-on. Showing a Borrow button that then errors
               would advertise the add-on by frustrating people, which is a poor
               way to sell it -- the pitch lives on /library instead.
             */}
             <div className="mt-4 flex flex-wrap items-start gap-2">
+              <AddToCartButton
+                book={{ id: book.id, title: book.title, author: book.author }}
+                inCart={cartIds.has(book.id)}
+              />
               <WishlistButton
                 book={{ id: book.id, title: book.title, author: book.author }}
                 kind="buy"

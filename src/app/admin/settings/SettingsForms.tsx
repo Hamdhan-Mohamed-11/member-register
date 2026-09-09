@@ -12,6 +12,12 @@ export type Settings = {
   graceDays: number;
   expiringSoonDays: number;
   bookDiscount: number;
+  libraryFee: number;
+  libraryTermMonths: number;
+  readrisePercent: number;
+  readriseBookCost: number;
+  readriseTarget: number;
+  readriseTargetOn: string;
 };
 
 export type PointsRule = { code: string; label: string; points: number };
@@ -98,6 +104,78 @@ export function SettingsForm({ settings }: { settings: Settings }) {
         defaultValue={settings.bookDiscount}
         hint="Applied to catalogue prices in the portal. Separate from the main site's own discount."
       />
+
+      <fieldset className="border-t border-line pt-4">
+        <legend className="sr-only">Borrowing add-on</legend>
+        <p className="text-sm font-medium text-ink mb-3">Borrowing add-on</p>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <Field
+            label="Borrowing fee (LKR)"
+            name="libraryFee"
+            type="number"
+            min={0}
+            step="0.01"
+            required
+            defaultValue={settings.libraryFee}
+            hint="What members pay to borrow, on top of membership."
+          />
+          <Field
+            label="Borrowing term (months)"
+            name="libraryTermMonths"
+            type="number"
+            min={1}
+            required
+            defaultValue={settings.libraryTermMonths}
+            hint="It renews rather than being bought once."
+          />
+        </div>
+      </fieldset>
+
+      <fieldset className="border-t border-line pt-4">
+        <legend className="sr-only">Read and Rise</legend>
+        <p className="text-sm font-medium text-ink mb-3">Read and Rise</p>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <Field
+            label="Share of each order (%)"
+            name="readrisePercent"
+            type="number"
+            min={0}
+            max={100}
+            step="0.01"
+            required
+            defaultValue={settings.readrisePercent}
+            hint="Changing this affects orders priced from now on. What past orders donated stays as it was."
+          />
+          <Field
+            label="Cost of one donated book (LKR)"
+            name="readriseBookCost"
+            type="number"
+            min={1}
+            step="0.01"
+            required
+            defaultValue={settings.readriseBookCost}
+            hint="Used to turn rupees donated into a number of books."
+          />
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3 mt-3">
+          <Field
+            label="Target (books)"
+            name="readriseTarget"
+            type="number"
+            min={1}
+            required
+            defaultValue={settings.readriseTarget}
+            hint="Shown as a progress bar on every member's home page."
+          />
+          <Field
+            label="Target date"
+            name="readriseTargetOn"
+            type="date"
+            required
+            defaultValue={settings.readriseTargetOn}
+          />
+        </div>
+      </fieldset>
 
       <Button type="submit" disabled={pending}>
         {pending ? "Saving…" : "Save settings"}

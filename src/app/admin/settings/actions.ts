@@ -13,6 +13,12 @@ const settingsSchema = z.object({
   graceDays: z.coerce.number().int().min(0).max(365),
   expiringSoonDays: z.coerce.number().int().min(1).max(365),
   bookDiscount: z.coerce.number().min(0).max(100),
+  libraryFee: z.coerce.number().min(0).max(1_000_000),
+  libraryTermMonths: z.coerce.number().int().min(1).max(120),
+  readrisePercent: z.coerce.number().min(0).max(100),
+  readriseBookCost: z.coerce.number().min(1).max(1_000_000),
+  readriseTarget: z.coerce.number().int().min(1).max(100_000_000),
+  readriseTargetOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Pick a target date"),
 });
 
 export async function updateSettings(formData: FormData): Promise<ActionResult> {
@@ -24,6 +30,12 @@ export async function updateSettings(formData: FormData): Promise<ActionResult> 
     graceDays: formData.get("graceDays"),
     expiringSoonDays: formData.get("expiringSoonDays"),
     bookDiscount: formData.get("bookDiscount"),
+    libraryFee: formData.get("libraryFee"),
+    libraryTermMonths: formData.get("libraryTermMonths"),
+    readrisePercent: formData.get("readrisePercent"),
+    readriseBookCost: formData.get("readriseBookCost"),
+    readriseTarget: formData.get("readriseTarget"),
+    readriseTargetOn: formData.get("readriseTargetOn"),
   });
 
   if (!parsed.success) {
@@ -37,11 +49,23 @@ export async function updateSettings(formData: FormData): Promise<ActionResult> 
     p_grace_days: parsed.data.graceDays,
     p_expiring_soon_days: parsed.data.expiringSoonDays,
     p_book_discount: parsed.data.bookDiscount,
+    p_library_fee: parsed.data.libraryFee,
+    p_library_term_months: parsed.data.libraryTermMonths,
+    p_readrise_percent: parsed.data.readrisePercent,
+    p_readrise_book_cost: parsed.data.readriseBookCost,
+    p_readrise_target: parsed.data.readriseTarget,
+    p_readrise_target_on: parsed.data.readriseTargetOn,
   });
 
   if (error) return { ok: false, error: error.message };
 
   revalidatePath("/admin/settings");
+  // The fee shows on /library's paywall and the share shows on /cart and the
+  // home page, so a price change that only lands on the settings screen is a
+  // price change nobody sees.
+  revalidatePath("/library");
+  revalidatePath("/cart");
+  revalidatePath("/feed");
   return { ok: true };
 }
 

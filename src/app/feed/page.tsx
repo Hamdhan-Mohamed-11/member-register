@@ -17,6 +17,8 @@ import {
 } from "@/lib/auth/session";
 import { avatarUrl } from "@/lib/members/queries";
 import { listSessions } from "@/lib/sessions/queries";
+import { getReadRiseTotals } from "@/lib/orders/queries";
+import { ReadRiseCard } from "@/components/books/ReadRiseCard";
 
 export const metadata: Metadata = { title: "Home" };
 
@@ -40,7 +42,10 @@ export default async function FeedPage() {
   // never queried anything -- so the home page said the club had nothing
   // scheduled while /sessions listed a dozen. Same query and same card as that
   // page, capped at the next three.
-  const sessions = await listSessions();
+  const [sessions, readrise] = await Promise.all([
+    listSessions(),
+    getReadRiseTotals(),
+  ]);
   const upcoming = sessions.filter((s) => !s.isPast).reverse().slice(0, 3);
 
   // Mirrors /sessions: free if you are in the host club. session_fee_for()
@@ -132,6 +137,14 @@ export default async function FeedPage() {
             </div>
           </Card>
         ) : null}
+
+        {/*
+          Placed above "Coming up" rather than at the foot of the page: the
+          club wants members to notice it, and nobody scrolls to the bottom of
+          a home page. It renders for everyone -- a member who has not bought
+          anything sees the pitch instead of their total.
+        */}
+        {readrise ? <ReadRiseCard totals={readrise} /> : null}
 
         <Card flush>
           <div className="p-4 sm:p-5 pb-2">

@@ -95,6 +95,10 @@ export type Database = {
           library_addon_term_months: number
           membership_fee_lkr: number
           membership_term_months: number
+          readrise_book_cost_lkr: number
+          readrise_percent: number
+          readrise_target_books: number
+          readrise_target_on: string
           renewal_grace_days: number
           updated_at: string
           updated_by: string | null
@@ -108,6 +112,10 @@ export type Database = {
           library_addon_term_months?: number
           membership_fee_lkr?: number
           membership_term_months?: number
+          readrise_book_cost_lkr?: number
+          readrise_percent?: number
+          readrise_target_books?: number
+          readrise_target_on?: string
           renewal_grace_days?: number
           updated_at?: string
           updated_by?: string | null
@@ -121,6 +129,10 @@ export type Database = {
           library_addon_term_months?: number
           membership_fee_lkr?: number
           membership_term_months?: number
+          readrise_book_cost_lkr?: number
+          readrise_percent?: number
+          readrise_target_books?: number
+          readrise_target_on?: string
           renewal_grace_days?: number
           updated_at?: string
           updated_by?: string | null
@@ -183,6 +195,176 @@ export type Database = {
           tier?: number
         }
         Relationships: []
+      }
+      book_order_items: {
+        Row: {
+          agreed_unit_price_lkr: number | null
+          asking_unit_price_lkr: number
+          author: string
+          book_id: number
+          id: string
+          order_id: string
+          quantity: number
+          title: string
+        }
+        Insert: {
+          agreed_unit_price_lkr?: number | null
+          asking_unit_price_lkr?: number
+          author?: string
+          book_id: number
+          id?: string
+          order_id: string
+          quantity?: number
+          title?: string
+        }
+        Update: {
+          agreed_unit_price_lkr?: number | null
+          asking_unit_price_lkr?: number
+          author?: string
+          book_id?: number
+          id?: string
+          order_id?: string
+          quantity?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "book_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      book_order_messages: {
+        Row: {
+          body: string
+          created_at: string
+          from_admin: boolean
+          id: string
+          order_id: string
+          sender_id: string | null
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          from_admin?: boolean
+          id?: string
+          order_id: string
+          sender_id?: string | null
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          from_admin?: boolean
+          id?: string
+          order_id?: string
+          sender_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_order_messages_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "book_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_order_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_order_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      book_orders: {
+        Row: {
+          agreed_total_lkr: number | null
+          asking_total_lkr: number
+          created_at: string
+          decided_at: string | null
+          fulfilled_at: string | null
+          id: string
+          member_email: string | null
+          member_id: string | null
+          member_name: string | null
+          note: string | null
+          readrise_lkr: number
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+        }
+        Insert: {
+          agreed_total_lkr?: number | null
+          asking_total_lkr?: number
+          created_at?: string
+          decided_at?: string | null
+          fulfilled_at?: string | null
+          id?: string
+          member_email?: string | null
+          member_id?: string | null
+          member_name?: string | null
+          note?: string | null
+          readrise_lkr?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Update: {
+          agreed_total_lkr?: number | null
+          asking_total_lkr?: number
+          created_at?: string
+          decided_at?: string | null
+          fulfilled_at?: string | null
+          id?: string
+          member_email?: string | null
+          member_id?: string | null
+          member_name?: string | null
+          note?: string | null
+          readrise_lkr?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_orders_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_orders_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_orders_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_orders_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       book_wishlist: {
         Row: {
@@ -296,6 +478,48 @@ export type Database = {
           },
           {
             foreignKeyName: "borrow_requests_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cart_items: {
+        Row: {
+          added_at: string
+          author: string
+          book_id: number
+          member_id: string
+          quantity: number
+          title: string
+        }
+        Insert: {
+          added_at?: string
+          author?: string
+          book_id: number
+          member_id: string
+          quantity?: number
+          title?: string
+        }
+        Update: {
+          added_at?: string
+          author?: string
+          book_id?: number
+          member_id?: string
+          quantity?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cart_items_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cart_items_member_id_fkey"
             columns: ["member_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -1418,6 +1642,7 @@ export type Database = {
       }
       book_session: { Args: { p_session_id: string }; Returns: string }
       can_view_member: { Args: { p_member_id: string }; Returns: boolean }
+      cancel_book_order: { Args: { p_order_id: string }; Returns: undefined }
       cancel_borrow_request: { Args: { p_id: string }; Returns: undefined }
       cancel_session_booking: {
         Args: { p_booking_id: string }
@@ -1505,6 +1730,27 @@ export type Database = {
         }
         Returns: undefined
       }
+      place_book_order: {
+        Args: { p_items: Json; p_note?: string }
+        Returns: string
+      }
+      post_order_message: {
+        Args: { p_body: string; p_order_id: string }
+        Returns: string
+      }
+      readrise_books_funded: { Args: { p_member_id: string }; Returns: number }
+      readrise_donated_lkr: { Args: { p_member_id: string }; Returns: number }
+      readrise_totals: {
+        Args: never
+        Returns: {
+          books_funded: number
+          donated_lkr: number
+          my_books: number
+          my_donated: number
+          target_books: number
+          target_on: string
+        }[]
+      }
       recompute_all_points: { Args: never; Returns: number }
       recompute_member_badges: {
         Args: { p_member_id: string }
@@ -1537,10 +1783,22 @@ export type Database = {
           term_months: number
         }[]
       }
+      respond_to_quote: {
+        Args: { p_accept: boolean; p_order_id: string }
+        Returns: undefined
+      }
       revoke_invite: { Args: { p_invite_id: string }; Returns: undefined }
       session_fee_for: {
         Args: { p_member_id: string; p_session_id: string }
         Returns: number
+      }
+      set_book_order_fulfilled: {
+        Args: { p_order_id: string }
+        Returns: undefined
+      }
+      set_book_order_price: {
+        Args: { p_message?: string; p_order_id: string; p_unit_prices?: Json }
+        Returns: string
       }
       set_borrow_status: {
         Args: {
@@ -1561,6 +1819,14 @@ export type Database = {
       }
       shares_active_club: { Args: { p_member_id: string }; Returns: boolean }
       slugify: { Args: { p_text: string }; Returns: string }
+      start_book_order_payment: {
+        Args: { p_order_id: string }
+        Returns: {
+          amount: number
+          order_ref: string
+          payment_id: string
+        }[]
+      }
       start_club_membership_payment: {
         Args: { p_club_id: string }
         Returns: {
@@ -1606,7 +1872,13 @@ export type Database = {
           p_book_discount?: number
           p_expiring_soon_days?: number
           p_grace_days?: number
+          p_library_fee?: number
+          p_library_term_months?: number
           p_membership_fee?: number
+          p_readrise_book_cost?: number
+          p_readrise_percent?: number
+          p_readrise_target?: number
+          p_readrise_target_on?: string
           p_term_months?: number
         }
         Returns: undefined

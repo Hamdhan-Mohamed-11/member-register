@@ -23,7 +23,7 @@ export default async function SettingsPage() {
       supabase
         .from("app_settings")
         .select(
-          "membership_fee_lkr, membership_term_months, renewal_grace_days, expiring_soon_days, book_discount_percent",
+          "membership_fee_lkr, membership_term_months, renewal_grace_days, expiring_soon_days, book_discount_percent, library_addon_fee_lkr, library_addon_term_months, readrise_percent, readrise_book_cost_lkr, readrise_target_books, readrise_target_on",
         )
         .eq("id", 1)
         .maybeSingle(),
@@ -40,6 +40,12 @@ export default async function SettingsPage() {
         graceDays: settingsRow.renewal_grace_days,
         expiringSoonDays: settingsRow.expiring_soon_days,
         bookDiscount: Number(settingsRow.book_discount_percent),
+        libraryFee: Number(settingsRow.library_addon_fee_lkr),
+        libraryTermMonths: Number(settingsRow.library_addon_term_months),
+        readrisePercent: Number(settingsRow.readrise_percent),
+        readriseBookCost: Number(settingsRow.readrise_book_cost_lkr),
+        readriseTarget: Number(settingsRow.readrise_target_books),
+        readriseTargetOn: String(settingsRow.readrise_target_on),
       }
     : null;
 

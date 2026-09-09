@@ -26,6 +26,7 @@ export const ACCOUNT_ITEMS: AccountItem[] = [
   { href: "/me/videos", label: "My videos", icon: "play" },
   { href: "/me/reading", label: "My reading list", icon: "inbox" },
   { href: "/me/wishlist", label: "My wishlist", icon: "bookmark" },
+  { href: "/orders", label: "My orders", icon: "inbox" },
   { href: "/me/borrowing", label: "My borrowing", icon: "book" },
   { href: "/renew", label: "Renew or join a club", icon: "refresh" },
   { href: "/directory", label: "Browse members", icon: "users" },

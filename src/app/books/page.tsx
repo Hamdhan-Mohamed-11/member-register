@@ -7,16 +7,23 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { BookCard } from "@/components/books/BookCard";
 import { CatalogueFilters, CataloguePager } from "@/components/books/CatalogueFilters";
 import { CatalogueUnavailable } from "@/components/books/CatalogueUnavailable";
+import { WishlistButton } from "@/components/books/BookActions";
+import { AddToCartButton } from "@/app/cart/CartClient";
 import { requireActiveMember } from "@/lib/auth/session";
 import { listBooks, listCategories, memberPriceToShopPrice } from "@/lib/legacy/books";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
+import { getWishlistedIds } from "@/lib/library/queries";
+import { getCartBookIds } from "@/lib/orders/queries";
 import type { BookQuery } from "@/lib/legacy/types";
 
 export const metadata: Metadata = { title: "Books" };
 
-// The catalogue is a cache of someone else's database; a minute of staleness is
-// fine and saves hammering HostGator on every page view.
-export const revalidate = 60;
+// The catalogue itself is a cache of someone else's database and a minute of
+// staleness is fine -- but the page now also shows what THIS member has in
+// their basket and on their wishlist, and a shared cache would hand one
+// member another's buttons. The legacy layer keeps its own cache, so
+// HostGator is still not hit on every view.
+export const dynamic = "force-dynamic";
 
 type Search = {
   q?: string;
@@ -70,9 +77,11 @@ export default async function BooksPage({
     page: Number(sp.page) || 1,
   };
 
-  const [result, categoriesResult] = await Promise.all([
+  const [result, categoriesResult, wishlisted, cartIds] = await Promise.all([
     listBooks(query),
     listCategories(),
+    getWishlistedIds(),
+    getCartBookIds(),
   ]);
   const categories = categoriesResult.ok ? categoriesResult.data : [];
 
@@ -92,9 +101,14 @@ export default async function BooksPage({
               : "The Pick a Book catalogue."}
           </p>
         </div>
-        <Link href="/library" className={`${buttonClassName("secondary", "sm")} shrink-0`}>
-          Borrow a book
-        </Link>
+        <div className="flex shrink-0 gap-2">
+          <Link href="/cart" className={buttonClassName("secondary", "sm")}>
+            Basket
+          </Link>
+          <Link href="/library" className={buttonClassName("secondary", "sm")}>
+            Borrow
+          </Link>
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -137,6 +151,19 @@ export default async function BooksPage({
                   book={book}
                   discountPercent={discount}
                   href={`/books/${book.id}`}
+                  actions={
+                    <>
+                      <AddToCartButton
+                        book={{ id: book.id, title: book.title, author: book.author }}
+                        inCart={cartIds.has(book.id)}
+                      />
+                      <WishlistButton
+                        book={{ id: book.id, title: book.title, author: book.author }}
+                        kind="buy"
+                        saved={wishlisted.buy.has(book.id)}
+                      />
+                    </>
+                  }
                 />
               ))}
             </div>
