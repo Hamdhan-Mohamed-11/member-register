@@ -44,6 +44,22 @@ function check(name, cond, detail = "") {
 
 const md5Upper = (s) => createHash("md5").update(s, "utf8").digest("hex").toUpperCase();
 
+/**
+ * A per-run suffix for the fake PayHere payment ids.
+ *
+ * payments has a UNIQUE index on (provider, provider_payment_id), and payments
+ * deliberately SURVIVE the deletion of the member and club they belong to
+ * (migration 0015) -- so wiping the fixtures does not remove them. With the
+ * ids hardcoded, the first run left rows that made every later run fail
+ * settlement with "duplicate key value violates unique constraint
+ * payments_provider_payment_idx", visible only in the service log because the
+ * webhook answers 200 regardless.
+ */
+const RUN = Date.now().toString(36);
+const PH_FIRST = `PH-FIRST-${RUN}`;
+const PH_SECOND = `PH-SECOND-${RUN}`;
+const PH_LATE = `PH-LATE-${RUN}`;
+
 /** Mirrors what PayHere posts, signed the way PayHere signs it. */
 async function notify({ orderRef, amount, statusCode = 2, paymentId, badSignature = false }) {
   const amountStr = Number(amount).toFixed(2);
@@ -102,6 +118,17 @@ async function wipe() {
       await admin(`/auth/v1/admin/users/${u.id}`, { method: "DELETE" });
     }
   }
+  // Payments outlive their member and club by design (migration 0015), so
+  // they have to be removed explicitly or the table fills with fixture rows.
+  // Delete them BEFORE the club: payments.club_id is ON DELETE SET NULL, so
+  // removing the club first would orphan them beyond reach of this filter.
+  // payment_events.payment_id is also SET NULL, so the events need no pass of
+  // their own -- they are a log, and a null payment_id is what a deleted
+  // payment is supposed to leave behind.
+  const clubs = await j(await admin("/rest/v1/clubs?slug=eq.pay-club&select=id"));
+  for (const c of clubs ?? []) {
+    await admin(`/rest/v1/payments?club_id=eq.${c.id}`, { method: "DELETE" });
+  }
   await admin("/rest/v1/clubs?slug=eq.pay-club", { method: "DELETE" });
 }
 
@@ -113,6 +140,11 @@ const payClub = (await j(await admin("/rest/v1/clubs", {
   body: JSON.stringify({
     name: "Pay Test Club", slug: "pay-club", kind: "public",
     membership_fee_lkr: 2500, term_months: 12,
+    // Required since migration 0022: start_club_membership_payment refuses a
+    // NEW join to a club that is not open for applications, so a fixture
+    // without this fails at the first step and every later assertion cascades
+    // from it. Renewals are exempt, which is why only the join needs it.
+    is_open_join: true,
   }),
 })))[0];
 
@@ -181,12 +213,12 @@ check("an unknown reference answers 200 anyway (no retry storm)", unknown === 20
 // --- successful settlement ------------------------------------------------
 console.log("\n--- settlement ---");
 
-const httpStatus = await notify({ orderRef: row.order_ref, amount: 2500, paymentId: "PH-FIRST" });
+const httpStatus = await notify({ orderRef: row.order_ref, amount: 2500, paymentId: PH_FIRST });
 check("the webhook answers 200", httpStatus === 200, String(httpStatus));
 
 pay = (await j(await admin(`/rest/v1/payments?provider_order_ref=eq.${row.order_ref}&select=*`)))[0];
 check("the payment is marked successful", pay?.status === "success", JSON.stringify(pay?.status));
-check("PayHere's payment id was stored", pay?.provider_payment_id === "PH-FIRST", pay?.provider_payment_id);
+check("PayHere's payment id was stored", pay?.provider_payment_id === PH_FIRST, pay?.provider_payment_id);
 
 let membership = (await j(await admin(
   `/rest/v1/club_memberships?member_id=eq.${ids[MEMBER]}&club_id=eq.${payClub.id}&select=*`)))[0];
@@ -204,7 +236,7 @@ check("the renewal date is one term out",
 console.log("\n--- idempotency (PayHere retries) ---");
 
 for (let i = 0; i < 5; i++) {
-  await notify({ orderRef: row.order_ref, amount: 2500, paymentId: "PH-FIRST" });
+  await notify({ orderRef: row.order_ref, amount: 2500, paymentId: PH_FIRST });
 }
 
 membership = (await j(await admin(
@@ -225,7 +257,7 @@ const renew = await rpc(tokMember, "start_club_membership_payment", { p_club_id:
 const renewRow = Array.isArray(renew.body) ? renew.body[0] : renew.body;
 check("renewing is recognised as a renewal", renewRow?.is_renewal === true, JSON.stringify(renewRow));
 
-await notify({ orderRef: renewRow.order_ref, amount: 2500, paymentId: "PH-SECOND" });
+await notify({ orderRef: renewRow.order_ref, amount: 2500, paymentId: PH_SECOND });
 
 membership = (await j(await admin(
   `/rest/v1/club_memberships?member_id=eq.${ids[MEMBER]}&club_id=eq.${payClub.id}&select=renewal_date`)))[0];
@@ -288,7 +320,7 @@ check("an already-settled payment cannot be settled twice",
 // A webhook arriving AFTER a manual settlement must not double-apply either.
 const afterManual = (await j(await admin(
   `/rest/v1/club_memberships?member_id=eq.${ids[MEMBER]}&club_id=eq.${payClub.id}&select=renewal_date`)))[0];
-await notify({ orderRef: manualRow.order_ref, amount: 2500, paymentId: "PH-LATE" });
+await notify({ orderRef: manualRow.order_ref, amount: 2500, paymentId: PH_LATE });
 membership = (await j(await admin(
   `/rest/v1/club_memberships?member_id=eq.${ids[MEMBER]}&club_id=eq.${payClub.id}&select=renewal_date`)))[0];
 check("a webhook arriving after a manual settlement is ignored",

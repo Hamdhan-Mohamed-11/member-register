@@ -248,6 +248,16 @@ $$;
 -- The gate applies to NEW joins only. A member already in a club must always be
 -- able to renew, even if the club has since been closed to applications --
 -- otherwise closing a full club to newcomers silently expires everyone in it.
+-- Rebuilt from the 0015 body, NOT 0014's.
+--
+-- This was first written against 0014 and silently dropped the snapshot
+-- columns 0015 had added -- member_email, member_name, club_name, description
+-- -- which exist so a payment record still says who paid for what after the
+-- member and club rows are gone. Nothing failed loudly: payments still
+-- settled, and only the deletion-safety assertions in payments-test caught it.
+--
+-- When replacing a function, diff against its LATEST definition across every
+-- migration, not the one that introduced it.
 create or replace function public.start_club_membership_payment(p_club_id uuid)
 returns table (
   payment_id uuid,
@@ -262,6 +272,7 @@ declare
   v_fee      numeric;
   v_term     int;
   v_club     clubs%rowtype;
+  v_profile  profiles%rowtype;
   v_existing club_memberships%rowtype;
   v_ref      text;
   v_id       uuid;
@@ -270,7 +281,8 @@ begin
     raise exception 'not authenticated';
   end if;
 
-  if not exists (select 1 from profiles where id = v_me and status = 'active') then
+  select * into v_profile from profiles where id = v_me;
+  if not found or v_profile.status <> 'active' then
     raise exception 'your account is not active';
   end if;
 
@@ -279,13 +291,12 @@ begin
     raise exception 'club not found';
   end if;
 
-  -- Company clubs are invite-only. Letting someone buy their way in would
-  -- route straight around that, so the check lives here too, not just in
-  -- request_club_join.
   select * into v_existing
   from club_memberships
   where member_id = v_me and club_id = p_club_id;
 
+  -- Company clubs are invite-only. Letting someone buy their way in would
+  -- route straight around that.
   if v_club.kind <> 'public' and not found then
     raise exception 'this club is invite only';
   end if;
@@ -306,8 +317,17 @@ begin
 
   v_ref := public.new_payment_ref('MB');
 
-  insert into payments (purpose, member_id, club_id, provider_order_ref, amount_lkr, term_months)
-  values ('club_membership', v_me, p_club_id, v_ref, v_fee, coalesce(v_term, 12))
+  insert into payments (
+    purpose, member_id, club_id, provider_order_ref, amount_lkr, term_months,
+    member_email, member_name, club_name, description
+  )
+  values (
+    'club_membership', v_me, p_club_id, v_ref, v_fee, coalesce(v_term, 12),
+    v_profile.email,
+    nullif(trim(v_profile.first_name || ' ' || v_profile.last_name), ''),
+    v_club.name,
+    v_club.name || ' membership'
+  )
   returning id into v_id;
 
   return query
