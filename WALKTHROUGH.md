@@ -151,6 +151,15 @@ is set to `'club'`, so a company member sees only their own company.
 - [ ] Equal scores share a place (two 3rds, then 5th), they do not tie-break
       arbitrarily
 
+### Read and Rise
+
+- [ ] `/feed` carries the Read and Rise card above "Coming up"
+- [ ] Before buying anything it shows the pitch, not a row of zeroes
+- [ ] After a paid order it shows **rupees given** first, and how much more
+      would fund another book
+- [ ] The progress bar shows the club total against the target, and is
+      visible even at a fraction of a percent
+
 ### Achievements
 
 - [ ] `/me/badges` — a card per family (books, presentations, streak, points,
@@ -163,6 +172,41 @@ is set to `'club'`, so a company member sees only their own company.
       trigger does, so this proves the trigger is live
 - [ ] `/me` shows the badges earned, and links to the full set
 - [ ] Open Ruwan's profile → his badges show, with **no progress bars**
+
+### Buying a book — the price conversation
+
+This is the flow with money in it, so test it properly. Two windows: Nimali,
+and a super admin.
+
+- [ ] `/books` — each card has **Buy** and a bookmark. Tap Buy on two books
+- [ ] `/cart` — both listed, with live prices and an estimated total
+- [ ] The basket names the Read and Rise share of that total
+- [ ] Change a quantity; remove one; the total follows
+- [ ] Send the order. The button says **send to the club**, never "pay" —
+      nothing is charged at this point
+- [ ] `/orders` shows it as **With the club**
+- [ ] As admin, `/admin/orders` — it is under **Needs a price from you**, with
+      what the member was quoted on each line
+
+**The club accepts the price as it is:**
+
+- [ ] Press **Confirm these prices** without changing anything
+- [ ] Nimali's order goes straight to **Ready to pay** — she is *not* asked to
+      re-agree to a price that did not change
+
+**The club corrects the price upward** (do this on a second order):
+
+- [ ] Raise one line, add the message "this is the actual price, still want
+      it?", and send
+- [ ] Nimali sees **Needs your answer**, both totals, and two plain buttons
+- [ ] **No thanks** → the order is declined, and nothing is owed. This is the
+      one the club specifically asked for
+- [ ] On a third order, accept the higher price → **Ready to pay**
+
+**The rule that matters most:**
+
+- [ ] An order still under review has **no pay button anywhere**
+- [ ] Messages work both ways and each side is notified of the other's
 
 ### Sessions, books, videos
 
@@ -315,6 +359,22 @@ Your own account. Everything above, plus what can break the club.
 - [ ] Add Colombo Poetry Circle to Ruwan → appears with its own renewal date
 - [ ] Suspend Ruwan → he cannot reach `/feed`; un-suspend → he can
 - [ ] **Demote yourself → REFUSED**, you are the last super admin
+
+### Book orders and borrowing
+
+- [ ] `/admin/orders` groups by what needs doing: needs a price, paid and
+      ready to hand over, with the member, finished
+- [ ] Marking a paid order **handed over** works; an unpaid one cannot be
+- [ ] `/admin/library` — approve a borrow request, hand it over with a due
+      date, then mark it returned
+- [ ] An overdue book is flagged in red at the top
+
+### Settings that are now editable
+
+- [ ] `/admin/settings` — borrowing fee and term, and all four Read and Rise
+      figures
+- [ ] Change the Read and Rise share to 15 → `/cart` reflects it on a NEW
+      order, and an order already priced keeps what it donated
 
 ### Clubs and club types
 

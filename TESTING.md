@@ -85,6 +85,11 @@ list, points from a past session, one pending video, one pending application.
       ranking; your own row is marked; equal scores share a place
 - [ ] The people ranked are the same people `/directory` shows
 - [ ] `/me/badges` — a card per family with the next badge and a progress bar
+- [ ] `/books` Buy → `/cart` → send to the club; **no charge at this point**
+- [ ] As admin, confirming an unchanged price makes it payable immediately;
+      raising a price sends it back to the member to accept or decline
+- [ ] An order under review offers no way to pay
+- [ ] `/feed` shows the Read and Rise card, in rupees before books
 - [ ] Mark a book read, reload `/me/badges` → the books count went up
 - [ ] `/sessions` — "Demo August book night" is **free**; "Demo Poetry evening" shows **LKR 1,200** because you are a guest there
 - [ ] Open the poetry session → booking panel quotes that guest fee
