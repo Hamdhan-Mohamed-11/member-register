@@ -5,6 +5,7 @@ import { BackLink } from "@/components/ui/BackLink";
 import { ProfileView } from "@/components/members/ProfileView";
 import { requireActiveMember } from "@/lib/auth/session";
 import { getMemberProfile } from "@/lib/members/queries";
+import { getBadgesFor } from "@/lib/badges/queries";
 
 export async function generateMetadata({
   params,
@@ -39,13 +40,15 @@ export default async function MemberProfilePage({
   // the company-club rule is meant to prevent.
   if (!profile) notFound();
 
+  const badges = await getBadgesFor(id);
+
   return (
     <AppShell>
       <div className="mb-4">
         <BackLink href="/directory">Members</BackLink>
       </div>
 
-      <ProfileView profile={profile} />
+      <ProfileView profile={profile} badges={badges} />
     </AppShell>
   );
 }

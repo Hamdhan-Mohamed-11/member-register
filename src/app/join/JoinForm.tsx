@@ -14,6 +14,10 @@ export type JoinableClub = {
   id: string;
   name: string;
   description: string | null;
+  /** The club's type, used to group the picker. Null if it has none. */
+  typeName?: string | null;
+  /** Type sort order, so the groups appear in the admin's chosen order. */
+  typeSort?: number;
 };
 
 const MIN_LENGTH = 10;
@@ -40,6 +44,7 @@ type Pending = {
  * this page, so there is nothing to persist for.
  */
 export function JoinForm({ clubs }: { clubs: JoinableClub[] }) {
+  const groups = groupByType(clubs);
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const hydrated = useHydrated();
@@ -166,11 +171,28 @@ export function JoinForm({ clubs }: { clubs: JoinableClub[] }) {
           <option value="" disabled>
             Choose a club…
           </option>
-          {clubs.map((club) => (
-            <option key={club.id} value={club.id}>
-              {club.name}
-            </option>
-          ))}
+          {/*
+            Grouped by type when there is more than one, so "Arcane" and
+            "Aureate" read as two Public clubs rather than as an undifferentiated
+            list. A single group renders flat -- an <optgroup> of one is noise.
+          */}
+          {groups.map(({ typeName, items }) =>
+            typeName && groups.length > 1 ? (
+              <optgroup key={typeName} label={typeName}>
+                {items.map((club) => (
+                  <option key={club.id} value={club.id}>
+                    {club.name}
+                  </option>
+                ))}
+              </optgroup>
+            ) : (
+              items.map((club) => (
+                <option key={club.id} value={club.id}>
+                  {club.name}
+                </option>
+              ))
+            ),
+          )}
         </select>
         <p className="mt-1 text-xs text-ink-muted">
           A club admin reviews your application. You can pay to join more clubs
@@ -190,4 +212,20 @@ export function JoinForm({ clubs }: { clubs: JoinableClub[] }) {
       </p>
     </form>
   );
+}
+
+/** Clubs bucketed by type name, in the order the admin gave the types. */
+function groupByType(
+  clubs: JoinableClub[],
+): { typeName: string | null; items: JoinableClub[] }[] {
+  const buckets = new Map<string, { sort: number; items: JoinableClub[] }>();
+  for (const club of clubs) {
+    const key = club.typeName ?? "";
+    const bucket = buckets.get(key) ?? { sort: club.typeSort ?? 999, items: [] };
+    bucket.items.push(club);
+    buckets.set(key, bucket);
+  }
+  return [...buckets.entries()]
+    .sort((a, b) => a[1].sort - b[1].sort || a[0].localeCompare(b[0]))
+    .map(([typeName, bucket]) => ({ typeName: typeName || null, items: bucket.items }));
 }

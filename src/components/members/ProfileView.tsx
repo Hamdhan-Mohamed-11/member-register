@@ -5,6 +5,8 @@ import { Card, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { buttonClassName } from "@/components/ui/Button";
 import { avatarUrl, type MemberProfile } from "@/lib/members/queries";
+import { BadgeIcon } from "@/components/badges/BadgeIcon";
+import type { EarnedBadge } from "@/lib/badges/queries";
 
 function formatDate(value: string): string {
   return new Date(`${value}T00:00:00`).toLocaleDateString("en-GB", {
@@ -21,9 +23,12 @@ function formatDate(value: string): string {
  */
 export function ProfileView({
   profile,
+  badges = [],
   isSelf = false,
 }: {
   profile: MemberProfile;
+  /** Highest badge per family plus the one-offs; see getBadgesFor. */
+  badges?: EarnedBadge[];
   isSelf?: boolean;
 }) {
   const name = `${profile.firstName} ${profile.lastName}`.trim() || "Member";
@@ -111,6 +116,52 @@ export function ProfileView({
           </div>
         ) : null}
       </Card>
+
+      {/*
+        Only badges actually earned, and only the highest rung of each family --
+        a profile is a summary, not a trophy cabinet. On your own profile the
+        card links through to the full set with progress; on someone else's it
+        does not, because how close they are to the next badge is not something
+        the directory shares.
+      */}
+      {badges.length ? (
+        <Card>
+          <CardHeader
+            title={`Achievements (${badges.length})`}
+            action={
+              isSelf ? (
+                <Link href="/me/badges" className={buttonClassName("ghost", "sm")}>
+                  All badges
+                </Link>
+              ) : undefined
+            }
+          />
+          <ul className="flex flex-wrap gap-2">
+            {badges.map((badge) => (
+              <li
+                key={badge.id}
+                className="flex items-center gap-2 rounded-full border border-gold-700/25 bg-gold-100 pl-2 pr-3 py-1"
+                title={badge.description ?? undefined}
+              >
+                <BadgeIcon name={badge.icon} className="size-4 text-gold-700" />
+                <span className="text-xs font-medium text-gold-700">{badge.name}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      ) : isSelf ? (
+        <Card>
+          <CardHeader
+            title="Achievements"
+            description="Read, present and turn up, and badges start appearing here."
+            action={
+              <Link href="/me/badges" className={buttonClassName("ghost", "sm")}>
+                See what&apos;s on offer
+              </Link>
+            }
+          />
+        </Card>
+      ) : null}
 
       <Card flush>
         <div className="p-4 pb-2">

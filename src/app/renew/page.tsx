@@ -50,11 +50,17 @@ export default async function RenewPage({
         .from("club_memberships")
         .select("id, status, renewal_date, is_primary, clubs(id, name, kind, membership_fee_lkr, term_months)")
         .eq("member_id", member.userId),
+      // Only clubs open to applications. start_club_membership_payment refuses
+      // the rest for a NEW join, so offering one here would sell a member a
+      // club and then reject them at the checkout. Renewing an existing
+      // membership is unaffected -- that list comes from club_memberships
+      // above, not from here.
       supabase
         .from("clubs")
         .select("id, name, description, membership_fee_lkr, term_months")
         .eq("kind", "public")
         .eq("is_active", true)
+        .eq("is_open_join", true)
         .order("name"),
     ]);
 

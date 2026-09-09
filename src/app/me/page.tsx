@@ -13,6 +13,7 @@ import {
   requireActiveMember,
 } from "@/lib/auth/session";
 import { getMemberProfile } from "@/lib/members/queries";
+import { getBadgesFor } from "@/lib/badges/queries";
 
 export const metadata: Metadata = { title: "My profile" };
 
@@ -47,13 +48,14 @@ export default async function MyProfilePage() {
   const member = await requireActiveMember();
   const profile = await getMemberProfile(member.userId);
   if (!profile) notFound();
+  const badges = await getBadgesFor(member.userId);
 
   const clubs = activeMemberships(member);
 
   return (
     <AppShell>
       <div className="space-y-4">
-        <ProfileView profile={profile} isSelf />
+        <ProfileView profile={profile} badges={badges} isSelf />
 
         <Card flush>
           <div className="p-4 pb-2">

@@ -25,7 +25,9 @@ export type IconName =
   | "card"
   | "shield"
   | "inbox"
-  | "sparkle";
+  | "sparkle"
+  | "medal"
+  | "trophy";
 
 export function Icon({
   name,
@@ -146,6 +148,21 @@ export function Icon({
         <svg {...common}>
           <path d="M12 3.5c.7 4 1.8 5.1 5.8 5.8-4 .7-5.1 1.8-5.8 5.8-.7-4-1.8-5.1-5.8-5.8 4-.7 5.1-1.8 5.8-5.8Z" />
           <path d="M18 15.5c.3 1.8.8 2.3 2.6 2.6-1.8.3-2.3.8-2.6 2.6-.3-1.8-.8-2.3-2.6-2.6 1.8-.3 2.3-.8 2.6-2.6Z" />
+        </svg>
+      );
+    case "medal":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="14.5" r="5.5" />
+          <path d="m8 9-2.5-5h13L16 9" />
+        </svg>
+      );
+    case "trophy":
+      return (
+        <svg {...common}>
+          <path d="M7 4h10v5a5 5 0 0 1-10 0z" />
+          <path d="M7 5.5H4.5V8a3 3 0 0 0 3 3M17 5.5h2.5V8a3 3 0 0 1-3 3" />
+          <path d="M12 14v3M9 20h6l-.5-3h-5z" />
         </svg>
       );
   }

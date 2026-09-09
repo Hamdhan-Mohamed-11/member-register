@@ -14,7 +14,7 @@ export const MEMBER_NAV: NavItem[] = [
   { href: "/feed", label: "Home" },
   { href: "/sessions", label: "Sessions", match: ["/sessions", "/videos"] },
   { href: "/books", label: "Books", match: ["/books", "/library", "/cart"] },
-  { href: "/directory", label: "Members", match: ["/directory", "/members"] },
+  { href: "/directory", label: "Members", match: ["/directory", "/members", "/leaderboard"] },
   { href: "/me", label: "Me", match: ["/me", "/orders", "/renew"] },
 ];
 

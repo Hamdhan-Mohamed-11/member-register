@@ -15,15 +15,33 @@ export default async function JoinPage() {
   // Read as anon. The clubs_select_public_anon policy limits this to active
   // public clubs, so company clubs cannot leak into the picker even if this
   // query forgot to filter -- but filter anyway, so the intent is on the page.
+  //
+  // is_open_join is the real gate, not kind. Kids, Teen and Special clubs are
+  // all kind = 'public' -- they are nobody's private company club -- but only
+  // clubs under Public Clubs are offered for self-signup; the others are places
+  // an admin puts you. request_club_join enforces the same rule server-side, so
+  // a hand-posted club id gets refused rather than quietly queued.
   const supabase = await getServerComponentSupabase();
   const { data } = await supabase
     .from("clubs")
-    .select("id, name, description")
+    .select("id, name, description, club_types ( name, sort_order )")
     .eq("kind", "public")
     .eq("is_active", true)
+    .eq("is_open_join", true)
     .order("name");
 
-  const clubs = (data ?? []) as JoinableClub[];
+  type Raw = JoinableClub & {
+    club_types: { name: string; sort_order: number } | null;
+  };
+
+  const rows = (data ?? []) as unknown as Raw[];
+  const clubs: JoinableClub[] = rows.map((c) => ({
+    id: c.id,
+    name: c.name,
+    description: c.description,
+    typeName: c.club_types?.name ?? null,
+    typeSort: c.club_types?.sort_order ?? 999,
+  }));
 
   return (
     <AppShell signedOut>

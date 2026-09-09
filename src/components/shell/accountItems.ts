@@ -21,6 +21,8 @@ export type AccountItem = {
 export const ACCOUNT_ITEMS: AccountItem[] = [
   { href: "/me/edit", label: "Edit profile", icon: "pencil" },
   { href: "/me/points", label: "My points", icon: "star", hint: "points" },
+  { href: "/me/badges", label: "Achievements", icon: "medal" },
+  { href: "/leaderboard", label: "Leaderboard", icon: "trophy" },
   { href: "/me/videos", label: "My videos", icon: "play" },
   { href: "/me/reading", label: "My reading list", icon: "inbox" },
   { href: "/renew", label: "Renew or join a club", icon: "refresh" },

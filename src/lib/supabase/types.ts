@@ -7,11 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.15"
-  }
   graphql_public: {
     Tables: {
       [_ in never]: never
@@ -141,6 +136,48 @@ export type Database = {
           },
         ]
       }
+      badges: {
+        Row: {
+          code: string
+          created_at: string
+          description: string
+          family: string | null
+          icon: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          threshold: number | null
+          tier: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description: string
+          family?: string | null
+          icon?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          threshold?: number | null
+          tier?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string
+          family?: string | null
+          icon?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          threshold?: number | null
+          tier?: number
+        }
+        Relationships: []
+      }
       club_join_requests: {
         Row: {
           club_id: string
@@ -268,6 +305,42 @@ export type Database = {
           },
         ]
       }
+      club_types: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          member_visibility: string
+          name: string
+          requires_guardian: boolean
+          slug: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          member_visibility?: string
+          name: string
+          requires_guardian?: boolean
+          slug: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          member_visibility?: string
+          name?: string
+          requires_guardian?: boolean
+          slug?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       clubs: {
         Row: {
           company_id: string | null
@@ -275,11 +348,13 @@ export type Database = {
           description: string | null
           id: string
           is_active: boolean
+          is_open_join: boolean
           kind: string
           membership_fee_lkr: number | null
           name: string
           slug: string
           term_months: number | null
+          type_id: string | null
         }
         Insert: {
           company_id?: string | null
@@ -287,11 +362,13 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean
+          is_open_join?: boolean
           kind: string
           membership_fee_lkr?: number | null
           name: string
           slug: string
           term_months?: number | null
+          type_id?: string | null
         }
         Update: {
           company_id?: string | null
@@ -299,11 +376,13 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean
+          is_open_join?: boolean
           kind?: string
           membership_fee_lkr?: number | null
           name?: string
           slug?: string
           term_months?: number | null
+          type_id?: string | null
         }
         Relationships: [
           {
@@ -311,6 +390,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clubs_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "club_types"
             referencedColumns: ["id"]
           },
         ]
@@ -517,6 +603,49 @@ export type Database = {
           {
             foreignKeyName: "member_activities_updated_by_fkey"
             columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      member_badges: {
+        Row: {
+          badge_id: string
+          earned_at: string
+          id: string
+          member_id: string
+        }
+        Insert: {
+          badge_id: string
+          earned_at?: string
+          id?: string
+          member_id: string
+        }
+        Update: {
+          badge_id?: string
+          earned_at?: string
+          id?: string
+          member_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_badges_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_badges_member_id_fkey"
+            columns: ["member_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -1146,11 +1275,28 @@ export type Database = {
         Returns: string
       }
       approve_join_request: { Args: { p_request_id: string }; Returns: string }
+      badge_progress: {
+        Args: never
+        Returns: {
+          family: string
+          value: number
+        }[]
+      }
       book_session: { Args: { p_session_id: string }; Returns: string }
       can_view_member: { Args: { p_member_id: string }; Returns: boolean }
       cancel_session_booking: {
         Args: { p_booking_id: string }
         Returns: undefined
+      }
+      create_club_type: {
+        Args: {
+          p_description?: string
+          p_member_visibility?: string
+          p_name: string
+          p_requires_guardian?: boolean
+          p_sort_order?: number
+        }
+        Returns: string
       }
       create_company_with_club: {
         Args: {
@@ -1175,7 +1321,9 @@ export type Database = {
           p_description?: string
           p_fee_lkr?: number
           p_name: string
+          p_open_join?: boolean
           p_term_months?: number
+          p_type_id?: string
         }
         Returns: string
       }
@@ -1187,6 +1335,19 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
       is_public_club: { Args: { p_club_id: string }; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }
+      leaderboard: {
+        Args: { p_period?: string }
+        Returns: {
+          avatar_path: string
+          club_name: string
+          first_name: string
+          is_me: boolean
+          last_name: string
+          member_id: string
+          place: number
+          points: number
+        }[]
+      }
       membership_state: {
         Args: { p_expiring_soon_days?: number; p_renewal: string }
         Returns: string
@@ -1196,7 +1357,22 @@ export type Database = {
         Returns: undefined
       }
       new_payment_ref: { Args: { p_prefix: string }; Returns: string }
+      notify_member: {
+        Args: {
+          p_body?: string
+          p_dedupe_key?: string
+          p_href?: string
+          p_kind: string
+          p_member_id: string
+          p_title: string
+        }
+        Returns: undefined
+      }
       recompute_all_points: { Args: never; Returns: number }
+      recompute_member_badges: {
+        Args: { p_member_id: string }
+        Returns: number
+      }
       recompute_member_points: {
         Args: { p_member_id: string }
         Returns: number
@@ -1283,7 +1459,21 @@ export type Database = {
           p_fee_lkr?: number
           p_is_active?: boolean
           p_name?: string
+          p_open_join?: boolean
           p_term_months?: number
+          p_type_id?: string
+        }
+        Returns: undefined
+      }
+      update_club_type: {
+        Args: {
+          p_description?: string
+          p_is_active?: boolean
+          p_member_visibility?: string
+          p_name?: string
+          p_requires_guardian?: boolean
+          p_sort_order?: number
+          p_type_id: string
         }
         Returns: undefined
       }
@@ -1338,12 +1528,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1367,11 +1557,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1392,11 +1582,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1417,11 +1607,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1434,11 +1624,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1455,3 +1645,4 @@ export const Constants = {
     Enums: {},
   },
 } as const
+

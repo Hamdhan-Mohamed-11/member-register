@@ -4,6 +4,7 @@ import { AppShell } from "@/components/shell/AppShell";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Avatar } from "@/components/ui/Avatar";
+import { buttonClassName } from "@/components/ui/Button";
 import { activeMemberships, requireActiveMember } from "@/lib/auth/session";
 import { avatarUrl, getDirectory } from "@/lib/members/queries";
 
@@ -20,13 +21,23 @@ export default async function DirectoryPage() {
 
   return (
     <AppShell>
-      <div className="mb-4">
-        <h1 className="font-display text-2xl sm:text-3xl text-ink">Members</h1>
-        <p className="text-sm text-ink-muted">
-          {clubs.length
-            ? `Everyone in ${clubs.map((c) => c.clubName).join(" and ")}.`
-            : "Join a club to see its members."}
-        </p>
+      {/*
+        The leaderboard ranks exactly these people, so it belongs beside them
+        rather than only in the account menu. The bottom nav is full at five
+        items, which is why /leaderboard is a Members sub-page and not a sixth.
+      */}
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="font-display text-2xl sm:text-3xl text-ink">Members</h1>
+          <p className="text-sm text-ink-muted">
+            {clubs.length
+              ? `Everyone in ${clubs.map((c) => c.clubName).join(" and ")}, and the clubs they share a type with.`
+              : "Join a club to see its members."}
+          </p>
+        </div>
+        <Link href="/leaderboard" className={buttonClassName("secondary", "sm")}>
+          Leaderboard
+        </Link>
       </div>
 
       {others.length === 0 ? (
