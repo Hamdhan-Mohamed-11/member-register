@@ -87,10 +87,13 @@ listed Nimali, who is in another club" can.
 
 ### Directory and other members
 
-- [ ] `/directory` lists **only your own club's** members
-- [ ] Ishara and Ruwan are listed; **Tharindu is not** (different club)
+- [ ] `/directory` lists everyone the **club type** allows: Public Clubs is
+      shared across its clubs, Corporate Clubs is one company only
+- [ ] Ishara, Ruwan **and Tharindu** are listed (all under Public Clubs)
+- [ ] No company member is listed
 - [ ] Open a member → their club, current reading, books read
-- [ ] `/members/<poet's id>` typed directly → **404**, not a permission error
+- [ ] `/members/<a company-only member's id>` typed directly → **404**, not a
+      permission error
 
 ### Sessions
 

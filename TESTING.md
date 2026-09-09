@@ -67,7 +67,7 @@ list, points from a past session, one pending video, one pending application.
 | `/me/edit` | Name/bio save; **photo upload** resizes and shows in the top bar |
 | `/me/reading` | Three books across the three sections |
 | `/me/points` | Ledger shows +10 attend; total matches `/feed` |
-| `/directory` | Members of your club only |
+| `/directory` | Everyone your club type lets you see (Public Clubs = all public clubs; Corporate = your company only) |
 | `/members/…` | Their club, current reading, books read |
 | `/sessions` | Both sessions listed |
 | `/books` | 13,129 books |
@@ -76,7 +76,9 @@ list, points from a past session, one pending video, one pending application.
 
 - [ ] `/me/reading` — **"Mark read"** moves a book to the Read section with a date
 - [ ] `/me/reading` — add a book; it appears immediately
-- [ ] `/directory` — shows Ishara and Ruwan, **not Tharindu** (different club)
+- [ ] `/directory` — shows Ishara and Ruwan, and **also Tharindu** (Colombo
+      Poetry Circle is under the same Public Clubs type); shows **no** company
+      members
 - [ ] `/sessions` — "Demo August book night" is **free**; "Demo Poetry evening" shows **LKR 1,200** because you are a guest there
 - [ ] Open the poetry session → booking panel quotes that guest fee
 - [ ] `/books` — search `Ishiguro`, filter a category, go to page 2; filters survive paging
@@ -89,7 +91,8 @@ list, points from a past session, one pending video, one pending application.
 
 - [ ] `/videos/submit` — paste `javascript:alert(1)` → rejected, not saved
 - [ ] `/admin` → bounced back to `/feed`
-- [ ] Open `/members/<the poet's id>` → **404**, not a permission error
+- [ ] Open `/members/<a company-only member's id>` → **404**, not a permission
+      error
 
 ---
 

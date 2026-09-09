@@ -120,15 +120,34 @@ Log in as `member@test.pickabook.lk` (Nimali Perera).
 - [ ] `/me/points` — the ledger says where each point came from, and the total
       matches `/feed`
 
-### Who they can see — the club boundary
+### Who they can see — the club-type boundary
+
+Nimali is in Pick a Book Public Club, which sits under the **Public Clubs**
+type. That type is set to `member_visibility = 'type'`, so every club under it
+is one directory: she sees Colombo Poetry Circle members too. Corporate Clubs
+is set to `'club'`, so a company member sees only their own company.
 
 - [ ] `/directory` lists **Ruwan Silva, Ishara Weerasinghe, Sanduni Fernando**
-      and **Hamdhan Mohamed**
-- [ ] It does **NOT** list **Tharindu Bandara** or **Maiza Fathima** — both are
-      Colombo Poetry Circle. Either one appearing is a data leak
+      and **Hamdhan Mohamed** — her own club
+- [ ] It **also** lists **Tharindu Bandara** and **Maiza Fathima** — Colombo
+      Poetry Circle, the other club under Public Clubs
+- [ ] It does **NOT** list anyone whose only club is **Acme Club**, **Test Corp
+      Club** or **Inevitable Book CLub**. A company member appearing here is a
+      data leak
 - [ ] Open Ruwan → his club, current reading, books read
-- [ ] Open Tharindu's profile by editing the URL → **404**, not "forbidden".
-      A 403 confirms he exists; a 404 tells a stranger nothing
+- [ ] Open Tharindu → opens, same as Ruwan
+- [ ] Open a company-only member's profile by editing the URL → **404**, not
+      "forbidden". A 403 confirms they exist; a 404 tells a stranger nothing
+
+### Leaderboard
+
+- [ ] `/leaderboard` opens on **This month**, with **Year** and **All time**
+      beside it
+- [ ] The people ranked are the same people `/directory` shows — public-wide,
+      not just her club
+- [ ] Her own row is marked, wherever it falls
+- [ ] Equal scores share a place (two 3rds, then 5th), they do not tie-break
+      arbitrarily
 
 ### Sessions, books, videos
 
@@ -153,11 +172,14 @@ Log in as `poet@test.pickabook.lk` (Tharindu Bandara), ideally beside §2 in a
 second browser. This is the mirror image, and the leak test.
 
 - [ ] `/feed` greets **Tharindu**, club **Colombo Poetry Circle**
-- [ ] `/directory` lists **Maiza Fathima** and nobody from the public club —
-      no Nimali, no Ruwan, no Ishara
+- [ ] `/directory` lists **Maiza Fathima**, and **also Nimali, Ruwan and
+      Ishara** — Pick a Book Public Club is under the same Public Clubs type.
+      This is the mirror of §2 and must agree with it
+- [ ] It lists no company members
 - [ ] `/sessions` — **Demo Poetry evening** is **free** for you
 - [ ] **Demo August book night** is visibly another club's
-- [ ] Nimali's profile by URL → **404**
+- [ ] Nimali's profile by URL → **opens** (same type). A company member's
+      profile by URL → **404**
 - [ ] `/renew` offers **Pick a Book Public Club** as one you *could* join, at
       **LKR 4,750**
 
@@ -226,7 +248,7 @@ using the app under pressure, in a room, with members waiting.
 ### The attendance recorder — the live screen
 
 - [ ] `/admin/sessions/…/attendance` lists your club's members (Nimali, Ruwan,
-      Sanduni, Hamdhan — **not** Tharindu or Maiza)
+      Sanduni, Hamdhan, and — since 0020 — Tharindu and Maiza)
 - [ ] Tick **Presented** + **Attended** for Ruwan → running total **+30**
 - [ ] Save → confirmation
 - [ ] Untick Presented, save again → total drops to **+10**
