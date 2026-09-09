@@ -79,6 +79,11 @@ list, points from a past session, one pending video, one pending application.
 - [ ] `/directory` — shows Ishara and Ruwan, and **also Tharindu** (Colombo
       Poetry Circle is under the same Public Clubs type); shows **no** company
       members
+- [ ] `/leaderboard` — opens on **This month**; Year and All time change the
+      ranking; your own row is marked; equal scores share a place
+- [ ] The people ranked are the same people `/directory` shows
+- [ ] `/me/badges` — a card per family with the next badge and a progress bar
+- [ ] Mark a book read, reload `/me/badges` → the books count went up
 - [ ] `/sessions` — "Demo August book night" is **free**; "Demo Poetry evening" shows **LKR 1,200** because you are a guest there
 - [ ] Open the poetry session → booking panel quotes that guest fee
 - [ ] `/books` — search `Ishiguro`, filter a category, go to page 2; filters survive paging

@@ -95,6 +95,13 @@ listed Nimali, who is in another club" can.
 - [ ] `/members/<a company-only member's id>` typed directly → **404**, not a
       permission error
 
+### Leaderboard and badges
+
+- [ ] `/leaderboard` opens on **This month**, with Year and All time beside it
+- [ ] It ranks the same people the directory shows, and marks your own row
+- [ ] `/me/badges` lists every family with the next badge and the gap to it
+- [ ] A profile shows earned badges only — no progress bars on someone else's
+
 ### Sessions
 
 - [ ] `/sessions` lists both sessions

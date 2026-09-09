@@ -67,7 +67,9 @@ Incognito window. Use a **real address you can read** that is not registered.
 
 - [ ] `/` loads and looks right — also narrow, like a phone
 - [ ] `/join` lists **exactly two** clubs: Pick a Book Public Club and Colombo
-      Poetry Circle. A company club appearing here is a serious bug
+      Poetry Circle, grouped under **Public Clubs**. A company club appearing
+      here is a serious bug, and so is a Kids, Teen or Special club — only
+      clubs marked "anyone can apply" belong in this list
 - [ ] `/feed` typed directly → bounced to `/login`, `?next=/feed` preserved
 - [ ] Fill in first name, last name, email, password → submit
 - [ ] A password under 10 characters is refused
@@ -148,6 +150,19 @@ is set to `'club'`, so a company member sees only their own company.
 - [ ] Her own row is marked, wherever it falls
 - [ ] Equal scores share a place (two 3rds, then 5th), they do not tie-break
       arbitrarily
+
+### Achievements
+
+- [ ] `/me/badges` — a card per family (books, presentations, streak, points,
+      Read and Rise), each showing the badge held and the next one
+- [ ] The progress bar measures from the rung already earned, not from zero
+- [ ] Unearned one-off badges are shown greyed, not hidden — knowing a badge
+      exists is half its point
+- [ ] Mark a book read on `/me/reading` → after a reload the books count on
+      `/me/badges` has gone up. Nothing in the app "awards" it; a database
+      trigger does, so this proves the trigger is live
+- [ ] `/me` shows the badges earned, and links to the full set
+- [ ] Open Ruwan's profile → his badges show, with **no progress bars**
 
 ### Sessions, books, videos
 
@@ -284,6 +299,22 @@ Your own account. Everything above, plus what can break the club.
 - [ ] Add Colombo Poetry Circle to Ruwan → appears with its own renewal date
 - [ ] Suspend Ruwan → he cannot reach `/feed`; un-suspend → he can
 - [ ] **Demote yourself → REFUSED**, you are the last super admin
+
+### Clubs and club types
+
+- [ ] `/admin/clubs` — five types, each labelled **Shared directory** or
+      **Club by club**. Public Clubs must say Shared directory
+- [ ] Add a type "Test Type", visibility "Only their own club" → it appears
+- [ ] Add a club under it, leaving "anyone can apply" **off**
+- [ ] `/join` in an incognito window → the new club is **not** offered
+- [ ] Tick "anyone can apply" and save → now it **is** offered, under its type
+- [ ] Open a company club → its Type control is **disabled**, and says why.
+      A company club that could be moved out of Corporate would put one
+      company's staff in another's directory
+- [ ] Try to retire a type that still has clubs → refused, with a reason
+- [ ] Invite yourself at a spare address to the new club as **Secretary** →
+      the email names the club
+- [ ] Delete the test club and type when you are done
 
 ### Settings
 
