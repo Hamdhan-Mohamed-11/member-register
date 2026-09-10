@@ -297,6 +297,37 @@ using the app under pressure, in a room, with members waiting.
 - [ ] Typed directly, each of `/admin/settings`, `/admin/members`,
       `/admin/payments`, `/admin/companies` → bounced away
 
+### The club boundary — the point of §5
+
+Before this, a secretary could act on any club. Now they run exactly one. Do
+this as super admin first, then log in as the secretary.
+
+- [ ] `/admin/clubs` — every club without a secretary is flagged **No secretary**
+- [ ] Appoint Ruwan as secretary of **Pick a Book Public Club**. His role
+      changes to secretary automatically and he is notified
+- [ ] He is no longer offered for any other club — one club per person
+- [ ] Setting a club's secretary back to **Nobody yet** returns that person to
+      plain member
+
+Now as Ruwan:
+
+- [ ] `/admin` says **Secretary of Pick a Book Public Club**
+- [ ] It does **not** offer Book orders or Borrow requests — those are central,
+      not one club's business
+- [ ] `/admin/sessions` lists **only** his club's sessions
+- [ ] `/admin/sessions/new` offers **only** his club in the host picker
+- [ ] Open another club's session by URL → **404**, not a permission error
+- [ ] Open another club's attendance recorder by URL → **404**
+- [ ] `/admin/videos` shows only videos attached to his club's sessions
+- [ ] `/admin/join-requests` shows only applications to his club
+- [ ] `/admin/orders`, `/admin/library`, `/admin/members`, `/admin/settings`
+      typed directly → bounced away
+
+**A secretary with no club** (appoint one, then clear it):
+
+- [ ] `/admin` says plainly that no club has been assigned yet
+- [ ] `/admin/sessions` says the same rather than showing an empty list
+
 ### Sessions
 
 - [ ] `/admin/sessions/new` — create one

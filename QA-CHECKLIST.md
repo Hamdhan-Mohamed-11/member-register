@@ -95,6 +95,13 @@ listed Nimali, who is in another club" can.
 - [ ] `/members/<a company-only member's id>` typed directly → **404**, not a
       permission error
 
+### The secretary boundary
+
+- [ ] A secretary runs exactly one club, appointed at `/admin/clubs`
+- [ ] They see only that club's sessions, videos and join requests
+- [ ] Another club's session or attendance page by URL → **404**
+- [ ] Book orders, Borrow requests, Members and Settings are out of reach
+
 ### Leaderboard and badges
 
 - [ ] `/leaderboard` opens on **This month**, with Year and All time beside it
