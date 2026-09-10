@@ -90,6 +90,9 @@ list, points from a past session, one pending video, one pending application.
       raising a price sends it back to the member to accept or decline
 - [ ] An order under review offers no way to pay
 - [ ] `/feed` shows the Read and Rise card, in rupees before books
+- [ ] `/discover` — like, save and share work; there is no comment box
+- [ ] A company club's post is invisible to a public-club member, and its
+      media URL 404s for them
 - [ ] A secretary sees only their own club's sessions, videos and join
       requests, and gets a 404 on another club's session or attendance page
 - [ ] A secretary cannot reach Book orders, Borrow requests, Members or

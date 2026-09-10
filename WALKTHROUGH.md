@@ -151,6 +151,30 @@ is set to `'club'`, so a company member sees only their own company.
 - [ ] Equal scores share a place (two 3rds, then 5th), they do not tie-break
       arbitrarily
 
+### Discover
+
+- [ ] `/feed` has a **Discover** card; `/sessions` has a Discover button
+- [ ] As a secretary, `/admin/discover` — post a photo to your club with a
+      caption. It appears in the feed straight away
+- [ ] Post a **video** → the feed shows a still from the middle of it, not a
+      black box, and it only downloads when tapped
+- [ ] Like it → the count moves immediately; unlike it → it goes back
+- [ ] Save it → it appears under `/discover/saved`, which says only you can
+      see that list
+- [ ] Share → on a phone the share sheet opens; on a desktop the link is
+      copied. Either way it shares a **link**, not the file
+- [ ] There is **no comment box anywhere**. That is deliberate
+
+**The boundary — do this with two accounts:**
+
+- [ ] A post to a public club is visible to members of the *other* public
+      club, the same way the directory is
+- [ ] A post to a company club is **not** visible to any public-club member
+- [ ] Open `/api/discover/<a company post id>/media` while signed in as a
+      public-club member → **404**
+- [ ] A secretary can only post to their own club, and can only remove their
+      own club's posts
+
 ### Read and Rise
 
 - [ ] `/feed` carries the Read and Rise card above "Coming up"
