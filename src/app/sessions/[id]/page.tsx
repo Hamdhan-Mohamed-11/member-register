@@ -7,6 +7,7 @@ import { Card, CardHeader } from "@/components/ui/Card";
 import { requireActiveMember } from "@/lib/auth/session";
 import { feeForMember, getSession, myBooking } from "@/lib/sessions/queries";
 import { formatWhen } from "@/components/sessions/SessionCard";
+import { flyerUrl } from "@/lib/flyers/url";
 import { parseVideoUrl } from "@/lib/sessions/video";
 import { BookingPanel } from "./BookingPanel";
 
@@ -37,6 +38,7 @@ export default async function SessionPage({
   ]);
 
   const video = parseVideoUrl(session.videoUrl);
+  const flyer = flyerUrl(session.flyerPath);
 
   return (
     <AppShell>
@@ -45,6 +47,26 @@ export default async function SessionPage({
       </div>
 
       <div className="space-y-4">
+        {/*
+          Above the details, not below them: a flyer is the thing people
+          actually look at and forward on, and burying it under a definition
+          list would waste the effort of making one.
+
+          A plain <img>, not next/image -- the file lives in Supabase Storage
+          on a host that would need adding to remotePatterns, and it is already
+          a fixed-ratio PNG sized for exactly this.
+        */}
+        {flyer ? (
+          <Card flush className="overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={flyer}
+              alt={`Flyer for ${session.title}`}
+              className="w-full h-auto block"
+            />
+          </Card>
+        ) : null}
+
         <Card>
           <h1 className="font-display text-2xl text-ink">{session.title}</h1>
           <p className="text-sm text-ink-muted mt-1">{formatWhen(session.heldAt)}</p>

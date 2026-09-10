@@ -17,6 +17,9 @@ export type SessionSummary = {
   capacity: number | null;
   /** How many people are scheduled to present. Null = no limit. */
   presenterCount: number | null;
+  /** Object key of the saved flyer in the public bucket, or null. */
+  flyerPath: string | null;
+  flyerTemplate: string | null;
   hostClub: { id: string; name: string } | null;
   presenter: { id: string; firstName: string; lastName: string } | null;
   /**
@@ -43,6 +46,8 @@ type RawSession = {
   guest_fee_lkr: number | null;
   capacity: number | null;
   presenter_count: number | null;
+  flyer_path: string | null;
+  flyer_template: string | null;
   host_club_id: string;
   clubs: { id: string; name: string } | null;
   presenter: { id: string; first_name: string; last_name: string } | null;
@@ -54,7 +59,8 @@ type RawSession = {
 // second profiles FK is added.
 const SESSION_SELECT = `
   id, title, book_title, book_author, held_at, location, notes, video_url,
-  status, pricing_kind, guest_fee_lkr, capacity, presenter_count, host_club_id,
+  status, pricing_kind, guest_fee_lkr, capacity, presenter_count,
+  flyer_path, flyer_template, host_club_id,
   clubs ( id, name ),
   presenter:profiles!sessions_presenter_member_id_fkey ( id, first_name, last_name )
 `;
@@ -75,6 +81,8 @@ function toSummary(raw: RawSession, now: number): SessionSummary {
     guestFeeLkr: raw.guest_fee_lkr,
     capacity: raw.capacity,
     presenterCount: raw.presenter_count,
+    flyerPath: raw.flyer_path,
+    flyerTemplate: raw.flyer_template,
     hostClub: raw.clubs ? { id: raw.clubs.id, name: raw.clubs.name } : null,
     presenter: raw.presenter
       ? {

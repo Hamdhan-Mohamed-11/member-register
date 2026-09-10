@@ -73,12 +73,20 @@ export default async function AdminSessionPage({
                 : "Nothing recorded yet."
             }
             action={
-              <Link
-                href={`/admin/sessions/${id}/attendance`}
-                className={buttonClassName("primary", "sm")}
-              >
-                Record
-              </Link>
+              <div className="flex gap-2">
+                <Link
+                  href={`/admin/sessions/${id}/flyer`}
+                  className={buttonClassName("secondary", "sm")}
+                >
+                  {session.flyerPath ? "Edit flyer" : "Make a flyer"}
+                </Link>
+                <Link
+                  href={`/admin/sessions/${id}/attendance`}
+                  className={buttonClassName("primary", "sm")}
+                >
+                  Record
+                </Link>
+              </div>
             }
           />
           <p className="text-sm text-ink-muted">

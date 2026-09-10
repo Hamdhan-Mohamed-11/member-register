@@ -1426,6 +1426,9 @@ export type Database = {
           capacity: number | null
           created_at: string
           created_by: string | null
+          flyer_path: string | null
+          flyer_template: string | null
+          flyer_updated_at: string | null
           guest_fee_lkr: number | null
           held_at: string
           host_club_id: string
@@ -1446,6 +1449,9 @@ export type Database = {
           capacity?: number | null
           created_at?: string
           created_by?: string | null
+          flyer_path?: string | null
+          flyer_template?: string | null
+          flyer_updated_at?: string | null
           guest_fee_lkr?: number | null
           held_at: string
           host_club_id: string
@@ -1466,6 +1472,9 @@ export type Database = {
           capacity?: number | null
           created_at?: string
           created_by?: string | null
+          flyer_path?: string | null
+          flyer_template?: string | null
+          flyer_updated_at?: string | null
           guest_fee_lkr?: number | null
           held_at?: string
           host_club_id?: string
@@ -1839,6 +1848,10 @@ export type Database = {
       }
       set_member_status: {
         Args: { p_member_id: string; p_status: string }
+        Returns: undefined
+      }
+      set_session_flyer: {
+        Args: { p_path?: string; p_session_id: string; p_template?: string }
         Returns: undefined
       }
       shares_active_club: { Args: { p_member_id: string }; Returns: boolean }
