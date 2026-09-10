@@ -24,6 +24,7 @@ export const ACCOUNT_ITEMS: AccountItem[] = [
   { href: "/me/badges", label: "Achievements", icon: "medal" },
   { href: "/leaderboard", label: "Leaderboard", icon: "trophy" },
   { href: "/me/videos", label: "My videos", icon: "play" },
+  { href: "/discover/saved", label: "Saved from Discover", icon: "bookmark" },
   { href: "/me/reading", label: "My reading list", icon: "inbox" },
   { href: "/me/wishlist", label: "My wishlist", icon: "bookmark" },
   { href: "/orders", label: "My orders", icon: "inbox" },

@@ -44,9 +44,14 @@ export default async function SessionsPage() {
             paid sessions as a guest.
           </p>
         </div>
-        <Link href="/videos" className={`${buttonClassName("secondary", "sm")} shrink-0`}>
-          Recordings
-        </Link>
+        <div className="flex shrink-0 gap-2">
+          <Link href="/discover" className={buttonClassName("secondary", "sm")}>
+            Discover
+          </Link>
+          <Link href="/videos" className={buttonClassName("secondary", "sm")}>
+            Recordings
+          </Link>
+        </div>
       </div>
 
       {sessions.length === 0 ? (

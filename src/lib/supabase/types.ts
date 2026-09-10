@@ -797,6 +797,160 @@ export type Database = {
         }
         Relationships: []
       }
+      discover_likes: {
+        Row: {
+          liked_at: string
+          member_id: string
+          post_id: string
+        }
+        Insert: {
+          liked_at?: string
+          member_id: string
+          post_id: string
+        }
+        Update: {
+          liked_at?: string
+          member_id?: string
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discover_likes_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discover_likes_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discover_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "discover_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discover_posts: {
+        Row: {
+          author_id: string | null
+          caption: string | null
+          club_id: string | null
+          created_at: string
+          duration_s: number | null
+          height: number | null
+          id: string
+          kind: string
+          poster_path: string | null
+          session_id: string | null
+          storage_path: string
+          width: number | null
+        }
+        Insert: {
+          author_id?: string | null
+          caption?: string | null
+          club_id?: string | null
+          created_at?: string
+          duration_s?: number | null
+          height?: number | null
+          id?: string
+          kind: string
+          poster_path?: string | null
+          session_id?: string | null
+          storage_path: string
+          width?: number | null
+        }
+        Update: {
+          author_id?: string | null
+          caption?: string | null
+          club_id?: string | null
+          created_at?: string
+          duration_s?: number | null
+          height?: number | null
+          id?: string
+          kind?: string
+          poster_path?: string | null
+          session_id?: string | null
+          storage_path?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discover_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discover_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discover_posts_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discover_posts_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discover_saves: {
+        Row: {
+          member_id: string
+          post_id: string
+          saved_at: string
+        }
+        Insert: {
+          member_id: string
+          post_id: string
+          saved_at?: string
+        }
+        Update: {
+          member_id?: string
+          post_id?: string
+          saved_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discover_saves_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discover_saves_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discover_saves_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "discover_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invites: {
         Row: {
           accepted_at: string | null
@@ -1672,6 +1826,7 @@ export type Database = {
       }
       book_session: { Args: { p_session_id: string }; Returns: string }
       can_admin_club: { Args: { p_club_id: string }; Returns: boolean }
+      can_see_club: { Args: { p_club_id: string }; Returns: boolean }
       can_view_member: { Args: { p_member_id: string }; Returns: boolean }
       cancel_book_order: { Args: { p_order_id: string }; Returns: undefined }
       cancel_borrow_request: { Args: { p_id: string }; Returns: undefined }
@@ -1703,6 +1858,20 @@ export type Database = {
           company_id: string
         }[]
       }
+      create_discover_post: {
+        Args: {
+          p_caption?: string
+          p_club_id: string
+          p_duration_s?: number
+          p_height?: number
+          p_kind: string
+          p_poster_path?: string
+          p_session_id?: string
+          p_storage_path: string
+          p_width?: number
+        }
+        Returns: string
+      }
       create_invite: {
         Args: { p_club_id: string; p_email: string; p_role?: string }
         Returns: string
@@ -1723,7 +1892,27 @@ export type Database = {
       current_member_has_library: { Args: never; Returns: boolean }
       current_member_is_active: { Args: never; Returns: boolean }
       current_member_role: { Args: never; Returns: string }
+      delete_discover_post: { Args: { p_id: string }; Returns: undefined }
       delete_video: { Args: { p_video_id: string }; Returns: undefined }
+      discover_feed: {
+        Args: { p_before?: string; p_limit?: number; p_saved?: boolean }
+        Returns: {
+          author_name: string
+          caption: string
+          club_id: string
+          club_name: string
+          created_at: string
+          duration_s: number
+          height: number
+          id: string
+          kind: string
+          like_count: number
+          liked_by_me: boolean
+          saved_by_me: boolean
+          session_id: string
+          width: number
+        }[]
+      }
       has_library_access: { Args: { p_member_id: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       is_public_club: { Args: { p_club_id: string }; Returns: boolean }

@@ -146,6 +146,25 @@ export default async function FeedPage() {
         */}
         {readrise ? <ReadRiseCard totals={readrise} /> : null}
 
+        {/*
+          The bottom bar is full at five items, so Discover is reachable from
+          here, from /sessions and from the account menu rather than being a
+          sixth tab nobody can hit with a thumb.
+        */}
+        <Link href="/discover" className="block">
+          <Card interactive>
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-display text-lg text-ink leading-tight">Discover</p>
+                <p className="text-sm text-ink-muted">
+                  Photos and video from what the clubs have been up to.
+                </p>
+              </div>
+              <Icon name="chevron-right" className="size-5 shrink-0 text-ink-faint" />
+            </div>
+          </Card>
+        </Link>
+
         <Card flush>
           <div className="p-4 sm:p-5 pb-2">
             <CardHeader
