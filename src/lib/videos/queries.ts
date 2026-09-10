@@ -19,6 +19,8 @@ export type VideoItem = {
   createdAt: string;
   submittedBy: { id: string; firstName: string; lastName: string } | null;
   session: { id: string; title: string } | null;
+  /** The club that owns this video, through its session. Null if unattached. */
+  hostClubId: string | null;
 };
 
 type Raw = {
@@ -32,14 +34,14 @@ type Raw = {
   review_note: string | null;
   created_at: string;
   profiles: { id: string; first_name: string; last_name: string } | null;
-  sessions: { id: string; title: string } | null;
+  sessions: { id: string; title: string; host_club_id: string } | null;
 };
 
 const SELECT = `
   id, title, description, provider, external_id, source_url, status,
   review_note, created_at,
   profiles!videos_submitted_by_fkey ( id, first_name, last_name ),
-  sessions ( id, title )
+  sessions ( id, title, host_club_id )
 `;
 
 function toItem(raw: Raw): VideoItem {
@@ -63,6 +65,7 @@ function toItem(raw: Raw): VideoItem {
         }
       : null,
     session: raw.sessions ? { id: raw.sessions.id, title: raw.sessions.title } : null,
+    hostClubId: raw.sessions?.host_club_id ?? null,
   };
 }
 
@@ -91,7 +94,15 @@ export async function listMyVideos(memberId: string): Promise<VideoItem[]> {
 }
 
 /** The moderation queue: pending first, then recent decisions for context. */
-export async function listForModeration(): Promise<{
+/**
+ * The moderation queue.
+ *
+ * `scope` is null for a super admin and a list of club ids for a secretary.
+ * A video belongs to a club through its session; one with no session has no
+ * club, so only a super admin can act on it -- which matches moderate_video,
+ * and means a secretary is not shown a queue item that would refuse them.
+ */
+export async function listForModeration(scope?: string[] | null): Promise<{
   pending: VideoItem[];
   recent: VideoItem[];
 }> {
@@ -102,7 +113,10 @@ export async function listForModeration(): Promise<{
     .order("created_at", { ascending: false })
     .limit(100);
 
-  const all = ((data ?? []) as unknown as Raw[]).map(toItem);
+  let all = ((data ?? []) as unknown as Raw[]).map(toItem);
+  if (scope != null) {
+    all = all.filter((v) => v.hostClubId != null && scope.includes(v.hostClubId));
+  }
   return {
     pending: all.filter((v) => v.status === "pending"),
     recent: all.filter((v) => v.status !== "pending").slice(0, 20),

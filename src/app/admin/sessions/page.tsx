@@ -6,14 +6,24 @@ import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { buttonClassName } from "@/components/ui/Button";
 import { SessionCard } from "@/components/sessions/SessionCard";
-import { requireSecretary } from "@/lib/auth/session";
+import { adminClubScope, requireSecretary } from "@/lib/auth/session";
 import { listAllSessions } from "@/lib/sessions/queries";
 
 export const metadata: Metadata = { title: "Sessions · Admin" };
 
 export default async function AdminSessionsPage() {
-  await requireSecretary();
-  const sessions = await listAllSessions();
+  const member = await requireSecretary();
+  const scope = adminClubScope(member);
+  const all = await listAllSessions();
+
+  // A secretary sees only their own club's sessions. sessions_select still
+  // lets any active member READ a session -- that has always been true, and is
+  // why this filter is here rather than in the policy. What changed in 0027 is
+  // that they can no longer act on the others.
+  const sessions =
+    scope == null
+      ? all
+      : all.filter((s) => s.hostClub != null && scope.includes(s.hostClub.id));
 
   return (
     <AppShell>
@@ -22,7 +32,9 @@ export default async function AdminSessionsPage() {
           <BackLink href="/admin">Admin</BackLink>
           <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Sessions</h1>
           <p className="text-sm text-ink-muted">
-            Create sessions and record attendance as they happen.
+            {member.secretaryClubName
+              ? `${member.secretaryClubName} — create sessions and record attendance as they happen.`
+              : "Create sessions and record attendance as they happen."}
           </p>
         </div>
         <Link href="/admin/sessions/new" className={buttonClassName("primary", "sm")}>
@@ -33,8 +45,16 @@ export default async function AdminSessionsPage() {
       {sessions.length === 0 ? (
         <Card flush>
           <EmptyState
-            title="No sessions yet"
-            description="Create one to start recording attendance and points."
+            title={
+              scope != null && scope.length === 0
+                ? "You don't run a club yet"
+                : "No sessions yet"
+            }
+            description={
+              scope != null && scope.length === 0
+                ? "A super admin needs to appoint you as a club's secretary before you can create sessions."
+                : "Create one to start recording attendance and points."
+            }
           />
         </Card>
       ) : (

@@ -701,6 +701,7 @@ export type Database = {
           kind: string
           membership_fee_lkr: number | null
           name: string
+          secretary_id: string | null
           slug: string
           term_months: number | null
           type_id: string | null
@@ -715,6 +716,7 @@ export type Database = {
           kind: string
           membership_fee_lkr?: number | null
           name: string
+          secretary_id?: string | null
           slug: string
           term_months?: number | null
           type_id?: string | null
@@ -729,6 +731,7 @@ export type Database = {
           kind?: string
           membership_fee_lkr?: number | null
           name?: string
+          secretary_id?: string | null
           slug?: string
           term_months?: number | null
           type_id?: string | null
@@ -739,6 +742,20 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clubs_secretary_id_fkey"
+            columns: ["secretary_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clubs_secretary_id_fkey"
+            columns: ["secretary_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -1632,6 +1649,10 @@ export type Database = {
         }
         Returns: string
       }
+      appoint_club_secretary: {
+        Args: { p_club_id: string; p_member_id?: string }
+        Returns: undefined
+      }
       approve_join_request: { Args: { p_request_id: string }; Returns: string }
       badge_progress: {
         Args: never
@@ -1641,6 +1662,7 @@ export type Database = {
         }[]
       }
       book_session: { Args: { p_session_id: string }; Returns: string }
+      can_admin_club: { Args: { p_club_id: string }; Returns: boolean }
       can_view_member: { Args: { p_member_id: string }; Returns: boolean }
       cancel_book_order: { Args: { p_order_id: string }; Returns: undefined }
       cancel_borrow_request: { Args: { p_id: string }; Returns: undefined }
@@ -1776,6 +1798,7 @@ export type Database = {
         Args: { p_club_id: string; p_message?: string }
         Returns: string
       }
+      require_club_admin: { Args: { p_club_id: string }; Returns: undefined }
       resolve_club_terms: {
         Args: { p_club_id: string }
         Returns: {
@@ -1788,6 +1811,7 @@ export type Database = {
         Returns: undefined
       }
       revoke_invite: { Args: { p_invite_id: string }; Returns: undefined }
+      secretary_club_id: { Args: never; Returns: string }
       session_fee_for: {
         Args: { p_member_id: string; p_session_id: string }
         Returns: number

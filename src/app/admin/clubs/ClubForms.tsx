@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Field, Notice, SelectField, TextareaField } from "@/components/ui/Field";
 import {
+  appointSecretary,
   createClub,
   createClubType,
   inviteToClub,
@@ -25,8 +26,12 @@ export type ClubTypeOption = {
   clubCount: number;
 };
 
+export type MemberOption = { id: string; name: string; email: string };
+
 export type ClubRow = {
   id: string;
+  secretaryId: string | null;
+  secretaryName: string | null;
   name: string;
   description: string | null;
   kind: string;
@@ -441,6 +446,57 @@ export function InviteToClubForm({
 
       <Button type="submit" size="sm" disabled={pending}>
         {pending ? "Sending invites…" : "Send invites"}
+      </Button>
+    </form>
+  );
+}
+
+/**
+ * Who runs this club.
+ *
+ * One club, one secretary, and one club per person -- so the list offers only
+ * members who are not already running something else. The RPC refuses it
+ * regardless; leaving them selectable would just be an error waiting to
+ * happen.
+ */
+export function AppointSecretaryForm({
+  club,
+  members,
+  takenBy,
+}: {
+  club: ClubRow;
+  members: MemberOption[];
+  /** member id -> the club they already run, for everyone who runs one. */
+  takenBy: Record<string, string>;
+}) {
+  const { pending, error, done, run } = useAction();
+
+  const selectable = members.filter(
+    (m) => !takenBy[m.id] || m.id === club.secretaryId,
+  );
+
+  return (
+    <form onSubmit={(e) => run(appointSecretary, e)} className="space-y-3">
+      <input type="hidden" name="clubId" value={club.id} />
+      {error ? <Notice>{error}</Notice> : null}
+      {done ? <Notice tone="success">Saved.</Notice> : null}
+
+      <SelectField
+        label="Secretary"
+        name="memberId"
+        defaultValue={club.secretaryId ?? ""}
+        hint="They can create sessions and record attendance for this club, and nothing else."
+      >
+        <option value="">Nobody yet</option>
+        {selectable.map((m) => (
+          <option key={m.id} value={m.id}>
+            {m.name} · {m.email}
+          </option>
+        ))}
+      </SelectField>
+
+      <Button type="submit" variant="secondary" size="sm" disabled={pending}>
+        {pending ? "Saving…" : "Save secretary"}
       </Button>
     </form>
   );

@@ -251,3 +251,39 @@ export async function inviteToClub(formData: FormData): Promise<ActionResult<Inv
   revalidatePath("/admin/clubs");
   return { ok: true, data: { invited, failed } };
 }
+
+const appointSchema = z.object({
+  clubId: z.string().uuid(),
+  // Empty means "no secretary" -- the club runs without one until appointed,
+  // which is a real state and not an error.
+  memberId: z.string().uuid().nullable(),
+});
+
+/**
+ * Puts one member in charge of one club, or clears the post.
+ *
+ * The RPC does the work: it also sets or clears the `secretary` role, so a
+ * club can never point at someone who cannot reach the admin area. Doing that
+ * here in two calls would leave a window where the two disagree.
+ */
+export async function appointSecretary(formData: FormData): Promise<ActionResult> {
+  await requireSuperAdmin();
+
+  const raw = formData.get("memberId");
+  const parsed = appointSchema.safeParse({
+    clubId: formData.get("clubId"),
+    memberId: typeof raw === "string" && raw.trim() !== "" ? raw : null,
+  });
+  if (!parsed.success) return { ok: false, error: "Choose a member, or none." };
+
+  const supabase = await getActionSupabase();
+  const { error } = await supabase.rpc("appoint_club_secretary", {
+    p_club_id: parsed.data.clubId,
+    p_member_id: parsed.data.memberId ?? undefined,
+  });
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/admin/clubs");
+  revalidatePath("/admin");
+  return { ok: true };
+}

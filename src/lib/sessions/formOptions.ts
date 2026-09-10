@@ -3,14 +3,30 @@ import "server-only";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import type { ClubOption, MemberOption } from "@/app/admin/sessions/SessionForm";
 
-export async function getSessionFormOptions(): Promise<{
+/**
+ * The clubs and members a session form may offer.
+ *
+ * `scope` is null for a super admin (every club) or a list of club ids for a
+ * secretary -- see adminClubScope(). Filtering here is presentation: a
+ * secretary who hand-posts another club's id is refused by upsert_session,
+ * which is the actual control. Offering it in a dropdown would just be a
+ * cruel way to find that out.
+ */
+export async function getSessionFormOptions(scope?: string[] | null): Promise<{
   clubs: ClubOption[];
   members: MemberOption[];
 }> {
   const supabase = await getServerComponentSupabase();
 
+  let clubQuery = supabase.from("clubs").select("id, name").eq("is_active", true).order("name");
+  if (scope != null) {
+    // An empty scope means a secretary with no club yet: offer nothing rather
+    // than everything, which is what `.in()` with an empty list does.
+    clubQuery = clubQuery.in("id", scope);
+  }
+
   const [{ data: clubs }, { data: members }] = await Promise.all([
-    supabase.from("clubs").select("id, name").eq("is_active", true).order("name"),
+    clubQuery,
     supabase
       .from("profiles")
       .select("id, first_name, last_name, email")

@@ -5,7 +5,7 @@ import { AppShell } from "@/components/shell/AppShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { buttonClassName } from "@/components/ui/Button";
-import { requireSecretary } from "@/lib/auth/session";
+import { adminClubScope, canAdminClub, requireSecretary } from "@/lib/auth/session";
 import { getSession } from "@/lib/sessions/queries";
 import { getSessionFormOptions, toDatetimeLocal } from "@/lib/sessions/formOptions";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
@@ -27,13 +27,18 @@ export default async function AdminSessionPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireSecretary();
+  const member = await requireSecretary();
   const { id } = await params;
 
   const session = await getSession(id);
   if (!session) notFound();
 
-  const { clubs, members } = await getSessionFormOptions();
+  // A secretary may read any session -- sessions_select has always allowed
+  // that -- but the admin view of one is an editing screen, and offering it
+  // for a club they cannot act on only leads to a refusal on save.
+  if (!canAdminClub(member, session.hostClub?.id ?? null)) notFound();
+
+  const { clubs, members } = await getSessionFormOptions(adminClubScope(member));
   const supabase = await getServerComponentSupabase();
 
   const [{ count: bookingCount }, { count: activityCount }] = await Promise.all([

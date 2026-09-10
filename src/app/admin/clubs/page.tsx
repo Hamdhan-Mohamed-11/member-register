@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { requireSuperAdmin } from "@/lib/auth/session";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import {
+  AppointSecretaryForm,
   CreateClubForm,
   CreateTypeForm,
   EditClubForm,
@@ -16,6 +17,7 @@ import {
   InviteToClubForm,
   type ClubRow,
   type ClubTypeOption,
+  type MemberOption,
 } from "./ClubForms";
 
 export const metadata: Metadata = { title: "Clubs" };
@@ -41,6 +43,8 @@ type RawClub = {
   term_months: number | null;
   is_active: boolean;
   is_open_join: boolean;
+  secretary_id: string | null;
+  secretary: { id: string; first_name: string; last_name: string } | null;
   club_memberships: { status: string }[] | null;
 };
 
@@ -48,8 +52,11 @@ export default async function AdminClubsPage() {
   await requireSuperAdmin();
   const supabase = await getServerComponentSupabase();
 
-  const [{ data: typeRows, error: typeError }, { data: clubRows, error: clubError }] =
-    await Promise.all([
+  const [
+    { data: typeRows, error: typeError },
+    { data: clubRows, error: clubError },
+    { data: memberRows },
+  ] = await Promise.all([
       supabase
         .from("club_types")
         .select(
@@ -61,9 +68,19 @@ export default async function AdminClubsPage() {
         .from("clubs")
         .select(
           `id, name, description, kind, type_id, membership_fee_lkr, term_months,
-           is_active, is_open_join, club_memberships ( status )`,
+           is_active, is_open_join, secretary_id,
+           secretary:profiles!clubs_secretary_id_fkey ( id, first_name, last_name ),
+           club_memberships ( status )`,
         )
         .order("name"),
+      // Everyone who could be appointed. Active members only -- the RPC
+      // refuses anyone else, and offering a suspended member would be a
+      // strange thing to do.
+      supabase
+        .from("profiles")
+        .select("id, first_name, last_name, email")
+        .eq("status", "active")
+        .order("first_name"),
     ]);
 
   const clubs: ClubRow[] = ((clubRows ?? []) as unknown as RawClub[]).map((c) => ({
@@ -76,8 +93,29 @@ export default async function AdminClubsPage() {
     termMonths: c.term_months,
     isActive: c.is_active,
     isOpenJoin: c.is_open_join,
+    secretaryId: c.secretary_id,
+    secretaryName: c.secretary
+      ? `${c.secretary.first_name} ${c.secretary.last_name}`.trim()
+      : null,
     memberCount: (c.club_memberships ?? []).filter((m) => m.status === "active").length,
   }));
+
+  const members: MemberOption[] = (
+    (memberRows ?? []) as unknown as {
+      id: string;
+      first_name: string;
+      last_name: string;
+      email: string;
+    }[]
+  ).map((m) => ({
+    id: m.id,
+    name: `${m.first_name} ${m.last_name}`.trim() || m.email,
+    email: m.email,
+  }));
+
+  // Who already runs something, so no one is offered a second club.
+  const takenBy: Record<string, string> = {};
+  for (const c of clubs) if (c.secretaryId) takenBy[c.secretaryId] = c.name;
 
   const types: ClubTypeOption[] = ((typeRows ?? []) as unknown as RawType[]).map((t) => ({
     id: t.id,
@@ -178,6 +216,9 @@ export default async function AdminClubsPage() {
                               {club.name}
                             </span>
                             <span className="block text-xs text-ink-muted">
+                              {club.secretaryName
+                                ? `Secretary: ${club.secretaryName} · `
+                                : ""}
                               {club.memberCount} member{club.memberCount === 1 ? "" : "s"}
                               {club.feeLkr != null
                                 ? ` · LKR ${club.feeLkr.toLocaleString("en-LK")}`
@@ -186,6 +227,9 @@ export default async function AdminClubsPage() {
                             </span>
                           </span>
                           <span className="shrink-0 flex items-center gap-2">
+                            {club.secretaryName ? null : (
+                              <Badge tone="warning">No secretary</Badge>
+                            )}
                             {club.isOpenJoin ? <Badge tone="success">Open to apply</Badge> : null}
                             {club.isActive ? null : <Badge tone="danger">Off</Badge>}
                             <span className="text-sm text-brand-600 font-medium">
@@ -197,11 +241,23 @@ export default async function AdminClubsPage() {
 
                         <div className="mt-4 grid gap-5 lg:grid-cols-2">
                           <EditClubForm club={club} types={types} />
-                          <div className="lg:border-l lg:border-line lg:pl-5">
-                            <h3 className="font-display text-base text-ink mb-2">
-                              Invite people to {club.name}
-                            </h3>
-                            <InviteToClubForm clubId={club.id} clubName={club.name} />
+                          <div className="lg:border-l lg:border-line lg:pl-5 space-y-5">
+                            <div>
+                              <h3 className="font-display text-base text-ink mb-2">
+                                Who runs {club.name}
+                              </h3>
+                              <AppointSecretaryForm
+                                club={club}
+                                members={members}
+                                takenBy={takenBy}
+                              />
+                            </div>
+                            <div className="border-t border-line pt-4">
+                              <h3 className="font-display text-base text-ink mb-2">
+                                Invite people to {club.name}
+                              </h3>
+                              <InviteToClubForm clubId={club.id} clubName={club.name} />
+                            </div>
                           </div>
                         </div>
                       </details>

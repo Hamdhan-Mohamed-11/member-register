@@ -36,6 +36,17 @@ export type SessionMember = {
   pointsBalance: number;
   /** Every membership, including expired ones -- the renewal UI needs those. */
   memberships: ClubMembership[];
+  /**
+   * The one club this member RUNS, or null.
+   *
+   * Not the same as being in a club: a secretary may run a club they are not a
+   * member of, and being a member of one grants nothing administrative. This
+   * mirrors clubs.secretary_id, and is null for a super admin -- their reach
+   * is not a club, so a page asking "which club is theirs" would get the wrong
+   * answer from a value here.
+   */
+  secretaryClubId: string | null;
+  secretaryClubName: string | null;
 };
 
 export const getSessionMember = cache(async (): Promise<SessionMember | null> => {
@@ -60,7 +71,8 @@ export const getSessionMember = cache(async (): Promise<SessionMember | null> =>
        club_memberships (
          id, club_id, status, is_primary, renewal_date,
          clubs ( name, slug, kind )
-       )`,
+       ),
+       runs:clubs!clubs_secretary_id_fkey ( id, name )`,
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -100,6 +112,11 @@ export const getSessionMember = cache(async (): Promise<SessionMember | null> =>
           : 1,
     );
 
+  // The embed comes back as an array because it is a reverse relation, but the
+  // unique index on clubs.secretary_id means there can only ever be one.
+  const runs = (profile as unknown as { runs?: { id: string; name: string }[] }).runs;
+  const runsClub = Array.isArray(runs) ? runs[0] : (runs ?? null);
+
   return {
     userId: profile.id,
     email: profile.email,
@@ -110,6 +127,8 @@ export const getSessionMember = cache(async (): Promise<SessionMember | null> =>
     avatarPath: profile.avatar_path,
     pointsBalance: profile.points_balance,
     memberships,
+    secretaryClubId: runsClub?.id ?? null,
+    secretaryClubName: runsClub?.name ?? null,
   };
 });
 
@@ -193,6 +212,30 @@ export async function requireSuperAdmin(): Promise<SessionMember> {
 
 export function isAdmin(member: SessionMember): boolean {
   return member.role === "secretary" || member.role === "super_admin";
+}
+
+/**
+ * May this member act on this club?
+ *
+ * The app-side twin of can_admin_club() in SQL. Use it to decide what to SHOW;
+ * the database decides what may actually happen, and every RPC re-checks. A
+ * page that forgets this hides nothing important -- one that relies on it as
+ * the only check is wrong.
+ */
+export function canAdminClub(member: SessionMember, clubId: string | null): boolean {
+  if (member.role === "super_admin") return true;
+  return clubId != null && member.secretaryClubId === clubId;
+}
+
+/**
+ * The clubs an admin may act on, or null meaning "all of them".
+ *
+ * Null rather than a list of every club id on purpose: a super admin's reach
+ * is not a set that has to be kept in step with the clubs table.
+ */
+export function adminClubScope(member: SessionMember): string[] | null {
+  if (member.role === "super_admin") return null;
+  return member.secretaryClubId ? [member.secretaryClubId] : [];
 }
 
 export function fullName(member: {

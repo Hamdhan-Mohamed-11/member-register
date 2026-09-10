@@ -19,8 +19,8 @@ const AREAS = [
   { href: "/admin/companies", label: "Companies", desc: "Company clubs and employee onboarding.", superOnly: true, ready: true },
   { href: "/admin/sessions", label: "Sessions", desc: "Create sessions and record attendance.", superOnly: false, ready: true },
   { href: "/admin/videos", label: "Videos", desc: "Approve member-submitted recordings.", superOnly: false, ready: true },
-  { href: "/admin/orders", label: "Book orders", desc: "Confirm prices and fulfil member purchases.", superOnly: false, ready: true },
-  { href: "/admin/library", label: "Borrow requests", desc: "Issue and return library books.", superOnly: false, ready: true },
+  { href: "/admin/orders", label: "Book orders", desc: "Confirm prices and fulfil member purchases.", superOnly: true, ready: true },
+  { href: "/admin/library", label: "Borrow requests", desc: "Issue and return library books.", superOnly: true, ready: true },
   { href: "/admin/members", label: "Members", desc: "Roles, membership dates, suspensions.", superOnly: true, ready: true },
   { href: "/admin/payments", label: "Payments", desc: "Membership and booking payments.", superOnly: true, ready: true },
   { href: "/admin/settings", label: "Settings", desc: "Fees, terms, discount, points rules.", superOnly: true, ready: true },
@@ -36,9 +36,28 @@ export default async function AdminPage() {
       <div className="mb-4">
         <h1 className="font-display text-2xl sm:text-3xl text-ink">Club admin</h1>
         <p className="text-sm text-ink-muted">
-          Signed in as {member.role === "super_admin" ? "super admin" : "secretary"}.
+          {member.role === "super_admin"
+            ? "Signed in as super admin."
+            : member.secretaryClubName
+              ? `Secretary of ${member.secretaryClubName}. You can act on this club only.`
+              : "You are a secretary, but no club has been assigned to you yet."}
         </p>
       </div>
+
+      {/*
+        A secretary with no club can reach this page and do nothing on it. Say
+        so plainly rather than showing them a grid of areas that will all turn
+        them away -- 0027 leaves every existing secretary in exactly this state
+        until someone appoints them.
+      */}
+      {member.role === "secretary" && !member.secretaryClubId ? (
+        <Card tone="warning" className="mb-4">
+          <p className="text-sm text-ink">
+            A super admin needs to appoint you as a club&apos;s secretary before
+            you can create sessions or record attendance.
+          </p>
+        </Card>
+      ) : null}
 
       <div className="grid gap-3 sm:grid-cols-2">
         {areas.map((area) =>

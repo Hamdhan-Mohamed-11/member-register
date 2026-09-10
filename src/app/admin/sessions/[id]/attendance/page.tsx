@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
 import { BackLink } from "@/components/ui/BackLink";
-import { requireSecretary } from "@/lib/auth/session";
+import { canAdminClub, requireSecretary } from "@/lib/auth/session";
 import { avatarUrl } from "@/lib/members/queries";
 import { getSession } from "@/lib/sessions/queries";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
@@ -20,11 +20,17 @@ export default async function AttendancePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireSecretary();
+  const member = await requireSecretary();
   const { id } = await params;
 
   const session = await getSession(id);
   if (!session || !session.hostClub) notFound();
+
+  // The recorder for someone else's club. record_session_attendance refuses it
+  // anyway, but a secretary should not be able to open a roster of members
+  // they have no business seeing, let alone tick boxes for twenty minutes and
+  // find out on save.
+  if (!canAdminClub(member, session.hostClub.id)) notFound();
 
   const supabase = await getServerComponentSupabase();
 
