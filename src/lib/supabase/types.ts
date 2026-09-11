@@ -1892,6 +1892,8 @@ export type Database = {
       current_member_has_library: { Args: never; Returns: boolean }
       current_member_is_active: { Args: never; Returns: boolean }
       current_member_role: { Args: never; Returns: string }
+      delete_club: { Args: { p_club_id: string }; Returns: undefined }
+      delete_club_type: { Args: { p_type_id: string }; Returns: undefined }
       delete_discover_post: { Args: { p_id: string }; Returns: undefined }
       delete_video: { Args: { p_video_id: string }; Returns: undefined }
       discover_feed: {

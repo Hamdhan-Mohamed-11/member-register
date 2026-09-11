@@ -116,7 +116,7 @@ export default async function LeaderboardPage({
             </Card>
           ) : null}
 
-          <Card flush>
+          <Card flush className="reveal">
             <ol className="divide-y divide-line">
               {rows.map((row) => {
                 const name = `${row.firstName} ${row.lastName}`.trim() || "Member";

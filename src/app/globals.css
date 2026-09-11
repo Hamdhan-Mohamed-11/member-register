@@ -25,6 +25,21 @@
   --color-brand-100: #dde2f5;
   --color-brand-50: #eff2fb;
 
+  /*
+    Brand sky — the second half of the brand's primary pair (#00AEEF).
+    It was missing entirely, which is why the portal read as navy-and-beige
+    rather than as Pick a Book. Used for energy: highlights, active states,
+    the light half of a gradient. Never for body text on white -- at 3.1:1 it
+    fails AA, so anything readable uses sky-700.
+  */
+  --color-sky-800: #005f85;
+  --color-sky-700: #0079a8;
+  --color-sky-600: #0095cc;
+  --color-sky-500: #00aeef;
+  --color-sky-300: #7fd7f7;
+  --color-sky-200: #b2e7fb;
+  --color-sky-100: #e0f5fe;
+
   /* Gold — accents, rules and eyebrows only. */
   --color-gold-700: #8a6410;
   --color-gold-600: #b8891f;
@@ -151,4 +166,87 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/*
+  Motion.
+  ------------------------------------------------------------------
+  Two jobs only: bring content in on load, and acknowledge a tap. Both are
+  short (300-450ms) and both stop entirely under prefers-reduced-motion, which
+  is handled by the global block above -- these keyframes do not need their own
+  guard because that rule collapses every animation-duration in the document.
+
+  `.reveal` is deliberately an ANIMATION, not a scroll-triggered transition:
+  a scroll observer would need client JavaScript on pages that currently ship
+  none, and the payoff on a short page is not worth the hydration.
+*/
+@layer utilities {
+  @keyframes pab-rise {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 14px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes pab-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .reveal {
+    animation: pab-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .reveal-fade {
+    animation: pab-fade 0.5s ease-out both;
+  }
+
+  /*
+    Stagger by nth-child rather than per-element inline delays, so a list can
+    be rendered by a server component with no JavaScript at all. Capped at six:
+    beyond that the last item waits long enough to read as a broken page rather
+    than as choreography.
+  */
+  .stagger > * {
+    animation: pab-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0.04s; }
+  .stagger > *:nth-child(2) { animation-delay: 0.10s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.16s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.22s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.28s; }
+  .stagger > *:nth-child(n + 6) { animation-delay: 0.34s; }
+
+  /* A pressed state for touch, where there is no hover to rely on. */
+  .press {
+    transition:
+      transform 0.12s ease,
+      box-shadow 0.16s ease,
+      background-color 0.16s ease;
+  }
+  .press:active {
+    transform: scale(0.97);
+  }
+}
+
+/*
+  The native <dialog> backdrop. Styled here because ::backdrop cannot be
+  reached from a utility class.
+*/
+dialog::backdrop {
+  background: rgba(15, 22, 64, 0.5);
+  backdrop-filter: blur(2px);
+  animation: pab-fade 0.2s ease-out both;
+}
+
+dialog[open] {
+  animation: pab-rise 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
 }

@@ -58,7 +58,7 @@ export default async function FeedPage() {
 
   return (
     <AppShell>
-      <div className="space-y-4">
+      <div className="space-y-4 stagger">
         {/*
           The one warm panel on the page. Cream rather than white so the
           greeting reads as a header and the cards below it read as content --

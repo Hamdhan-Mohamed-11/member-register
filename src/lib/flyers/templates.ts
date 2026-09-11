@@ -38,15 +38,20 @@ export type FlyerTemplate = {
 export const FLYER_W = 1080;
 export const FLYER_H = 1350;
 
-// The portal's own colours, so a flyer looks like it came from this club.
-const INK = "#1c1917";
-const CREAM = "#faf6ef";
-const BRAND = "#7c2d12";
-const BRAND_LIGHT = "#c2703b";
-const GOLD = "#b8912f";
+// Straight from the brand guideline, not approximated.
+//
+// These were a brown (#7c2d12) and a tan, which are nowhere in Pick a Book's
+// palette — a flyer drawn in them would have gone out looking like a different
+// organisation's. #293896 and #00AEEF are the brand's primary pair; the gold
+// stays only as a hairline accent, never as a field.
+const INK = "#14162e";
+const CREAM = "#f8f2e9";
+const BRAND = "#293896";
+const BRAND_LIGHT = "#00aeef";
+const GOLD = "#b8891f";
 
-const DISPLAY = "'Georgia', 'Times New Roman', serif";
-const BODY = "'Helvetica Neue', Arial, sans-serif";
+const DISPLAY = "'Playfair Display', Georgia, 'Times New Roman', serif";
+const BODY = "Poppins, 'Helvetica Neue', Arial, sans-serif";
 
 /** Wraps text to a width and returns how far down it ended. */
 function wrap(

@@ -52,7 +52,7 @@ export default async function DirectoryPage() {
           />
         </Card>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 stagger">
           {others.map((person) => {
             const name = `${person.firstName} ${person.lastName}`.trim() || "Member";
             return (

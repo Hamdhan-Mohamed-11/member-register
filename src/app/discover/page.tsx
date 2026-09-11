@@ -46,7 +46,7 @@ export default async function DiscoverPage() {
       ) : (
         // One column. This is photos and video of people, and a two-up grid
         // shrinks faces to thumbnails on the device most members are holding.
-        <div className="space-y-4 max-w-xl">
+        <div className="space-y-4 max-w-xl stagger">
           {posts.map((post) => (
             <DiscoverCard key={post.id} post={post} />
           ))}

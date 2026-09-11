@@ -152,29 +152,53 @@ let profile = (await j(await admin(`/rest/v1/profiles?id=eq.${ids[A2]}&select=ro
 check("a member can be promoted to secretary", profile?.role === "secretary", JSON.stringify(profile));
 await page.screenshot({ path: `${SHOT}e2e-member-admin.png`, fullPage: true });
 
-// Alpha is currently the ONLY super admin.
+// The last-super-admin guard.
+//
+// This block used to assume Alpha was the only super admin in the database.
+// That is true of an empty database and false of a real one: the moment the
+// club has its own super admins, Alpha is not the last, the demotion SUCCEEDS,
+// and the next line -- which expects to still be on an admin page -- times out
+// waiting for #role on the /feed page it was bounced to. The crash then left
+// every fixture account behind, including a super admin with a known password.
+//
+// So count the real ones first and assert whichever rule actually applies.
+const otherSupers = (await j(await admin(
+  "/rest/v1/profiles?role=eq.super_admin&status=eq.active&select=id",
+))).filter((p) => p.id !== ids[A1] && p.id !== ids[A2]);
+
 await page.goto(`${BASE}/admin/members/${ids[A1]}`, { waitUntil: "domcontentloaded" });
 await page.waitForTimeout(1500);
 await page.selectOption("#role", "member");
 await page.waitForTimeout(3000);
-
 profile = (await j(await admin(`/rest/v1/profiles?id=eq.${ids[A1]}&select=role`)))[0];
-check("the LAST super admin cannot demote themselves",
-  profile?.role === "super_admin", JSON.stringify(profile));
-body = await visibleText(page);
-check("and they are told why", /last super admin/i.test(body ?? ""), body?.slice(0, 200));
 
-// With a second super admin, demotion is allowed.
+if (otherSupers.length === 0) {
+  check("the LAST super admin cannot demote themselves",
+    profile?.role === "super_admin", JSON.stringify(profile));
+  body = await visibleText(page);
+  check("and they are told why", /last super admin/i.test(body ?? ""), body?.slice(0, 200));
+
+  // Now give them company, and the same demotion must go through.
+  await admin(`/rest/v1/profiles?id=eq.${ids[A2]}`, {
+    method: "PATCH", body: JSON.stringify({ role: "super_admin" }),
+  });
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await page.waitForTimeout(1500);
+  await page.selectOption("#role", "member");
+  await page.waitForTimeout(3000);
+  profile = (await j(await admin(`/rest/v1/profiles?id=eq.${ids[A1]}&select=role`)))[0];
+} else {
+  console.log(`  SKIP  last-super-admin guard (${otherSupers.length} real super admin${otherSupers.length === 1 ? "" : "s"} exist, so the fixture is not the last)`);
+}
+
+// Either way Alpha ends up demoted, which is what the rest of the suite needs.
+check("a super admin with company can be demoted",
+  profile?.role === "member", JSON.stringify(profile));
+
+// Beta has to be able to carry on from here.
 await admin(`/rest/v1/profiles?id=eq.${ids[A2]}`, {
   method: "PATCH", body: JSON.stringify({ role: "super_admin" }),
 });
-await page.reload({ waitUntil: "domcontentloaded" });
-await page.waitForTimeout(1500);
-await page.selectOption("#role", "member");
-await page.waitForTimeout(3000);
-profile = (await j(await admin(`/rest/v1/profiles?id=eq.${ids[A1]}&select=role`)))[0];
-check("with a second super admin, demotion is allowed",
-  profile?.role === "member", JSON.stringify(profile));
 
 // --- club membership admin -----------------------------------------------
 console.log("\n--- club memberships ---");

@@ -287,3 +287,41 @@ export async function appointSecretary(formData: FormData): Promise<ActionResult
   revalidatePath("/admin");
   return { ok: true };
 }
+
+/**
+ * Removes a club, or a club type.
+ *
+ * Both refuse when anything depends on them, and the database says exactly
+ * what is in the way -- "3 clubs are filed under it", not "cannot delete".
+ * That message is surfaced verbatim, because the fix it names is the useful
+ * part.
+ */
+export async function deleteClub(clubId: string): Promise<ActionResult> {
+  await requireSuperAdmin();
+  if (!z.string().uuid().safeParse(clubId).success) {
+    return { ok: false, error: "Unknown club." };
+  }
+
+  const supabase = await getActionSupabase();
+  const { error } = await supabase.rpc("delete_club", { p_club_id: clubId });
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/admin/clubs");
+  revalidatePath("/join");
+  return { ok: true };
+}
+
+export async function deleteClubType(typeId: string): Promise<ActionResult> {
+  await requireSuperAdmin();
+  if (!z.string().uuid().safeParse(typeId).success) {
+    return { ok: false, error: "Unknown type." };
+  }
+
+  const supabase = await getActionSupabase();
+  const { error } = await supabase.rpc("delete_club_type", { p_type_id: typeId });
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/admin/clubs");
+  revalidatePath("/join");
+  return { ok: true };
+}
