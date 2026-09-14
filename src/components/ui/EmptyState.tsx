@@ -28,8 +28,13 @@ export function EmptyState({
 }) {
   return (
     <div className={`text-center px-4 ${compact ? "py-7" : "py-12"}`}>
+      {/*
+        Tinted rather than grey. An empty list is a normal state, not a
+        degraded one, and a grey disc on a grey panel is what makes it read as
+        something having gone wrong.
+      */}
       <span
-        className={`mx-auto grid place-items-center rounded-full bg-canvas-deep text-ink-faint ${
+        className={`mx-auto grid place-items-center rounded-full bg-sky-100 text-sky-700 ${
           compact ? "mb-2.5 size-10" : "mb-3 size-12"
         }`}
       >

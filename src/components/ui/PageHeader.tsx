@@ -32,13 +32,22 @@ export function PageHeader({
     >
       <div className="min-w-0">
         {eyebrow ? (
-          <p className="text-xs font-semibold uppercase tracking-wider text-gold-700 mb-1">
+          <p className="text-xs font-semibold uppercase tracking-wider text-brand-600 mb-1">
             {eyebrow}
           </p>
         ) : null}
         <h1 className="font-display text-2xl sm:text-[1.75rem] leading-tight text-ink">
           {title}
         </h1>
+        {/*
+          A short rule in the brand's light blue under every page title. It is
+          the one repeated mark that makes a screen look designed rather than
+          defaulted, and it costs nothing -- no image, no layout shift.
+        */}
+        <span
+          aria-hidden
+          className="mt-2 block h-0.5 w-9 rounded-full bg-sky-500"
+        />
         {description ? (
           <p className="mt-1 text-sm text-ink-muted max-w-prose">{description}</p>
         ) : null}

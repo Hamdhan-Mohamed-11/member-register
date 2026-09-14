@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
  * warm background a pure shadow reads as muddy, while a border keeps the edge
  * crisp at any zoom level and on low-quality screens.
  */
-export type CardTone = "surface" | "cream" | "brand" | "warning" | "danger";
+export type CardTone = "surface" | "cream" | "brand" | "sky" | "warning" | "danger";
 
 /**
  * Backgrounds have to be a PROP, not something a caller passes through
@@ -21,6 +21,10 @@ const tones: Record<CardTone, string> = {
   surface: "bg-surface border-line",
   cream: "bg-cream border-cream-deep",
   brand: "bg-brand-50 border-brand-200",
+  // The brand's light blue, for a panel that should feel like a highlight
+  // rather than a warning. sky-100 keeps text at full contrast; the bright
+  // #00AEEF would not.
+  sky: "bg-sky-100 border-sky-200",
   warning: "bg-warning-100/50 border-warning-600/25",
   danger: "bg-danger-100/50 border-danger-600/25",
 };

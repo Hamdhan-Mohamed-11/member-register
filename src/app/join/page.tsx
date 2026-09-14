@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
-import { Card } from "@/components/ui/Card";
+import { AuthLayout } from "@/components/shell/AuthLayout";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { getSessionMember } from "@/lib/auth/session";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
@@ -44,25 +44,20 @@ export default async function JoinPage() {
   }));
 
   return (
-    <AppShell signedOut>
-      <div className="max-w-sm mx-auto pt-4 sm:pt-10">
-        <div className="text-center mb-6">
-          <h1 className="font-display text-2xl sm:text-3xl text-ink">Join a club</h1>
-          <p className="mt-1.5 text-sm text-ink-muted">
-            Pick a club, and the club will confirm your place.
-          </p>
-        </div>
-        <Card>
-          {clubs.length ? (
-            <JoinForm clubs={clubs} />
-          ) : (
-            <EmptyState
-              title="No clubs are open for applications"
-              description="There aren't any public clubs accepting members right now. If your employer has a club, look for your invite email instead."
-            />
-          )}
-        </Card>
-      </div>
+    <AppShell signedOut wide>
+      <AuthLayout
+        title="Join a club"
+        subtitle="Pick a club, and the club will confirm your place."
+      >
+        {clubs.length ? (
+          <JoinForm clubs={clubs} />
+        ) : (
+          <EmptyState
+            title="No clubs are open for applications"
+            description="There aren't any public clubs accepting members right now. If your employer has a club, look for your invite email instead."
+          />
+        )}
+      </AuthLayout>
     </AppShell>
   );
 }

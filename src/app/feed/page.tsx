@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AppShell } from "@/components/shell/AppShell";
 import { Avatar } from "@/components/ui/Avatar";
-import { Badge } from "@/components/ui/Badge";
-import { Card, CardHeader, Stat } from "@/components/ui/Card";
+import { Card, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Icon } from "@/components/ui/Icon";
 import { buttonClassName } from "@/components/ui/Button";
@@ -60,51 +59,77 @@ export default async function FeedPage() {
     <AppShell>
       <div className="space-y-4 stagger">
         {/*
-          The one warm panel on the page. Cream rather than white so the
-          greeting reads as a header and the cards below it read as content --
-          previously everything on this page was the same white card and the
-          eye had nowhere to start.
+          The page's anchor, in the brand's two blues.
+          
+          It was a cream card, which read as "a card, but beige" rather than as
+          a header -- the eye had nowhere to start and the whole page was one
+          flat tone. A dark panel at the top gives the rest of the page
+          something to be lighter than, and it is the same treatment the
+          signed-out landing page opens with, so the two halves of the product
+          look related.
         */}
-        <Card tone="cream">
-          <div className="flex items-start gap-4">
-            <Avatar
-              src={avatarUrl(member.userId, member.avatarPath)}
-              firstName={member.firstName}
-              lastName={member.lastName}
-              size="md"
-              className="mt-0.5"
-            />
-            <div className="min-w-0 flex-1">
-              <h1 className="font-display text-2xl sm:text-3xl leading-tight text-ink">
-                Hello, {member.firstName || "there"}
-              </h1>
-              {clubs.length ? (
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {clubs.map((club) => (
-                    <Badge key={club.clubId} tone="brand">
-                      {club.clubName}
-                    </Badge>
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-1 text-sm text-ink-muted">
-                  You&apos;re not in a club yet.
+        <section className="relative overflow-hidden rounded-panel bg-brand-900 p-5 shadow-band sm:p-6">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(680px 340px at 88% -20%, rgba(0,174,239,0.48), transparent 62%)",
+            }}
+          />
+
+          <div className="relative">
+            <div className="flex items-start gap-4">
+              <Avatar
+                src={avatarUrl(member.userId, member.avatarPath)}
+                firstName={member.firstName}
+                lastName={member.lastName}
+                size="md"
+                className="mt-0.5 ring-2 ring-white/25"
+              />
+              <div className="min-w-0 flex-1">
+                <h1 className="font-display text-2xl leading-tight text-white sm:text-3xl">
+                  Hello, {member.firstName || "there"}
+                </h1>
+                {clubs.length ? (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {clubs.map((club) => (
+                      <span
+                        key={club.clubId}
+                        className="inline-flex items-center rounded-full border border-white/25 bg-white/10 px-2.5 py-1 text-xs font-medium text-sky-200"
+                      >
+                        {club.clubName}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-1 text-sm text-on-navy-muted">
+                    You&apos;re not in a club yet.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-5 flex flex-wrap gap-x-10 gap-y-4 border-t border-white/15 pt-4">
+              <Link href="/me/points" className="press rounded-lg">
+                <p className="font-display text-2xl leading-none text-sky-300 tabular-nums">
+                  {member.pointsBalance}
                 </p>
-              )}
+                <p className="mt-1.5 text-xs uppercase tracking-wide text-on-navy-muted">
+                  points
+                </p>
+              </Link>
+              <div>
+                <p className="font-display text-2xl leading-none text-white tabular-nums">
+                  {renewal ? formatDate(renewal) : "—"}
+                </p>
+                <p className="mt-1.5 text-xs uppercase tracking-wide text-on-navy-muted">
+                  {clubs.length > 1 ? "next renewal" : "renews on"}
+                </p>
+              </div>
             </div>
           </div>
-
-          <div className="mt-5 pt-4 border-t border-cream-deep flex flex-wrap gap-x-10 gap-y-4">
-            <Link href="/me/points" className="rounded-lg">
-              <Stat value={member.pointsBalance} label="points" />
-            </Link>
-            <Stat
-              value={renewal ? formatDate(renewal) : "—"}
-              label={clubs.length > 1 ? "next renewal" : "renews on"}
-              tone="ink"
-            />
-          </div>
-        </Card>
+        </section>
 
         {state === "expired" || state === "expiring_soon" ? (
           <Card tone={state === "expired" ? "danger" : "warning"}>
