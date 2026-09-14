@@ -20,7 +20,7 @@ export const metadata: Metadata = { title: "Books" };
 
 // The catalogue itself is a cache of someone else's database and a minute of
 // staleness is fine -- but the page now also shows what THIS member has in
-// their basket and on their wishlist, and a shared cache would hand one
+// their cart and on their wishlist, and a shared cache would hand one
 // member another's buttons. The legacy layer keeps its own cache, so
 // HostGator is still not hit on every view.
 export const dynamic = "force-dynamic";
@@ -103,7 +103,7 @@ export default async function BooksPage({
         </div>
         <div className="flex shrink-0 gap-2">
           <Link href="/cart" className={buttonClassName("secondary", "sm")}>
-            Basket
+            Cart
           </Link>
           <Link href="/library" className={buttonClassName("secondary", "sm")}>
             Borrow

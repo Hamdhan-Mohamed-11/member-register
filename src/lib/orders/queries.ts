@@ -127,7 +127,7 @@ function toOrder(raw: RawOrder): BookOrder {
 export async function getCart(): Promise<CartLine[]> {
   const supabase = await getServerComponentSupabase();
   // No member filter -- the policy on cart_items is auth.uid() for every
-  // command, so this cannot return anyone else's basket.
+  // command, so this cannot return anyone else's cart.
   const { data } = await supabase
     .from("cart_items")
     .select("book_id, title, author, quantity")
@@ -146,7 +146,7 @@ export async function getCart(): Promise<CartLine[]> {
   }));
 }
 
-/** Book ids already in the basket, so the catalogue can say "In basket". */
+/** Book ids already in the cart, so the catalogue can say "In cart". */
 export async function getCartBookIds(): Promise<Set<number>> {
   const supabase = await getServerComponentSupabase();
   const { data } = await supabase.from("cart_items").select("book_id");
@@ -201,6 +201,11 @@ export type ReadRiseTotals = {
   targetOn: string;
   myBooks: number;
   myDonated: number;
+  /** The member's primary club, or null if they are in none. */
+  clubId: string | null;
+  clubName: string | null;
+  clubBooks: number;
+  clubDonated: number;
 };
 
 /**
@@ -221,6 +226,10 @@ export async function getReadRiseTotals(): Promise<ReadRiseTotals | null> {
         target_on: string;
         my_books: number;
         my_donated: number | string;
+        club_id: string | null;
+        club_name: string | null;
+        club_books: number;
+        club_donated: number | string;
       }
     | undefined;
 
@@ -233,5 +242,9 @@ export async function getReadRiseTotals(): Promise<ReadRiseTotals | null> {
     targetOn: row.target_on,
     myBooks: Number(row.my_books),
     myDonated: Number(row.my_donated),
+    clubId: row.club_id,
+    clubName: row.club_name,
+    clubBooks: Number(row.club_books),
+    clubDonated: Number(row.club_donated),
   };
 }

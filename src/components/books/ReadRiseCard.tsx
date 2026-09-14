@@ -10,30 +10,49 @@ const lkr = (n: number) =>
  *
  * Leads with RUPEES, not books. A member who has just donated Rs. 200 against
  * a Rs. 500 book has funded nought books, and "0 books funded" is a deflating
- * thing to show someone who just gave money -- the exact opposite of what this
- * card is for. The rupee figure is always non-zero once they have bought
- * anything, and the books figure appears alongside it as it earns its place.
+ * thing to show someone who just gave money — the exact opposite of what this
+ * card is for.
  *
- * The nudge is the gap to the next book, because that is a target a member can
- * actually close today.
+ * The bar carries three NESTED figures, not three separate ones: what the
+ * member gave is part of what their club gave, which is part of the total. So
+ * they are drawn as segments of one bar, widest first, each starting where the
+ * last ends. Three separate bars would invite the reader to add them up and
+ * get a number three times too big.
  */
 export function ReadRiseCard({ totals }: { totals: ReadRiseTotals }) {
   const perBook =
     totals.myBooks > 0 ? totals.myDonated / totals.myBooks : null;
 
-  // How much more would fund one more book, derived from the same ratio the
-  // database used rather than a second copy of the cost setting.
   const toNextBook =
-    perBook != null
-      ? perBook * (totals.myBooks + 1) - totals.myDonated
-      : null;
+    perBook != null ? perBook * (totals.myBooks + 1) - totals.myDonated : null;
 
-  const pct =
+  // Everything is a percentage of the TARGET, so the three segments sit on one
+  // scale and the widest is genuinely the whole movement.
+  const pctOf = (books: number) =>
     totals.targetBooks > 0
-      ? Math.min(100, (totals.booksFunded / totals.targetBooks) * 100)
+      ? Math.min(100, (books / totals.targetBooks) * 100)
       : 0;
 
+  const allPct = pctOf(totals.booksFunded);
+  const clubPct = pctOf(totals.clubBooks);
+  const minePct = pctOf(totals.myBooks);
+
+  // A campaign at a fraction of a percent still needs a visible sliver, or the
+  // bar renders empty and reads as a broken component rather than early days.
+  const show = (p: number) => (p > 0 ? Math.max(p, 0.8) : 0);
+
   const targetYear = new Date(`${totals.targetOn}T00:00:00`).getFullYear();
+
+  const LEGEND = [
+    { label: "Everyone", value: totals.donatedLkr, className: "bg-brand-500" },
+    {
+      label: totals.clubName ?? "Your club",
+      value: totals.clubDonated,
+      className: "bg-sky-500",
+      hide: totals.clubId == null,
+    },
+    { label: "You", value: totals.myDonated, className: "bg-gold-500" },
+  ].filter((l) => !l.hide);
 
   return (
     <Card tone="brand">
@@ -42,15 +61,12 @@ export function ReadRiseCard({ totals }: { totals: ReadRiseTotals }) {
           <p className="text-xs font-semibold uppercase tracking-wider text-gold-700">
             Read and Rise
           </p>
-          <h2 className="font-display text-lg text-ink leading-tight mt-0.5">
+          <h2 className="mt-0.5 font-display text-lg leading-tight text-ink">
             {totals.myDonated > 0
               ? "Books you've put into schools"
               : "Every book you buy sends one to a school"}
           </h2>
         </div>
-        <span aria-hidden className="text-2xl shrink-0">
-          📚
-        </span>
       </div>
 
       {totals.myDonated > 0 ? (
@@ -85,21 +101,59 @@ export function ReadRiseCard({ totals }: { totals: ReadRiseTotals }) {
             {totals.booksFunded.toLocaleString("en-LK")} of{" "}
             {totals.targetBooks.toLocaleString("en-LK")} books by {targetYear}
           </span>
-          <span className="tabular-nums">{pct.toFixed(pct < 1 ? 2 : 0)}%</span>
+          <span className="tabular-nums">
+            {allPct.toFixed(allPct > 0 && allPct < 1 ? 2 : 0)}%
+          </span>
         </div>
-        <div className="mt-1.5 h-2 rounded-full bg-surface overflow-hidden">
+
+        {/*
+          Three segments, drawn widest first and stacked on top of each other
+          rather than side by side, because the figures nest. `readrise-grow`
+          animates the width from zero on load — a progress bar that is simply
+          there has nothing to say; one that fills says "this is moving".
+        */}
+        <div className="relative mt-1.5 h-2.5 overflow-hidden rounded-full bg-surface">
           <div
-            className="h-full rounded-full bg-brand-600"
-            // A campaign at 0.02% still deserves a visible sliver -- a bar that
-            // renders as empty reads as a broken component, not as early days.
-            style={{ width: `${Math.max(pct, 1.5)}%` }}
+            className="readrise-grow absolute inset-y-0 left-0 rounded-full bg-brand-500"
+            style={{ ["--w" as string]: `${show(allPct)}%` }}
+          />
+          {totals.clubId ? (
+            <div
+              className="readrise-grow absolute inset-y-0 left-0 rounded-full bg-sky-500"
+              style={{
+                ["--w" as string]: `${show(clubPct)}%`,
+                animationDelay: "0.12s",
+              }}
+            />
+          ) : null}
+          <div
+            className="readrise-grow absolute inset-y-0 left-0 rounded-full bg-gold-500"
+            style={{
+              ["--w" as string]: `${show(minePct)}%`,
+              animationDelay: "0.24s",
+            }}
           />
         </div>
+
+        <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
+          {LEGEND.map((item) => (
+            <li key={item.label} className="flex items-center gap-1.5 text-xs">
+              <span
+                aria-hidden
+                className={`size-2.5 shrink-0 rounded-full ${item.className}`}
+              />
+              <span className="text-ink-muted">{item.label}</span>
+              <span className="font-medium text-ink tabular-nums">
+                {lkr(item.value)}
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       <Link
         href="/books"
-        className="mt-4 inline-flex min-h-9 items-center rounded-lg bg-brand-600 px-3.5 text-sm font-medium text-white hover:bg-brand-700"
+        className="press mt-4 inline-flex min-h-9 items-center rounded-lg bg-brand-600 px-3.5 text-sm font-medium text-white hover:bg-brand-700"
       >
         {totals.myDonated > 0 ? "Give another book" : "Browse the catalogue"}
       </Link>

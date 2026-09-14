@@ -144,7 +144,7 @@ export default async function AdminOrdersPage() {
         <Card flush>
           <EmptyState
             title="No orders yet"
-            description="Orders appear here the moment a member sends their basket."
+            description="Orders appear here the moment a member sends their cart."
           />
         </Card>
       ) : (

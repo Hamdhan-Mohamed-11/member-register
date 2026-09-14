@@ -12,7 +12,7 @@ import { getBookSnapshots } from "@/lib/legacy/books";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import { formatLkrCents, priceLine } from "@/lib/pricing";
 
-export const metadata: Metadata = { title: "Basket" };
+export const metadata: Metadata = { title: "Cart" };
 export const dynamic = "force-dynamic";
 
 export default async function CartPage() {
@@ -31,8 +31,8 @@ export default async function CartPage() {
   const discount = Number(settings?.book_discount_percent ?? 0);
   const readrisePercent = Number(settings?.readrise_percent ?? 0);
 
-  // Live prices, not the ones cached when the book went in the basket. A
-  // basket that quotes last week's price and then charges this week's is the
+  // Live prices, not the ones cached when the book went in the cart. A
+  // cart that quotes last week's price and then charges this week's is the
   // single most annoying thing a shop can do.
   const snapshots = await getBookSnapshots(cart.map((l) => l.bookId));
   const byId = snapshots.ok ? snapshots.data : new Map();
@@ -56,7 +56,7 @@ export default async function CartPage() {
   return (
     <AppShell>
       <PageHeader
-        title="Your basket"
+        title="Your cart"
         description="Send it to the club and they'll confirm the price before anything is paid."
         action={
           <Link href="/orders" className={buttonClassName("secondary", "sm")}>
@@ -68,7 +68,7 @@ export default async function CartPage() {
       {cart.length === 0 ? (
         <Card flush>
           <EmptyState
-            title="Your basket is empty"
+            title="Your cart is empty"
             description="Find something in the catalogue and tap Buy."
             action={
               <Link href="/books" className={buttonClassName("secondary", "sm")}>

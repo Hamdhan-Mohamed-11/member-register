@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Notice, TextareaField } from "@/components/ui/Field";
 import { addToCart, placeOrder, setCartQuantity } from "./actions";
 
-/** Add a book to the basket from the catalogue. */
+/** Add a book to the cart from the catalogue. */
 export function AddToCartButton({
   book,
   inCart,
@@ -49,14 +49,14 @@ export function AddToCartButton({
             : "bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-60"
         }`}
       >
-        {added ? "In basket" : pending ? "Adding…" : "Buy"}
+        {added ? "In cart" : pending ? "Adding…" : "Buy"}
       </button>
       {error ? <span className="text-[11px] text-danger-600">{error}</span> : null}
     </span>
   );
 }
 
-/** Quantity stepper on the basket page. */
+/** Quantity stepper on the cart page. */
 export function QuantityStepper({
   bookId,
   quantity,
@@ -114,7 +114,7 @@ export function QuantityStepper({
 }
 
 /**
- * Sends the basket to the club.
+ * Sends the cart to the club.
  *
  * Deliberately does NOT say "Pay now". Nothing is charged here: the order goes
  * to the club, who confirm the price first. Labelling this as a payment and

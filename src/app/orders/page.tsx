@@ -42,7 +42,7 @@ export default async function OrdersPage() {
         description="The club confirms the price on every order before anything is paid."
         action={
           <Link href="/cart" className={buttonClassName("secondary", "sm")}>
-            Basket
+            Cart
           </Link>
         }
       />
@@ -51,7 +51,7 @@ export default async function OrdersPage() {
         <Card flush>
           <EmptyState
             title="No orders yet"
-            description="Add books to your basket and send them to the club."
+            description="Add books to your cart and send them to the club."
             action={
               <Link href="/books" className={buttonClassName("secondary", "sm")}>
                 Browse books

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { LegacyCategory } from "@/lib/legacy/types";
 import { controlClassName, selectClassName } from "@/components/ui/Field";
+import { PriceRange } from "./PriceRange";
 
 
 /**
@@ -73,35 +74,7 @@ export function CatalogueFilters({
         ) : null}
       </div>
 
-      {showPrice ? (
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm text-ink-muted">Price</span>
-          <input
-            type="number"
-            name="min_price"
-            min={0}
-            step="1"
-            inputMode="numeric"
-            defaultValue={current.minPrice ?? ""}
-            placeholder="Min"
-            aria-label="Minimum price in rupees"
-            className={`${controlClassName} w-28`}
-          />
-          <span className="text-ink-faint">to</span>
-          <input
-            type="number"
-            name="max_price"
-            min={0}
-            step="1"
-            inputMode="numeric"
-            defaultValue={current.maxPrice ?? ""}
-            placeholder="Max"
-            aria-label="Maximum price in rupees"
-            className={`${controlClassName} w-28`}
-          />
-          <span className="text-xs text-ink-faint">the price you pay</span>
-        </div>
-      ) : null}
+      {showPrice ? <PriceRange min={current.minPrice} max={current.maxPrice} /> : null}
 
       <button
         type="submit"

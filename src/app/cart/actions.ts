@@ -42,7 +42,7 @@ export async function addToCart(formData: FormData): Promise<ActionResult> {
   );
   if (error) return { ok: false, error: error.message };
 
-  // Adding to the basket takes it off the buy wishlist -- keeping a book on
+  // Adding to the cart takes it off the buy wishlist -- keeping a book on
   // both lists means two places to remove it from and two chances to forget.
   await supabase
     .from("book_wishlist")
@@ -86,7 +86,7 @@ export async function setCartQuantity(
 }
 
 /**
- * Turns the basket into an order awaiting the club's review.
+ * Turns the cart into an order awaiting the club's review.
  *
  * The prices are looked up HERE, from the live catalogue, rather than taken
  * from the page -- a browser can post anything. That still is not a guarantee,
@@ -110,7 +110,7 @@ export async function placeOrder(note: string): Promise<ActionResult<{ orderId: 
     quantity: number;
   }[];
 
-  if (lines.length === 0) return { ok: false, error: "Your basket is empty." };
+  if (lines.length === 0) return { ok: false, error: "Your cart is empty." };
 
   const { data: settings } = await supabase
     .from("app_settings")
@@ -133,7 +133,7 @@ export async function placeOrder(note: string): Promise<ActionResult<{ orderId: 
     return {
       book_id: Number(l.book_id),
       // Prefer the live title over the snapshot taken when it went in the
-      // basket: it is fresher, and the basket copy exists only for when the
+      // cart: it is fresher, and the cart copy exists only for when the
       // catalogue cannot be reached.
       title: snap?.title || l.title,
       author: snap?.author || l.author,
