@@ -50,8 +50,17 @@ export function SessionCard({
   const cancelled = session.status === "cancelled";
 
   const inner = (
+    /*
+      min-w-0 is load-bearing, not tidiness.
+
+      This card is placed in a CSS grid on /feed and /sessions, and a grid item
+      defaults to `min-width: auto` — it refuses to shrink below the intrinsic
+      width of its content. Every `truncate` inside is then ignored and a long
+      book title runs straight out of the card. Same rule applies to flex
+      children, which is why the chain below repeats it.
+    */
     <Card
-      className={`h-full ${past || cancelled ? "opacity-70" : ""}`}
+      className={`h-full min-w-0 ${past || cancelled ? "opacity-70" : ""}`}
       interactive={Boolean(href)}
       flush
     >
@@ -82,7 +91,9 @@ export function SessionCard({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
-            <p className="font-medium leading-snug text-ink">{session.title}</p>
+            <p className="min-w-0 font-medium leading-snug text-ink">
+              {session.title}
+            </p>
 
             {cancelled ? (
               <Badge tone="danger" className="shrink-0">
@@ -126,7 +137,8 @@ export function SessionCard({
   );
 
   return href ? (
-    <Link href={href} className="press block">
+    // The Link is the grid item, so it carries min-w-0 as well.
+    <Link href={href} className="press block min-w-0">
       {inner}
     </Link>
   ) : (

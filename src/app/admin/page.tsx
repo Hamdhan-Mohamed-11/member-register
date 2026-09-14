@@ -84,7 +84,7 @@ export default async function AdminPage() {
               <div className="stagger mt-3 grid gap-3 sm:grid-cols-2">
                 {inGroup.map((area) =>
                   area.ready ? (
-                    <Link key={area.href} href={area.href} className="block">
+                    <Link key={area.href} href={area.href} className="block min-w-0">
                       <Card interactive className="press h-full">
                         <div className="flex items-start gap-3">
                           <span className="grid size-10 shrink-0 place-items-center rounded-full bg-sky-100 text-sky-700">

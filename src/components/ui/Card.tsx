@@ -50,7 +50,13 @@ export function Card({
 }) {
   return (
     <div
-      className={`border rounded-card shadow-card ${tones[tone]} ${
+      /*
+        min-w-0 because a Card is very often a grid or flex item, and those
+        default to `min-width: auto` -- they refuse to shrink below their
+        content's intrinsic width, so every `truncate` inside is silently
+        ignored and long text runs out of the card. Harmless anywhere else.
+      */
+      className={`min-w-0 border rounded-card shadow-card ${tones[tone]} ${
         flush ? "" : "p-4 sm:p-5"
       } ${
         interactive

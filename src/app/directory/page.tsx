@@ -56,7 +56,7 @@ export default async function DirectoryPage() {
           {others.map((person) => {
             const name = `${person.firstName} ${person.lastName}`.trim() || "Member";
             return (
-              <Link key={person.id} href={`/members/${person.id}`} className="press block">
+              <Link key={person.id} href={`/members/${person.id}`} className="press block min-w-0">
                 <Card interactive className="h-full" flush>
                   <div className="flex items-start gap-3 p-4">
                     <Avatar
