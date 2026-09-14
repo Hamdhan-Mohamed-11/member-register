@@ -349,11 +349,32 @@ check("admin CAN invite someone to a company club",
   goodInvite.status < 300, JSON.stringify(goodInvite));
 
 // Locking yourself out of your own admin area is a one-click mistake.
+//
+// This only holds when the fixture IS the last super admin, which stops being
+// true the moment the club has real ones. When it is not last the demotion
+// legitimately succeeds -- and then every later check in this file ran as a
+// plain member, which is what made the two admin_members assertions below
+// fail too. All three failures were this one.
+const realSupers = (await j(await admin(
+  "/rest/v1/profiles?role=eq.super_admin&status=eq.active&select=id",
+))).filter((p) => p.id !== ids.admin);
+
 const demoteLast = await rpc(tokAdmin, "set_member_role",
   { p_member_id: ids.admin, p_role: "member" });
-check("the last super admin CANNOT be demoted",
-  demoteLast.status >= 400 && /last super admin/i.test(JSON.stringify(demoteLast.body)),
-  JSON.stringify(demoteLast));
+
+if (realSupers.length === 0) {
+  check("the last super admin CANNOT be demoted",
+    demoteLast.status >= 400 && /last super admin/i.test(JSON.stringify(demoteLast.body)),
+    JSON.stringify(demoteLast));
+} else {
+  check("a super admin with company CAN be demoted",
+    demoteLast.status < 300, JSON.stringify(demoteLast));
+
+  // Put the role back: everything after this point needs an admin session.
+  await admin(`/rest/v1/profiles?id=eq.${ids.admin}`, {
+    method: "PATCH", body: JSON.stringify({ role: "super_admin" }),
+  });
+}
 
 
 console.log("\n--- admin_members view ---");
