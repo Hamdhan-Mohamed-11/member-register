@@ -75,27 +75,38 @@ export function OrderReview({
     <div className="mt-3 border-t border-line pt-3 space-y-3">
       {error ? <Notice>{error}</Notice> : null}
 
-      <ul className="space-y-2">
+      {/*
+        Title on its own line, then "asked" and the price box beneath it.
+
+        This was one row -- title, asked price and input side by side -- which
+        the 360px audit caught overflowing by about a hundred pixels. The input
+        took `controlClassName`, whose w-full beats the w-28 beside it at equal
+        specificity, so a full-width box sat in a row that could not wrap. The
+        input now sets its own width outright, and the row stacks on a phone.
+      */}
+      <ul className="space-y-3">
         {items.map((item) => (
-          <li key={item.id} className="flex items-center gap-2">
-            <span className="min-w-0 flex-1 text-sm text-ink truncate">
+          <li key={item.id} className="min-w-0">
+            <p className="truncate text-sm text-ink">
               {item.title || `Book #${item.bookId}`}
               <span className="text-ink-faint"> × {item.quantity}</span>
-            </span>
-            <span className="text-xs text-ink-faint shrink-0 tabular-nums">
-              asked {lkr(item.askingUnitPrice)}
-            </span>
-            <input
-              type="number"
-              min={0}
-              step="0.01"
-              value={prices[item.id] ?? ""}
-              onChange={(e) =>
-                setPrices((p) => ({ ...p, [item.id]: e.target.value }))
-              }
-              aria-label={`Unit price for ${item.title}`}
-              className={`${controlClassName} w-28 shrink-0`}
-            />
+            </p>
+            <div className="mt-1.5 flex items-center justify-between gap-3">
+              <span className="text-xs text-ink-faint tabular-nums">
+                asked {lkr(item.askingUnitPrice)}
+              </span>
+              <input
+                type="number"
+                min={0}
+                step="0.01"
+                value={prices[item.id] ?? ""}
+                onChange={(e) =>
+                  setPrices((p) => ({ ...p, [item.id]: e.target.value }))
+                }
+                aria-label={`Unit price for ${item.title}`}
+                className="min-h-11 w-32 shrink-0 rounded-lg border border-line-strong bg-surface px-3 text-sm tabular-nums text-ink focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-600/20"
+              />
+            </div>
           </li>
         ))}
       </ul>
