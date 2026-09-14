@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AppShell } from "@/components/shell/AppShell";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
@@ -56,7 +56,7 @@ export default async function AdminMemberPage({
   const name = `${profile.first_name} ${profile.last_name}`.trim() || profile.email;
 
   return (
-    <AppShell>
+    <AdminShell>
       <div className="mb-4">
         <BackLink href="/admin/members">Members</BackLink>
       </div>
@@ -135,6 +135,6 @@ export default async function AdminMemberPage({
           </div>
         </Card>
       </div>
-    </AppShell>
+    </AdminShell>
   );
 }

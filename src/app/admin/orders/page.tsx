@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AppShell } from "@/components/shell/AppShell";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
@@ -132,7 +132,7 @@ export default async function AdminOrdersPage() {
   );
 
   return (
-    <AppShell>
+    <AdminShell>
       <BackLink href="/admin">Admin</BackLink>
       <PageHeader
         className="mt-1"
@@ -170,6 +170,6 @@ export default async function AdminOrdersPage() {
           )}
         </div>
       )}
-    </AppShell>
+    </AdminShell>
   );
 }

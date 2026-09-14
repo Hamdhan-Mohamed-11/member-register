@@ -42,7 +42,7 @@ export function LoginForm() {
     // paths: an open redirect here would let a phishing link bounce a
     // freshly-authenticated user off-site.
     const next = searchParams.get("next");
-    const target = next && next.startsWith("/") && !next.startsWith("//") ? next : "/feed";
+    const target = next && next.startsWith("/") && !next.startsWith("//") ? next : "/home";
 
     router.replace(target);
     router.refresh();

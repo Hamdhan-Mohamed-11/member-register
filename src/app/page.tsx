@@ -114,7 +114,7 @@ const STEPS = [
 
 export default async function Home() {
   // A signed-in member has no use for the sales pitch.
-  if (await getSessionMember()) redirect("/feed");
+  if (await getSessionMember()) redirect("/home");
 
   return (
     <AppShell signedOut wide>

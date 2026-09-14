@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Log in" };
 
 export default async function LoginPage() {
   // Already signed in? Nothing to do here.
-  if (await getSessionMember()) redirect("/feed");
+  if (await getSessionMember()) redirect("/home");
 
   return (
     <AppShell signedOut wide>

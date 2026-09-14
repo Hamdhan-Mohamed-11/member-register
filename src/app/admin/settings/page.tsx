@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AppShell } from "@/components/shell/AppShell";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Notice } from "@/components/ui/Field";
@@ -52,7 +52,7 @@ export default async function SettingsPage() {
   const rules = (ruleRows ?? []) as PointsRule[];
 
   return (
-    <AppShell>
+    <AdminShell>
       <div className="mb-4">
         <BackLink href="/admin">Admin</BackLink>
         <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Settings</h1>
@@ -83,6 +83,6 @@ export default async function SettingsPage() {
           <PointsRulesForm rules={rules} />
         </Card>
       </div>
-    </AppShell>
+    </AdminShell>
   );
 }

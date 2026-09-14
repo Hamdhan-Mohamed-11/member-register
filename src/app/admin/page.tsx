@@ -1,126 +1,375 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AppShell } from "@/components/shell/AppShell";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { Card } from "@/components/ui/Card";
-import { Icon } from "@/components/ui/Icon";
-import { requireSecretary } from "@/lib/auth/session";
+import { Icon, type IconName } from "@/components/ui/Icon";
+import { adminClubScope, requireSecretary } from "@/lib/auth/session";
+import { getDashboard } from "@/lib/admin/dashboard";
 
 export const metadata: Metadata = { title: "Admin" };
+export const dynamic = "force-dynamic";
 
-// Landing pages for each admin area. Super-admin-only entries are hidden from
-// secretaries -- the pages themselves re-check with requireSuperAdmin(), this
-// list only decides what is worth showing.
-//
-// `ready: false` marks an area that is planned but not built. Rendering it as a
-// dead link would send admins to a 404 and make them wonder what they broke;
-// showing it greyed out with "coming soon" is honest about the roadmap.
-// Grouped, because eleven equal tiles is a wall rather than a menu: the things
-// a secretary does weekly should not sit in the same undifferentiated grid as
-// the things a super admin touches twice a year.
-const AREAS = [
-  { href: "/admin/join-requests", label: "Join requests", desc: "Approve public club applications.", superOnly: false, ready: true, icon: "inbox" as const, group: "run" as const },
-  { href: "/admin/sessions", label: "Sessions", desc: "Create sessions and record attendance.", superOnly: false, ready: true, icon: "calendar" as const, group: "run" as const },
-  { href: "/admin/videos", label: "Videos", desc: "Approve member-submitted recordings.", superOnly: false, ready: true, icon: "play" as const, group: "run" as const },
-  { href: "/admin/discover", label: "Discover", desc: "Post photos and video from your events.", superOnly: false, ready: true, icon: "sparkle" as const, group: "run" as const },
+const lkr = (n: number) =>
+  `LKR ${n.toLocaleString("en-LK", { maximumFractionDigits: 0 })}`;
 
-  { href: "/admin/clubs", label: "Clubs and types", desc: "Create clubs, group them by type, invite members.", superOnly: true, ready: true, icon: "users" as const, group: "setup" as const },
-  { href: "/admin/companies", label: "Companies", desc: "Company clubs and employee onboarding.", superOnly: true, ready: true, icon: "shield" as const, group: "setup" as const },
-  { href: "/admin/members", label: "Members", desc: "Roles, membership dates, suspensions.", superOnly: true, ready: true, icon: "id" as const, group: "setup" as const },
-  { href: "/admin/settings", label: "Settings", desc: "Fees, terms, discount, points rules.", superOnly: true, ready: true, icon: "pencil" as const, group: "setup" as const },
+function when(iso: string): string {
+  return new Date(iso).toLocaleString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
-  { href: "/admin/orders", label: "Book orders", desc: "Confirm prices and fulfil member purchases.", superOnly: true, ready: true, icon: "book" as const, group: "money" as const },
-  { href: "/admin/library", label: "Borrow requests", desc: "Issue and return library books.", superOnly: true, ready: true, icon: "bookmark" as const, group: "money" as const },
-  { href: "/admin/payments", label: "Payments", desc: "Membership and booking payments.", superOnly: true, ready: true, icon: "card" as const, group: "money" as const },
-];
+/**
+ * One number on the dashboard.
+ *
+ * `urgent` tints it when the figure is a queue with something in it. A
+ * dashboard where every tile looks the same makes the reader hunt for the one
+ * that needs them, and the entire point of the page is that they should not
+ * have to.
+ */
+function Kpi({
+  label,
+  value,
+  hint,
+  icon,
+  href,
+  urgent = false,
+}: {
+  label: string;
+  value: string | number;
+  hint?: string;
+  icon: IconName;
+  href?: string;
+  urgent?: boolean;
+}) {
+  const body = (
+    <Card
+      interactive={Boolean(href)}
+      className={`press h-full ${urgent ? "border-warning-600/30 bg-warning-100/40" : ""}`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">
+          {label}
+        </p>
+        <span
+          className={`grid size-8 shrink-0 place-items-center rounded-full ${
+            urgent ? "bg-warning-100 text-warning-600" : "bg-sky-100 text-sky-700"
+          }`}
+        >
+          <Icon name={icon} className="size-4" />
+        </span>
+      </div>
+      <p className="mt-2 font-display text-3xl leading-none text-ink tabular-nums">
+        {value}
+      </p>
+      {hint ? <p className="mt-1.5 text-xs text-ink-faint">{hint}</p> : null}
+    </Card>
+  );
 
-const GROUPS = [
-  { id: "run" as const, title: "Running your club", hint: "The week-to-week work." },
-  { id: "setup" as const, title: "Setup", hint: "Who exists, and the rules they run under." },
-  { id: "money" as const, title: "Books and money", hint: "Orders, borrowing and payments." },
-];
+  return href ? (
+    <Link href={href} className="block min-w-0">
+      {body}
+    </Link>
+  ) : (
+    body
+  );
+}
 
-export default async function AdminPage() {
+export default async function AdminDashboard() {
   const member = await requireSecretary();
   const isSuper = member.role === "super_admin";
-  const areas = AREAS.filter((a) => !a.superOnly || isSuper);
+  const scope = adminClubScope(member);
+  const { stats, upcoming, recentMembers } = await getDashboard(scope);
+
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+
+  // The attention list: only things that genuinely wait on this person, in the
+  // order they should be done. Empty is the good state, and it says so.
+  const attention = [
+    stats.pendingJoinRequests > 0 && {
+      href: "/admin/join-requests",
+      text: `${stats.pendingJoinRequests} join request${stats.pendingJoinRequests === 1 ? "" : "s"} to decide`,
+      icon: "inbox" as const,
+    },
+    isSuper &&
+      (stats.ordersNeedingPrice ?? 0) > 0 && {
+        href: "/admin/orders",
+        text: `${stats.ordersNeedingPrice} book order${stats.ordersNeedingPrice === 1 ? "" : "s"} waiting for a price`,
+        icon: "book" as const,
+      },
+    isSuper &&
+      (stats.overdueBorrows ?? 0) > 0 && {
+        href: "/admin/library",
+        text: `${stats.overdueBorrows} borrowed book${stats.overdueBorrows === 1 ? " is" : "s are"} overdue`,
+        icon: "bookmark" as const,
+      },
+    isSuper &&
+      (stats.ordersToHandOver ?? 0) > 0 && {
+        href: "/admin/orders",
+        text: `${stats.ordersToHandOver} paid order${stats.ordersToHandOver === 1 ? "" : "s"} to hand over`,
+        icon: "check" as const,
+      },
+    stats.videosAwaitingReview > 0 && {
+      href: "/admin/videos",
+      text: `${stats.videosAwaitingReview} video${stats.videosAwaitingReview === 1 ? "" : "s"} to review`,
+      icon: "play" as const,
+    },
+  ].filter(Boolean) as { href: string; text: string; icon: IconName }[];
+
+  const noClub = !isSuper && !member.secretaryClubId;
 
   return (
-    <AppShell>
-      <div className="mb-4">
-        <h1 className="font-display text-2xl sm:text-3xl text-ink page-title">Club admin</h1>
-        <p className="text-sm text-ink-muted">
-          {member.role === "super_admin"
-            ? "Signed in as super admin."
-            : member.secretaryClubName
-              ? `Secretary of ${member.secretaryClubName}. You can act on this club only.`
-              : "You are a secretary, but no club has been assigned to you yet."}
-        </p>
-      </div>
+    <AdminShell>
+      {/* ---- Header -------------------------------------------------- */}
+      <section className="reveal relative mb-6 overflow-hidden rounded-panel bg-brand-900 p-5 shadow-band sm:p-6">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(640px 320px at 90% -20%, rgba(0,174,239,0.45), transparent 62%)",
+          }}
+        />
+        <div className="relative flex flex-wrap items-end justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-300">
+              {isSuper ? "Super admin" : "Secretary"}
+            </p>
+            <h1 className="mt-1 font-display text-2xl leading-tight text-white sm:text-3xl">
+              {greeting}, {member.firstName || "there"}
+            </h1>
+            <p className="mt-1 text-sm text-on-navy-muted">
+              {isSuper
+                ? "Everything across every club."
+                : member.secretaryClubName
+                  ? `Everything for ${member.secretaryClubName}.`
+                  : "No club has been assigned to you yet."}
+            </p>
+          </div>
 
-      {/*
-        A secretary with no club can reach this page and do nothing on it. Say
-        so plainly rather than showing them a grid of areas that will all turn
-        them away -- 0027 leaves every existing secretary in exactly this state
-        until someone appoints them.
-      */}
-      {member.role === "secretary" && !member.secretaryClubId ? (
-        <Card tone="warning" className="mb-4">
+          {noClub ? null : (
+            <Link
+              href="/admin/sessions/new"
+              className="press inline-flex min-h-11 items-center gap-2 rounded-lg bg-sky-500 px-4 text-sm font-medium text-brand-950 shadow-hero transition-colors hover:bg-sky-300"
+            >
+              <Icon name="calendar" className="size-4" />
+              New session
+            </Link>
+          )}
+        </div>
+      </section>
+
+      {noClub ? (
+        <Card tone="warning">
           <p className="text-sm text-ink">
-            A super admin needs to appoint you as a club&apos;s secretary before
-            you can create sessions or record attendance.
+            A super admin needs to appoint you as a club&apos;s secretary. Until
+            then there is nothing here for you to act on.
           </p>
         </Card>
-      ) : null}
-
-      <div className="space-y-6">
-        {GROUPS.map((group) => {
-          const inGroup = areas.filter((a) => a.group === group.id);
-          if (inGroup.length === 0) return null;
-          return (
-            <section key={group.id}>
-              <h2 className="font-display text-lg text-ink">{group.title}</h2>
-              <p className="text-sm text-ink-muted">{group.hint}</p>
-
-              <div className="stagger mt-3 grid gap-3 sm:grid-cols-2">
-                {inGroup.map((area) =>
-                  area.ready ? (
-                    <Link key={area.href} href={area.href} className="block min-w-0">
-                      <Card interactive className="press h-full">
-                        <div className="flex items-start gap-3">
-                          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-sky-100 text-sky-700">
-                            <Icon name={area.icon} className="size-5" />
-                          </span>
-                          <div className="min-w-0">
-                            <p className="font-medium text-ink">{area.label}</p>
-                            <p className="mt-0.5 text-sm text-ink-muted">{area.desc}</p>
-                          </div>
-                        </div>
-                      </Card>
-                    </Link>
-                  ) : (
-                    <Card key={area.href} className="h-full opacity-60">
-                      <div className="flex items-start gap-3">
-                        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-canvas-deep text-ink-faint">
-                          <Icon name={area.icon} className="size-5" />
+      ) : (
+        <div className="space-y-6">
+          {/* ---- Needs you ------------------------------------------- */}
+          <section>
+            <h2 className="font-display text-lg text-ink">Needs your attention</h2>
+            {attention.length === 0 ? (
+              <Card tone="sky" className="mt-3">
+                <p className="flex items-center gap-2 text-sm text-ink">
+                  <Icon name="check" className="size-5 text-success-600" />
+                  Nothing is waiting on you. Everything is up to date.
+                </p>
+              </Card>
+            ) : (
+              <Card flush className="mt-3">
+                <ul className="stagger divide-y divide-line">
+                  {attention.map((item) => (
+                    <li key={item.text}>
+                      <Link
+                        href={item.href}
+                        className="press flex items-center gap-3 px-4 py-3 transition-colors hover:bg-canvas"
+                      >
+                        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-warning-100 text-warning-600">
+                          <Icon name={item.icon} className="size-[18px]" />
                         </span>
-                        <div className="min-w-0">
-                          <p className="flex items-center gap-2 font-medium text-ink">
-                            {area.label}
-                            <span className="rounded border border-line px-1.5 py-0.5 text-[11px] font-medium uppercase tracking-wide text-ink-faint">
-                              Soon
-                            </span>
-                          </p>
-                          <p className="mt-0.5 text-sm text-ink-muted">{area.desc}</p>
-                        </div>
-                      </div>
-                    </Card>
-                  ),
-                )}
+                        <span className="min-w-0 flex-1 text-sm font-medium text-ink">
+                          {item.text}
+                        </span>
+                        <Icon name="chevron-right" className="size-4 shrink-0 text-ink-faint" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            )}
+          </section>
+
+          {/* ---- The numbers ----------------------------------------- */}
+          <section>
+            <h2 className="font-display text-lg text-ink">
+              {isSuper ? "Across the clubs" : "Your club"}
+            </h2>
+            <div className="stagger mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
+              <Kpi
+                label="Members"
+                value={stats.activeMembers}
+                hint={
+                  stats.newMembersThisMonth
+                    ? `+${stats.newMembersThisMonth} this month`
+                    : "none new this month"
+                }
+                icon="users"
+                href={isSuper ? "/admin/members" : undefined}
+              />
+              <Kpi
+                label="Join requests"
+                value={stats.pendingJoinRequests}
+                hint="waiting for a decision"
+                icon="inbox"
+                href="/admin/join-requests"
+                urgent={stats.pendingJoinRequests > 0}
+              />
+              <Kpi
+                label="Upcoming"
+                value={stats.upcomingSessions}
+                hint="sessions scheduled"
+                icon="calendar"
+                href="/admin/sessions"
+              />
+              <Kpi
+                label="Attended"
+                value={stats.attendanceThisMonth}
+                hint={`across ${stats.sessionsThisMonth} session${stats.sessionsThisMonth === 1 ? "" : "s"} this month`}
+                icon="check"
+              />
+            </div>
+          </section>
+
+          {isSuper ? (
+            <section>
+              <h2 className="font-display text-lg text-ink">Books and money</h2>
+              <div className="stagger mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
+                <Kpi
+                  label="Payments"
+                  value={lkr(stats.paymentsThisMonthLkr ?? 0)}
+                  hint="received this month"
+                  icon="card"
+                  href="/admin/payments"
+                />
+                <Kpi
+                  label="Orders to price"
+                  value={stats.ordersNeedingPrice ?? 0}
+                  hint="waiting on you"
+                  icon="book"
+                  href="/admin/orders"
+                  urgent={(stats.ordersNeedingPrice ?? 0) > 0}
+                />
+                <Kpi
+                  label="Borrowing"
+                  value={stats.borrowsWaiting ?? 0}
+                  hint={
+                    stats.overdueBorrows
+                      ? `${stats.overdueBorrows} overdue`
+                      : "requests waiting"
+                  }
+                  icon="bookmark"
+                  href="/admin/library"
+                  urgent={(stats.overdueBorrows ?? 0) > 0}
+                />
+                <Kpi
+                  label="Read and Rise"
+                  value={lkr(stats.readriseLkr ?? 0)}
+                  hint="given to schools"
+                  icon="sparkle"
+                />
               </div>
             </section>
-          );
-        })}
-      </div>
-    </AppShell>
+          ) : null}
+
+          {/* ---- Two lists ------------------------------------------- */}
+          <div className="grid gap-4 lg:grid-cols-2">
+            <section className="min-w-0">
+              <div className="flex items-baseline justify-between">
+                <h2 className="font-display text-lg text-ink">Coming up</h2>
+                <Link href="/admin/sessions" className="text-sm text-brand-600 hover:underline">
+                  All sessions
+                </Link>
+              </div>
+              <Card flush className="mt-3">
+                {upcoming.length === 0 ? (
+                  <p className="px-4 py-6 text-center text-sm text-ink-muted">
+                    Nothing scheduled.{" "}
+                    <Link href="/admin/sessions/new" className="text-brand-600 hover:underline">
+                      Create a session
+                    </Link>
+                  </p>
+                ) : (
+                  <ul className="divide-y divide-line">
+                    {upcoming.map((s) => (
+                      <li key={s.id}>
+                        <Link
+                          href={`/admin/sessions/${s.id}`}
+                          className="press flex items-center gap-3 px-4 py-3 transition-colors hover:bg-canvas"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-medium text-ink">{s.title}</p>
+                            <p className="truncate text-xs text-ink-muted">
+                              {when(s.heldAt)}
+                              {isSuper && s.clubName ? ` · ${s.clubName}` : ""}
+                            </p>
+                          </div>
+                          <span className="shrink-0 rounded-full bg-sky-100 px-2 py-0.5 text-xs font-medium text-sky-800 tabular-nums">
+                            {s.bookings} booked
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Card>
+            </section>
+
+            <section className="min-w-0">
+              <h2 className="font-display text-lg text-ink">Newest members</h2>
+              <Card flush className="mt-3">
+                {recentMembers.length === 0 ? (
+                  <p className="px-4 py-6 text-center text-sm text-ink-muted">
+                    No members yet.
+                  </p>
+                ) : (
+                  <ul className="divide-y divide-line">
+                    {recentMembers.map((m) => (
+                      <li key={`${m.id}-${m.clubName}`} className="flex items-center gap-3 px-4 py-3">
+                        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-50 text-xs font-semibold text-brand-700">
+                          {m.name
+                            .split(/\s+/)
+                            .slice(0, 2)
+                            .map((w) => w[0]?.toUpperCase() ?? "")
+                            .join("")}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium text-ink">{m.name}</p>
+                          <p className="truncate text-xs text-ink-muted">
+                            {m.clubName ?? "—"}
+                          </p>
+                        </div>
+                        <span className="shrink-0 text-xs text-ink-faint">
+                          {new Date(`${m.joinedOn}T00:00:00`).toLocaleDateString("en-GB", {
+                            day: "numeric",
+                            month: "short",
+                          })}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Card>
+            </section>
+          </div>
+        </div>
+      )}
+    </AdminShell>
   );
 }

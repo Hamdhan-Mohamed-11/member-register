@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AppShell } from "@/components/shell/AppShell";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { buttonClassName } from "@/components/ui/Button";
@@ -54,7 +54,7 @@ export default async function AdminSessionPage({
   ]);
 
   return (
-    <AppShell>
+    <AdminShell>
       <div className="mb-4">
         <BackLink href="/admin/sessions">Sessions</BackLink>
         <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">{session.title}</h1>
@@ -124,6 +124,6 @@ export default async function AdminSessionPage({
           />
         </Card>
       </div>
-    </AppShell>
+    </AdminShell>
   );
 }

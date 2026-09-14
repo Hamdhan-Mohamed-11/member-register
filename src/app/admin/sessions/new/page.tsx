@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AppShell } from "@/components/shell/AppShell";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -14,7 +14,7 @@ export default async function NewSessionPage() {
   const { clubs, members } = await getSessionFormOptions(adminClubScope(member));
 
   return (
-    <AppShell>
+    <AdminShell>
       <div className="mb-4">
         <BackLink href="/admin/sessions">Sessions</BackLink>
         <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">New session</h1>
@@ -50,6 +50,6 @@ export default async function NewSessionPage() {
           />
         )}
       </Card>
-    </AppShell>
+    </AdminShell>
   );
 }

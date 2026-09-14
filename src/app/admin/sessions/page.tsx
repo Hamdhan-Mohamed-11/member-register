@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AppShell } from "@/components/shell/AppShell";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -26,7 +26,7 @@ export default async function AdminSessionsPage() {
       : all.filter((s) => s.hostClub != null && scope.includes(s.hostClub.id));
 
   return (
-    <AppShell>
+    <AdminShell>
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <BackLink href="/admin">Admin</BackLink>
@@ -64,6 +64,6 @@ export default async function AdminSessionsPage() {
           ))}
         </div>
       )}
-    </AppShell>
+    </AdminShell>
   );
 }

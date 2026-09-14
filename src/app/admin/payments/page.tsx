@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AppShell } from "@/components/shell/AppShell";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
@@ -68,7 +68,7 @@ export default async function PaymentsPage() {
   const configured = isPayHereConfigured();
 
   return (
-    <AppShell>
+    <AdminShell>
       <div className="mb-4">
         <BackLink href="/admin">Admin</BackLink>
         <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Payments</h1>
@@ -183,6 +183,6 @@ export default async function PaymentsPage() {
           )}
         </Card>
       </div>
-    </AppShell>
+    </AdminShell>
   );
 }

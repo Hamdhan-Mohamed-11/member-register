@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { AppShell } from "@/components/shell/AppShell";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { canAdminClub, requireSecretary } from "@/lib/auth/session";
 import { avatarUrl } from "@/lib/members/queries";
@@ -120,7 +120,7 @@ export default async function AttendancePage({
   const rules = (rulesData ?? []) as Rule[];
 
   return (
-    <AppShell>
+    <AdminShell>
       <div className="mb-3">
         <BackLink href={`/admin/sessions/${id}`}>Session</BackLink>
         <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">{session.title}</h1>
@@ -135,6 +135,6 @@ export default async function AttendancePage({
         roster={roster}
         presenterCap={session.presenterCount}
       />
-    </AppShell>
+    </AdminShell>
   );
 }

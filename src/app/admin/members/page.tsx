@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AppShell } from "@/components/shell/AppShell";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
@@ -58,7 +58,7 @@ export default async function AdminMembersPage({
   const members = data ?? [];
 
   return (
-    <AppShell>
+    <AdminShell>
       <div className="mb-4">
         <BackLink href="/admin">Admin</BackLink>
         <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Members</h1>
@@ -133,6 +133,6 @@ export default async function AdminMembersPage({
           </ul>
         </Card>
       )}
-    </AppShell>
+    </AdminShell>
   );
 }

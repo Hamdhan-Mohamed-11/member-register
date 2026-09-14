@@ -21,7 +21,7 @@ export default async function AuthCallbackPage({
   // Same-origin relative paths only. This page is reachable by anyone holding
   // a link, so an unchecked `next` is an open redirect.
   const target =
-    next && next.startsWith("/") && !next.startsWith("//") ? next : "/feed";
+    next && next.startsWith("/") && !next.startsWith("//") ? next : "/home";
 
   return (
     <AppShell signedOut>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { AppShell } from "@/components/shell/AppShell";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { canAdminClub, requireSecretary } from "@/lib/auth/session";
@@ -28,7 +28,7 @@ export default async function FlyerPage({
   if (!canAdminClub(member, session.hostClub.id)) notFound();
 
   return (
-    <AppShell>
+    <AdminShell>
       <BackLink href={`/admin/sessions/${id}`}>Session</BackLink>
       <PageHeader
         className="mt-1"
@@ -52,6 +52,6 @@ export default async function FlyerPage({
           flyerUrl: flyerUrl(session.flyerPath),
         }}
       />
-    </AppShell>
+    </AdminShell>
   );
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AppShell } from "@/components/shell/AppShell";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -57,7 +57,7 @@ export default async function AdminDiscoverPage() {
   const mine = scope == null ? posts : posts.filter((p) => p.clubId && scope.includes(p.clubId));
 
   return (
-    <AppShell>
+    <AdminShell>
       <BackLink href="/admin">Admin</BackLink>
       <PageHeader
         className="mt-1"
@@ -119,6 +119,6 @@ export default async function AdminDiscoverPage() {
           </Card>
         )}
       </div>
-    </AppShell>
+    </AdminShell>
   );
 }
