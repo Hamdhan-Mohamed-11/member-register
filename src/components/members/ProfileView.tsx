@@ -37,15 +37,30 @@ export function ProfileView({
 
   return (
     <div className="space-y-4">
-      <Card>
-        <div className="flex items-start gap-4">
+      {/*
+        The identity card gets a tinted band behind the avatar rather than
+        being the first of six identical white cards. It is the only part of
+        the page that is about WHO this is, and it was indistinguishable from
+        the reading list below it.
+      */}
+      <Card flush className="overflow-hidden">
+        <div
+          aria-hidden
+          className="h-20 bg-brand-900"
+          style={{
+            background:
+              "linear-gradient(120deg, #16205c 0%, #293896 55%, #0079a8 100%)",
+          }}
+        />
+        <div className="-mt-10 flex items-start gap-4 p-4 sm:p-5">
           <Avatar
             src={avatarUrl(profile.id, profile.avatarPath)}
             firstName={profile.firstName}
             lastName={profile.lastName}
             size="lg"
+            className="ring-4 ring-surface shadow-card"
           />
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 pt-10">
             <h1 className="font-display text-2xl text-ink">{name}</h1>
             {isSelf ? (
               <p className="text-sm text-ink-muted truncate">{profile.email}</p>
@@ -85,11 +100,16 @@ export function ProfileView({
           </div>
 
           {isSelf ? (
-            <Link href="/me/edit" className={buttonClassName("secondary", "sm")}>
+            <Link
+              href="/me/edit"
+              className={`${buttonClassName("secondary", "sm")} mt-10 shrink-0`}
+            >
               Edit
             </Link>
           ) : null}
         </div>
+
+        <div className="px-4 pb-4 sm:px-5 sm:pb-5">
 
         {profile.bio ? (
           <p className="text-sm text-ink mt-4 whitespace-pre-line">{profile.bio}</p>
@@ -115,6 +135,7 @@ export function ProfileView({
             </div>
           </div>
         ) : null}
+        </div>
       </Card>
 
       {/*

@@ -72,6 +72,27 @@ export function BookCard({
               Pre-order
             </Badge>
           ) : null}
+
+          {/*
+            The member discount, on the cover.
+
+            It is the whole reason to buy through the club rather than anywhere
+            else, and it was the smallest, faintest text on the card — under
+            the price, in grey. A corner flag is the one place on a book card
+            that is reliably empty.
+          */}
+          {!hidePrice && discounted ? (
+            <span className="absolute right-2 top-2 rounded-full bg-brand-600 px-2 py-0.5 text-[11px] font-semibold text-white shadow-card">
+              −{Math.round((savedCents / listCents) * 100)}%
+            </span>
+          ) : null}
+
+          {/* A wash off the bottom of the cover so a pale book jacket still
+              has an edge against the card below it. */}
+          <span
+            aria-hidden
+            className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/15 to-transparent"
+          />
         </div>
 
         <div className="p-3 flex-1 flex flex-col">
@@ -82,17 +103,17 @@ export function BookCard({
 
           <div className="mt-auto pt-2">
             {hidePrice ? null : discounted ? (
-              <>
-                <p className="text-sm font-semibold text-brand-600">
+              // Member price and shop price on ONE line: two stacked lines of
+              // currency read as two prices to work out, rather than as one
+              // price and the thing it beats.
+              <p className="flex items-baseline gap-1.5">
+                <span className="text-sm font-semibold text-brand-600">
                   {formatLkrCents(memberCents)}
-                </p>
-                <p className="text-xs text-ink-faint">
-                  <span className="line-through">{formatLkrCents(listCents)}</span>{" "}
-                  <span className="text-success-600">
-                    save {formatLkrCents(savedCents)}
-                  </span>
-                </p>
-              </>
+                </span>
+                <span className="text-xs text-ink-faint line-through">
+                  {formatLkrCents(listCents)}
+                </span>
+              </p>
             ) : (
               <p className="text-sm font-semibold text-ink">{formatLkrCents(listCents)}</p>
             )}

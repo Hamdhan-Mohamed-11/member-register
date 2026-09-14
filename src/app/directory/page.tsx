@@ -56,35 +56,42 @@ export default async function DirectoryPage() {
           {others.map((person) => {
             const name = `${person.firstName} ${person.lastName}`.trim() || "Member";
             return (
-              <Link key={person.id} href={`/members/${person.id}`} className="block">
-                <Card interactive className="h-full">
-                  <div className="flex items-start gap-3">
+              <Link key={person.id} href={`/members/${person.id}`} className="press block">
+                <Card interactive className="h-full" flush>
+                  <div className="flex items-start gap-3 p-4">
                     <Avatar
                       src={avatarUrl(person.id, person.avatarPath)}
                       firstName={person.firstName}
                       lastName={person.lastName}
                     />
-                    <div className="min-w-0">
-                      <p className="font-medium text-ink truncate">{name}</p>
-                      <p className="text-xs text-ink-muted truncate">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium text-ink">{name}</p>
+                      <p className="truncate text-xs text-ink-muted">
                         {person.clubs.join(" · ") || "No club"}
                       </p>
+
+                      {/*
+                        What someone is reading is the reason to open their
+                        profile, so it gets a tinted strip of its own rather
+                        than a third line of grey text that reads as metadata.
+                      */}
                       {person.currentlyReading.length ? (
-                        <p className="text-sm text-ink-muted mt-1 truncate">
-                          Reading{" "}
-                          <span className="text-ink">
-                            {person.currentlyReading[0]}
-                          </span>
+                        <p className="mt-2 truncate rounded-lg bg-sky-100 px-2 py-1 text-xs text-sky-800">
+                          {person.currentlyReading[0]}
                           {person.currentlyReading.length > 1
                             ? ` +${person.currentlyReading.length - 1}`
                             : ""}
                         </p>
                       ) : null}
-                      <p className="text-xs text-brand-600 font-medium mt-1">
-                        {person.pointsBalance} points
-                      </p>
                     </div>
                   </div>
+
+                  {/* The points sit on their own footer rule, so the card has
+                      a bottom edge and every card in the grid lines up. */}
+                  <p className="border-t border-line px-4 py-2 text-xs font-medium text-brand-600">
+                    {person.pointsBalance} point
+                    {person.pointsBalance === 1 ? "" : "s"}
+                  </p>
                 </Card>
               </Link>
             );

@@ -22,6 +22,15 @@ export function formatLkr(amount: number): string {
   })}`;
 }
 
+/** Just the time, for the line under the title where the date is already shown. */
+function formatTime(iso: string): string {
+  return new Date(iso).toLocaleString("en-GB", {
+    weekday: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 /**
  * `fee` is what THIS viewer would pay -- resolved server-side per member, not
  * derived from the session. A host-club member sees "Free for your club" on
@@ -36,55 +45,88 @@ export function SessionCard({
   fee?: number;
   href?: string;
 }) {
-  const past = new Date(session.heldAt) < new Date();
+  const when = new Date(session.heldAt);
+  const past = when < new Date();
+  const cancelled = session.status === "cancelled";
 
   const inner = (
-    <Card className="h-full" interactive={Boolean(href)}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="font-medium text-ink">{session.title}</p>
+    <Card
+      className={`h-full ${past || cancelled ? "opacity-70" : ""}`}
+      interactive={Boolean(href)}
+      flush
+    >
+      <div className="flex gap-4 p-4">
+        {/*
+          A date block rather than a line of text.
+
+          A list of sessions is scanned by WHEN, not by title -- "is there
+          anything this weekend" is the question being asked -- and a date
+          buried in a grey line three rows down cannot answer it. Tinted for an
+          upcoming session, flat for one that has been and gone, so the two
+          separate at a glance without reading a word.
+        */}
+        <div
+          className={`grid h-14 w-14 shrink-0 place-content-center rounded-card border text-center leading-none ${
+            past || cancelled
+              ? "border-line bg-canvas-deep text-ink-faint"
+              : "border-sky-200 bg-sky-100 text-sky-800"
+          }`}
+        >
+          <span className="text-[10px] font-semibold uppercase tracking-wider">
+            {when.toLocaleString("en-GB", { month: "short" })}
+          </span>
+          <span className="font-display text-xl tabular-nums">
+            {when.toLocaleString("en-GB", { day: "numeric" })}
+          </span>
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-3">
+            <p className="font-medium leading-snug text-ink">{session.title}</p>
+
+            {cancelled ? (
+              <Badge tone="danger" className="shrink-0">
+                Cancelled
+              </Badge>
+            ) : fee === undefined ? null : fee === 0 ? (
+              <Badge tone="success" className="shrink-0">
+                Free
+              </Badge>
+            ) : (
+              <Badge tone="warning" className="shrink-0">
+                {formatLkr(fee)}
+              </Badge>
+            )}
+          </div>
+
           {session.bookTitle ? (
-            <p className="text-sm text-ink-muted truncate">
+            <p className="mt-0.5 truncate text-sm text-ink-muted">
               {session.bookTitle}
               {session.bookAuthor ? ` · ${session.bookAuthor}` : ""}
             </p>
           ) : null}
+
+          <p className="mt-2 flex items-center gap-1.5 text-sm text-ink-muted">
+            <Icon name="calendar" className="size-4 shrink-0 text-ink-faint" />
+            <span className="min-w-0 truncate">
+              {formatTime(session.heldAt)}
+              {past ? " · past" : ""}
+            </span>
+          </p>
+
+          <p className="mt-1 truncate text-xs text-ink-faint">
+            {session.hostClub?.name ?? "Unknown club"}
+            {session.presenter
+              ? ` · ${`${session.presenter.firstName} ${session.presenter.lastName}`.trim()}`
+              : ""}
+          </p>
         </div>
-
-        {session.status === "cancelled" ? (
-          <Badge tone="danger" className="shrink-0">
-            Cancelled
-          </Badge>
-        ) : fee === undefined ? null : fee === 0 ? (
-          <Badge tone="success" className="shrink-0">
-            Free
-          </Badge>
-        ) : (
-          <Badge tone="warning" className="shrink-0">
-            {formatLkr(fee)}
-          </Badge>
-        )}
       </div>
-
-      <p className="mt-3 flex items-center gap-1.5 text-sm text-ink-muted">
-        <Icon name="calendar" className="size-4 shrink-0 text-ink-faint" />
-        <span className="min-w-0 truncate">
-          {formatWhen(session.heldAt)}
-          {past ? " · past" : ""}
-        </span>
-      </p>
-
-      <p className="text-xs text-ink-faint mt-1.5">
-        {session.hostClub?.name ?? "Unknown club"}
-        {session.presenter
-          ? ` · presented by ${`${session.presenter.firstName} ${session.presenter.lastName}`.trim()}`
-          : ""}
-      </p>
     </Card>
   );
 
   return href ? (
-    <Link href={href} className="block">
+    <Link href={href} className="press block">
       {inner}
     </Link>
   ) : (
