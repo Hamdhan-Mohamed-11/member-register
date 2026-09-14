@@ -20,7 +20,7 @@ export default async function MyReadingPage() {
     <AppShell>
       <div className="mb-4">
         <BackLink href="/me">My profile</BackLink>
-        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">My reading</h1>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">My reading</h1>
       </div>
 
       <ReadingList items={profile.reading} />

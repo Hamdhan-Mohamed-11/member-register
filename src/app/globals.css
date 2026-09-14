@@ -225,6 +225,25 @@
   .stagger > *:nth-child(5) { animation-delay: 0.28s; }
   .stagger > *:nth-child(n + 6) { animation-delay: 0.34s; }
 
+  /*
+    The accent rule under a page title.
+    
+    PageHeader draws this itself; twenty-odd screens predate that component
+    and hand-roll their own <h1>. Rather than restructure all of them, they
+    carry `page-title` and get the same mark from one rule here — so the
+    product looks consistent now, and converting a page to PageHeader later
+    changes nothing visible.
+  */
+  .page-title::after {
+    content: "";
+    display: block;
+    width: 2.25rem;
+    height: 2px;
+    margin-top: 0.5rem;
+    border-radius: 9999px;
+    background: var(--color-sky-500);
+  }
+
   /* A pressed state for touch, where there is no hover to rely on. */
   .press {
     transition:

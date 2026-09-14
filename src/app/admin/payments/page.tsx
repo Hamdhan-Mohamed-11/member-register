@@ -71,7 +71,7 @@ export default async function PaymentsPage() {
     <AppShell>
       <div className="mb-4">
         <BackLink href="/admin">Admin</BackLink>
-        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Payments</h1>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Payments</h1>
         <p className="text-sm text-ink-muted">
           {configured
             ? `PayHere is connected in ${getPayHereMode()} mode.`

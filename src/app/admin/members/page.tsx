@@ -61,7 +61,7 @@ export default async function AdminMembersPage({
     <AppShell>
       <div className="mb-4">
         <BackLink href="/admin">Admin</BackLink>
-        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Members</h1>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Members</h1>
         <p className="text-sm text-ink-muted">
           {members.length} {members.length === 1 ? "account" : "accounts"}.
         </p>

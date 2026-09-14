@@ -10,7 +10,7 @@ export default function ResetPasswordPage() {
     <AppShell signedOut>
       <div className="max-w-sm mx-auto pt-4 sm:pt-10">
         <div className="text-center mb-6">
-          <h1 className="font-display text-2xl sm:text-3xl text-ink">
+          <h1 className="font-display text-2xl sm:text-3xl text-ink page-title">
             Choose a new password
           </h1>
         </div>

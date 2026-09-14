@@ -123,7 +123,7 @@ export default async function AttendancePage({
     <AppShell>
       <div className="mb-3">
         <BackLink href={`/admin/sessions/${id}`}>Session</BackLink>
-        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">{session.title}</h1>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">{session.title}</h1>
         <p className="text-sm text-ink-muted">
           {formatWhen(session.heldAt)} · {session.hostClub.name}
         </p>

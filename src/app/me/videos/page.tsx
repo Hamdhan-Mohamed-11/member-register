@@ -21,7 +21,7 @@ export default async function MyVideosPage() {
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <BackLink href="/me">My profile</BackLink>
-          <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">My videos</h1>
+          <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">My videos</h1>
           <p className="text-sm text-ink-muted">
             Only you and the club admins can see anything still awaiting review.
           </p>

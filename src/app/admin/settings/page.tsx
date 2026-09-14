@@ -55,7 +55,7 @@ export default async function SettingsPage() {
     <AppShell>
       <div className="mb-4">
         <BackLink href="/admin">Admin</BackLink>
-        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Settings</h1>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Settings</h1>
         <p className="text-sm text-ink-muted">
           Defaults used across the portal. Individual clubs can override the fee
           and term.

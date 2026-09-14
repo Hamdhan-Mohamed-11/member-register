@@ -94,7 +94,7 @@ export default async function BooksPage({
       */}
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-2xl sm:text-3xl text-ink">Books</h1>
+          <h1 className="font-display text-2xl sm:text-3xl text-ink page-title">Books</h1>
           <p className="text-sm text-ink-muted">
             {discount > 0
               ? `Members pay ${discount}% less than the shop price.`

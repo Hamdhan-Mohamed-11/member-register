@@ -17,7 +17,7 @@ export default async function NewSessionPage() {
     <AppShell>
       <div className="mb-4">
         <BackLink href="/admin/sessions">Sessions</BackLink>
-        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">New session</h1>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">New session</h1>
       </div>
 
       <Card>

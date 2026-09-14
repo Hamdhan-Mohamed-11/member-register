@@ -63,7 +63,7 @@ export default async function CompaniesPage() {
     <AppShell>
       <div className="mb-4">
         <BackLink href="/admin">Admin</BackLink>
-        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Companies</h1>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Companies</h1>
         <p className="text-sm text-ink-muted">
           Each company gets one private club. Employees join by invite only —
           they never appear in the public member directory.

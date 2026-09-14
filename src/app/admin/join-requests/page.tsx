@@ -43,7 +43,7 @@ export default async function JoinRequestsPage() {
     <AppShell>
       <div className="mb-4">
         <BackLink href="/admin">Admin</BackLink>
-        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Join requests</h1>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Join requests</h1>
         <p className="text-sm text-ink-muted">
           Approving adds the member to the club and activates their account.
         </p>

@@ -30,7 +30,7 @@ export default async function AdminSessionsPage() {
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <BackLink href="/admin">Admin</BackLink>
-          <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Sessions</h1>
+          <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Sessions</h1>
           <p className="text-sm text-ink-muted">
             {member.secretaryClubName
               ? `${member.secretaryClubName} — create sessions and record attendance as they happen.`

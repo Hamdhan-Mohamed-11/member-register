@@ -38,7 +38,7 @@ export default async function SessionsPage() {
       */}
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-2xl sm:text-3xl text-ink">Sessions</h1>
+          <h1 className="font-display text-2xl sm:text-3xl text-ink page-title">Sessions</h1>
           <p className="text-sm text-ink-muted">
             Your clubs&apos; sessions are free. You can book other clubs&apos;
             paid sessions as a guest.

@@ -15,7 +15,7 @@ export default async function SubmitVideoPage() {
     <AppShell>
       <div className="mb-4">
         <BackLink href="/videos">Videos</BackLink>
-        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Add a video</h1>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Add a video</h1>
       </div>
 
       <Card className="max-w-lg">

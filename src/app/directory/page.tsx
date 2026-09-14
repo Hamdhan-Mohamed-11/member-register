@@ -28,7 +28,7 @@ export default async function DirectoryPage() {
       */}
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="font-display text-2xl sm:text-3xl text-ink">Members</h1>
+          <h1 className="font-display text-2xl sm:text-3xl text-ink page-title">Members</h1>
           <p className="text-sm text-ink-muted">
             {clubs.length
               ? `Everyone in ${clubs.map((c) => c.clubName).join(" and ")}, and the clubs they share a type with.`

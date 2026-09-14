@@ -21,7 +21,7 @@ export default async function EditProfilePage() {
     <AppShell>
       <div className="mb-4">
         <BackLink href="/me">My profile</BackLink>
-        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1">Edit profile</h1>
+        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Edit profile</h1>
       </div>
 
       <div className="space-y-4">
