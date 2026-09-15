@@ -88,3 +88,40 @@ export async function getPostStats(): Promise<Map<string, PostStats>> {
   }
   return map;
 }
+
+export type Highlight = {
+  id: string;
+  kind: "photo" | "video";
+  caption: string | null;
+  clubName: string | null;
+  width: number | null;
+  height: number | null;
+  createdAt: string;
+};
+
+/**
+ * The Discover posts an admin marked for the public homepage. Callable signed
+ * out -- this and the media route's matching check are the only way anyone
+ * without an account sees Discover at all.
+ */
+export async function getHighlights(limit = 5): Promise<Highlight[]> {
+  const supabase = await getServerComponentSupabase();
+  const { data } = await supabase.rpc("public_discover_highlights", { p_limit: limit });
+  return ((data ?? []) as unknown as {
+    id: string;
+    kind: string;
+    caption: string | null;
+    club_name: string | null;
+    width: number | null;
+    height: number | null;
+    created_at: string;
+  }[]).map((r) => ({
+    id: r.id,
+    kind: r.kind === "video" ? "video" : "photo",
+    caption: r.caption,
+    clubName: r.club_name,
+    width: r.width,
+    height: r.height,
+    createdAt: r.created_at,
+  }));
+}

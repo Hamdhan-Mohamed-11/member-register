@@ -31,6 +31,9 @@ const PUBLIC_PATHS = [
   "/auth",
   "/api/payhere",
   "/api/health",
+  // The route gates itself: members through RLS, everyone else only for
+  // posts marked for the public homepage.
+  "/api/discover",
 ];
 
 function isPublic(pathname: string): boolean {

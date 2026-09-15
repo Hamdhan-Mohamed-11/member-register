@@ -3,6 +3,11 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
 import { buttonClassName } from "@/components/ui/Button";
 import { getSessionMember } from "@/lib/auth/session";
+import { BookCover } from "@/components/books/BookCover";
+import { EventStrip } from "@/components/home/EventStrip";
+import { PopularBooks } from "@/components/home/PopularBooks";
+import { getHighlights } from "@/lib/discover/queries";
+import { getPopularBooks, getPublicStats } from "@/lib/home/queries";
 
 /**
  * The signed-out landing page.
@@ -116,6 +121,15 @@ export default async function Home() {
   // A signed-in member has no use for the sales pitch.
   if (await getSessionMember()) redirect("/home");
 
+  // Real numbers and real covers. Highlights are only the Discover posts an
+  // admin marked for the public homepage; with none marked, that section
+  // simply does not appear.
+  const [stats, highlights, popular] = await Promise.all([
+    getPublicStats(),
+    getHighlights(5),
+    getPopularBooks(4),
+  ]);
+
   return (
     <AppShell signedOut wide>
       <div className="max-w-5xl mx-auto space-y-4 pb-8">
@@ -136,7 +150,8 @@ export default async function Home() {
             }}
           />
 
-          <div className="relative px-6 sm:px-10 py-12 sm:py-16 max-w-2xl">
+          <div className="relative grid lg:grid-cols-[minmax(0,1fr)_300px] lg:items-center">
+          <div className="px-6 sm:px-10 py-12 sm:py-16 max-w-2xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-200">
               <span className="relative flex size-1.5">
                 <span className="absolute inline-flex size-full rounded-full bg-sky-300 opacity-75 motion-safe:animate-ping" />
@@ -175,7 +190,91 @@ export default async function Home() {
               password.
             </p>
           </div>
+
+          {/* A fanned stack of the books members reach for most. Decorative. */}
+          {popular.length >= 3 ? (
+            <div aria-hidden className="relative mr-10 hidden h-64 lg:block">
+              {popular.slice(0, 3).map((book, i) => (
+                <div
+                  key={book.bookId}
+                  className="absolute top-1/2 h-52 w-36 overflow-hidden rounded-md shadow-band ring-1 ring-white/10"
+                  style={{
+                    left: `${10 + i * 72}px`,
+                    transform: `translateY(-50%) rotate(${(i - 1) * 8}deg)`,
+                    zIndex: i === 1 ? 3 : 1,
+                  }}
+                >
+                  <BookCover src={book.imageUrl} title={book.title} size="fill" className="border-0" />
+                </div>
+              ))}
+            </div>
+          ) : null}
+          </div>
         </section>
+
+        {/* ---- The club in numbers ---------------------------------------- */}
+        {stats ? (
+          <section className="stagger grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {[
+              { value: stats.members, label: "Members reading" },
+              { value: stats.clubs, label: "Clubs" },
+              { value: stats.sessionsHeld, label: "Sessions held" },
+              { value: stats.booksFunded, label: "Books sent to schools" },
+            ].map((s) => (
+              <div
+                key={s.label}
+                className="rounded-card border border-line bg-surface px-4 py-5 text-center shadow-card"
+              >
+                <p className="font-display text-3xl text-brand-600 tabular-nums sm:text-4xl">
+                  {s.value.toLocaleString("en-LK")}
+                </p>
+                <p className="mt-1 text-xs font-medium uppercase tracking-wider text-ink-muted">
+                  {s.label}
+                </p>
+              </div>
+            ))}
+          </section>
+        ) : null}
+
+        {/* ---- Recent evenings -------------------------------------------- */}
+        {highlights.length ? (
+          <section className="rounded-panel border border-line bg-surface px-6 py-8 sm:px-10">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-600">
+              From our recent evenings
+            </p>
+            <span className="mt-2.5 block h-0.5 w-10 bg-sky-500" aria-hidden />
+            <h2 className="mt-4 mb-5 font-display text-2xl leading-[1.15] text-ink sm:text-3xl">
+              What a club night looks like
+            </h2>
+            <EventStrip
+              mode="public"
+              items={highlights.map((h) => ({
+                id: h.id,
+                kind: h.kind,
+                caption: h.caption,
+                clubName: h.clubName,
+              }))}
+            />
+          </section>
+        ) : null}
+
+        {/* ---- Popular books ---------------------------------------------- */}
+        {popular.length ? (
+          <section className="rounded-panel border border-cream-deep bg-cream px-6 py-8 sm:px-10">
+            <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-600">
+                  On members&apos; shelves
+                </p>
+                <h2 className="mt-2 font-display text-2xl leading-[1.15] text-ink sm:text-3xl">
+                  Popular with our members
+                </h2>
+              </div>
+              <p className="text-sm text-ink-muted">All at 25% off for members.</p>
+            </div>
+            <PopularBooks books={popular} href={() => "/join"} />
+          </section>
+        ) : null}
 
         {/* ---- What it is ------------------------------------------------- */}
         <section className="rounded-panel border border-cream-deep bg-cream px-6 sm:px-10 py-10">

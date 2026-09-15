@@ -184,6 +184,42 @@ export async function setPostPoster(postId: string, posterPath: string): Promise
   return { ok: true };
 }
 
+const updateSchema = z.object({
+  caption: z.string().trim().max(500),
+  sessionId: z.string().uuid().nullable(),
+  showOnHome: z.boolean(),
+});
+
+/**
+ * Edits a post after the fact: its caption, the session it came from, and
+ * whether it appears on the public homepage. update_discover_post re-checks
+ * the caller runs the post's club and that the session is that club's.
+ */
+export async function updatePost(
+  postId: string,
+  input: { caption: string; sessionId: string | null; showOnHome: boolean },
+): Promise<ActionResult> {
+  await requireSecretary();
+  const parsed = updateSchema.safeParse(input);
+  if (!idSchema.safeParse(postId).success || !parsed.success) {
+    return { ok: false, error: parsed.error?.issues[0]?.message ?? "Unknown post." };
+  }
+
+  const supabase = await getActionSupabase();
+  const { error } = await supabase.rpc("update_discover_post", {
+    p_id: postId,
+    p_caption: parsed.data.caption,
+    p_session_id: parsed.data.sessionId as unknown as string,
+    p_show_on_home: parsed.data.showOnHome,
+  });
+  if (error) return { ok: false, error: error.message };
+
+  revalidate();
+  revalidatePath("/");
+  revalidatePath("/feed");
+  return { ok: true };
+}
+
 function revalidate() {
   revalidatePath("/discover");
   revalidatePath("/discover/saved");

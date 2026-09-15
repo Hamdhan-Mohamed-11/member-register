@@ -1,12 +1,13 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useCallback, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Notice, SelectField, TextareaField } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browserClient";
-import { createPost, deletePost, setPostPoster } from "@/app/discover/actions";
+import { createPost, deletePost, setPostPoster, updatePost } from "@/app/discover/actions";
 import type { DiscoverPost } from "@/lib/discover/media";
 
 export type ClubOption = { id: string; name: string };
@@ -497,5 +498,125 @@ export function SetThumbnailButton({ post }: { post: DiscoverPost }) {
       </label>
       {error ? <span className="text-[11px] text-danger-600">{error}</span> : null}
     </span>
+  );
+}
+
+/**
+ * Edits a posted item: caption, the session it came from, and whether it
+ * appears on the public homepage. In a dialog, so it is unmistakable which
+ * post is being changed.
+ */
+export function EditPostButton({
+  post,
+  sessions,
+  showOnHome,
+}: {
+  post: DiscoverPost;
+  sessions: SessionOption[];
+  showOnHome: boolean;
+}) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [caption, setCaption] = useState(post.caption ?? "");
+  const [sessionId, setSessionId] = useState(post.sessionId ?? "");
+  const [home, setHome] = useState(showOnHome);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+
+  const forThisClub = sessions.filter((s) => s.clubId === post.clubId);
+  const close = useCallback(() => setOpen(false), []);
+
+  function openDialog() {
+    // Start from what is saved, not from a previous unsaved edit.
+    setCaption(post.caption ?? "");
+    setSessionId(post.sessionId ?? "");
+    setHome(showOnHome);
+    setError(null);
+    setOpen(true);
+  }
+
+  function save() {
+    setError(null);
+    startTransition(async () => {
+      const result = await updatePost(post.id, {
+        caption,
+        sessionId: sessionId || null,
+        showOnHome: home,
+      });
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      setOpen(false);
+      router.refresh();
+    });
+  }
+
+  if (!post.clubId) return null;
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={openDialog}
+        className="min-h-9 rounded-lg border border-line px-3 text-xs font-medium text-brand-700 hover:bg-canvas"
+      >
+        Edit
+      </button>
+
+      <Modal open={open} onClose={close} title="Edit post" description={post.clubName ?? undefined}>
+        <div className="space-y-4">
+          {error ? <Notice>{error}</Notice> : null}
+
+          <TextareaField
+            label="Caption"
+            name="caption"
+            rows={3}
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            maxLength={500}
+          />
+
+          <SelectField
+            label="Session"
+            name="sessionId"
+            value={sessionId}
+            onChange={(e) => setSessionId(e.target.value)}
+          >
+            <option value="">Not tied to a session</option>
+            {forThisClub.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.title}
+              </option>
+            ))}
+          </SelectField>
+
+          <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-line p-3 hover:bg-canvas">
+            <input
+              type="checkbox"
+              checked={home}
+              onChange={(e) => setHome(e.target.checked)}
+              className="mt-0.5 size-4 shrink-0 accent-brand-600"
+            />
+            <span className="min-w-0">
+              <span className="block text-sm font-medium text-ink">Show on the public homepage</span>
+              <span className="block text-xs text-ink-muted">
+                Anyone visiting member.pickabook.lk sees it, signed in or not. Leave it off
+                for anything members wouldn&apos;t want public.
+              </span>
+            </span>
+          </label>
+
+          <div className="flex justify-end gap-2 pt-1">
+            <Button variant="ghost" size="sm" onClick={close}>
+              Cancel
+            </Button>
+            <Button size="sm" onClick={save} disabled={pending}>
+              {pending ? "Saving…" : "Save changes"}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    </>
   );
 }

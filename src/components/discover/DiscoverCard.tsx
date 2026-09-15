@@ -82,7 +82,17 @@ function ShareIcon() {
  * Like and save are optimistic; a tap on a feed has to answer instantly, and
  * both are trivially reversible if the server disagrees.
  */
-export function DiscoverCard({ post }: { post: DiscoverPost }) {
+export function DiscoverCard({
+  post,
+  inViewer = false,
+}: {
+  post: DiscoverPost;
+  /**
+   * Shown inside the full-size viewer: the media is fitted within the screen
+   * (letterboxed) instead of cropped, and a video starts playing.
+   */
+  inViewer?: boolean;
+}) {
   const router = useRouter();
   const hydrated = useHydrated();
   const [liked, setLiked] = useState(post.likedByMe);
@@ -181,15 +191,19 @@ export function DiscoverCard({ post }: { post: DiscoverPost }) {
         ) : null}
       </div>
 
-      <div className="bg-canvas-deep" style={{ aspectRatio: ratio }}>
+      <div
+        className={inViewer ? "grid place-items-center bg-black" : "bg-canvas-deep"}
+        style={inViewer ? undefined : { aspectRatio: ratio }}
+      >
         {post.kind === "video" ? (
           <video
             src={discoverMediaUrl(post.id)}
             poster={discoverMediaUrl(post.id, true)}
             controls
             playsInline
-            preload="none"
-            className="w-full h-full object-cover"
+            autoPlay={inViewer}
+            preload={inViewer ? "auto" : "none"}
+            className={inViewer ? "max-h-[62vh] w-full object-contain" : "w-full h-full object-cover"}
           />
         ) : (
           /*
@@ -203,7 +217,7 @@ export function DiscoverCard({ post }: { post: DiscoverPost }) {
             alt={post.caption ?? "Club photo"}
             loading="lazy"
             decoding="async"
-            className="w-full h-full object-cover"
+            className={inViewer ? "max-h-[62vh] w-full object-contain" : "w-full h-full object-cover"}
           />
         )}
       </div>

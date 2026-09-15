@@ -13,6 +13,8 @@ import {
   type BorrowStatus,
 } from "@/lib/library/queries";
 import { BorrowActions } from "./BorrowActions";
+import { BookCover } from "@/components/books/BookCover";
+import { getBookSnapshots } from "@/lib/legacy/books";
 
 export const metadata: Metadata = { title: "Borrow requests" };
 export const dynamic = "force-dynamic";
@@ -27,10 +29,11 @@ const STATUS: Record<BorrowStatus, { label: string; tone: BadgeTone }> = {
 };
 
 function formatDate(value: string): string {
-  return new Date(value.length === 10 ? `${value}T00:00:00` : value).toLocaleDateString(
-    "en-GB",
-    { day: "numeric", month: "short", year: "numeric" },
-  );
+  return new Date(value.length === 10 ? `${value}T00:00:00` : value).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 function Section({
@@ -38,11 +41,13 @@ function Section({
   rows,
   showActions = true,
   today,
+  covers,
 }: {
   title: string;
   rows: AdminBorrowRequest[];
   showActions?: boolean;
   today: string;
+  covers: Map<number, string | null>;
 }) {
   if (rows.length === 0) return null;
   return (
@@ -53,54 +58,48 @@ function Section({
       <Card flush>
         <ul className="divide-y divide-line">
           {rows.map((r) => {
-            const isOverdue =
-              r.status === "issued" && r.dueOn != null && r.dueOn < today;
+            const isOverdue = r.status === "issued" && r.dueOn != null && r.dueOn < today;
             return (
               <li
                 key={r.id}
                 className="px-4 py-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
               >
-                <div className="min-w-0">
-                  <Link
-                    href={`/books/${r.bookId}`}
-                    className="font-medium text-ink hover:text-brand-600"
-                  >
-                    {r.title || `Book #${r.bookId}`}
-                  </Link>
-                  {r.author ? (
-                    <p className="text-sm text-ink-muted truncate">{r.author}</p>
-                  ) : null}
+                <div className="flex min-w-0 gap-3">
+                  <BookCover src={covers.get(r.bookId)} title={r.title} />
+                  <div className="min-w-0">
+                    <Link
+                      href={`/books/${r.bookId}`}
+                      className="font-medium text-ink hover:text-brand-600"
+                    >
+                      {r.title || `Book #${r.bookId}`}
+                    </Link>
+                    {r.author ? (
+                      <p className="text-sm text-ink-muted truncate">{r.author}</p>
+                    ) : null}
 
-                  <p className="text-sm text-ink-muted mt-1">
-                    {r.member ? (
-                      <Link
-                        href={`/admin/members/${r.member.id}`}
-                        className="hover:underline"
-                      >
-                        {`${r.member.firstName} ${r.member.lastName}`.trim() ||
-                          r.member.email}
-                      </Link>
-                    ) : (
-                      "Member removed"
-                    )}
-                  </p>
+                    <p className="text-sm text-ink-muted mt-1">
+                      {r.member ? (
+                        <Link href={`/admin/members/${r.member.id}`} className="hover:underline">
+                          {`${r.member.firstName} ${r.member.lastName}`.trim() || r.member.email}
+                        </Link>
+                      ) : (
+                        "Member removed"
+                      )}
+                    </p>
 
-                  <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                    <Badge tone={isOverdue ? "danger" : STATUS[r.status].tone}>
-                      {isOverdue ? "Overdue" : STATUS[r.status].label}
-                    </Badge>
-                    <span className="text-xs text-ink-faint">
-                      Asked {formatDate(r.requestedAt)}
-                      {r.dueOn && r.status === "issued"
-                        ? ` · due ${formatDate(r.dueOn)}`
-                        : ""}
-                    </span>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                      <Badge tone={isOverdue ? "danger" : STATUS[r.status].tone}>
+                        {isOverdue ? "Overdue" : STATUS[r.status].label}
+                      </Badge>
+                      <span className="text-xs text-ink-faint">
+                        Asked {formatDate(r.requestedAt)}
+                        {r.dueOn && r.status === "issued" ? ` · due ${formatDate(r.dueOn)}` : ""}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                {showActions ? (
-                  <BorrowActions id={r.id} status={r.status} />
-                ) : null}
+                {showActions ? <BorrowActions id={r.id} status={r.status} /> : null}
               </li>
             );
           })}
@@ -113,6 +112,9 @@ function Section({
 export default async function AdminLibraryPage() {
   await requireSecretary();
   const all = await getAllBorrowRequests();
+  const snapshots = await getBookSnapshots(all.map((r) => r.bookId));
+  const covers = new Map<number, string | null>();
+  if (snapshots.ok) for (const [id, snap] of snapshots.data) covers.set(id, snap.imageUrl);
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -120,13 +122,9 @@ export default async function AdminLibraryPage() {
   // date buries the one thing needing a decision under last month's returns.
   const waiting = all.filter((r) => r.status === "requested");
   const active = all.filter((r) => r.status === "approved" || r.status === "issued");
-  const done = all.filter((r) =>
-    ["returned", "rejected", "cancelled"].includes(r.status),
-  );
+  const done = all.filter((r) => ["returned", "rejected", "cancelled"].includes(r.status));
 
-  const overdue = active.filter(
-    (r) => r.status === "issued" && r.dueOn != null && r.dueOn < today,
-  );
+  const overdue = active.filter((r) => r.status === "issued" && r.dueOn != null && r.dueOn < today);
 
   return (
     <AdminShell>
@@ -157,9 +155,9 @@ export default async function AdminLibraryPage() {
         </Card>
       ) : (
         <div className="space-y-5">
-          <Section title="Waiting for you" rows={waiting} today={today} />
-          <Section title="Approved and out" rows={active} today={today} />
-          <Section title="Finished" rows={done} showActions={false} today={today} />
+          <Section title="Waiting for you" rows={waiting} today={today} covers={covers} />
+          <Section title="Approved and out" rows={active} today={today} covers={covers} />
+          <Section title="Finished" rows={done} showActions={false} today={today} covers={covers} />
         </div>
       )}
     </AdminShell>

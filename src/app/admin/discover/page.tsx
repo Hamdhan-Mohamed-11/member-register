@@ -15,6 +15,7 @@ import {
 import {
   DeletePostButton,
   DiscoverUploader,
+  EditPostButton,
   SetThumbnailButton,
   type ClubOption,
   type SessionOption,
@@ -108,12 +109,15 @@ export default async function AdminDiscoverPage() {
     .limit(100);
   if (scope != null) sessionQuery = sessionQuery.in("host_club_id", scope);
 
-  const [{ data: clubRows }, { data: sessionRows }, posts, stats] = await Promise.all([
-    clubQuery,
-    sessionQuery,
-    getManageablePosts(),
-    getPostStats(),
-  ]);
+  const [{ data: clubRows }, { data: sessionRows }, posts, stats, { data: homeRows }] =
+    await Promise.all([
+      clubQuery,
+      sessionQuery,
+      getManageablePosts(),
+      getPostStats(),
+      supabase.from("discover_posts").select("id").eq("show_on_home", true),
+    ]);
+  const onHome = new Set((homeRows ?? []).map((r) => r.id));
 
   const clubs = (clubRows ?? []) as ClubOption[];
   const sessions: SessionOption[] = (
@@ -222,9 +226,19 @@ export default async function AdminDiscoverPage() {
                     <p className="mt-0.5 text-xs text-ink-muted tabular-nums">
                       {s.likes} like{s.likes === 1 ? "" : "s"} · {s.saves} save
                       {s.saves === 1 ? "" : "s"}
+                      {onHome.has(post.id) ? (
+                        <span className="ml-2 rounded-full bg-sky-100 px-2 py-0.5 text-[11px] font-medium text-sky-800">
+                          On homepage
+                        </span>
+                      ) : null}
                     </p>
                   </div>
-                  <div className="flex items-start gap-2">
+                  <div className="flex flex-wrap items-start gap-2">
+                    <EditPostButton
+                      post={post}
+                      sessions={sessions}
+                      showOnHome={onHome.has(post.id)}
+                    />
                     {post.kind === "video" ? <SetThumbnailButton post={post} /> : null}
                     <DeletePostButton post={post} />
                   </div>

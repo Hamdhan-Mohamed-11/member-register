@@ -6,6 +6,8 @@ const SIZES = {
   sm: "w-10 h-14 rounded-md",
   md: "w-14 h-20 rounded-lg",
   lg: "w-20 h-28 rounded-lg",
+  /** Fills its parent; the parent sets the size and shape. */
+  fill: "h-full w-full",
 } as const;
 
 /**

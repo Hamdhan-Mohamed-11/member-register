@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { buttonClassName } from "@/components/ui/Button";
-import { DiscoverCard } from "@/components/discover/DiscoverCard";
+import { DiscoverGrid } from "@/components/discover/DiscoverGrid";
 import { requireActiveMember } from "@/lib/auth/session";
 import { getDiscoverFeed } from "@/lib/discover/queries";
 
@@ -18,7 +18,7 @@ export default async function SavedDiscoverPage() {
   const posts = await getDiscoverFeed({ limit: 60, savedOnly: true });
 
   return (
-    <AppShell>
+    <AppShell wide>
       <BackLink href="/discover">Discover</BackLink>
       <PageHeader
         className="mt-1"
@@ -40,11 +40,7 @@ export default async function SavedDiscoverPage() {
           />
         </Card>
       ) : (
-        <div className="space-y-4 max-w-xl">
-          {posts.map((post) => (
-            <DiscoverCard key={post.id} post={post} />
-          ))}
-        </div>
+        <DiscoverGrid posts={posts} />
       )}
     </AppShell>
   );

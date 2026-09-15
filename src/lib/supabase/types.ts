@@ -849,6 +849,7 @@ export type Database = {
           kind: string
           poster_path: string | null
           session_id: string | null
+          show_on_home: boolean
           storage_path: string
           width: number | null
         }
@@ -863,6 +864,7 @@ export type Database = {
           kind: string
           poster_path?: string | null
           session_id?: string | null
+          show_on_home?: boolean
           storage_path: string
           width?: number | null
         }
@@ -877,6 +879,7 @@ export type Database = {
           kind?: string
           poster_path?: string | null
           session_id?: string | null
+          show_on_home?: boolean
           storage_path?: string
           width?: number | null
         }
@@ -1967,9 +1970,39 @@ export type Database = {
         Args: { p_items: Json; p_note?: string }
         Returns: string
       }
+      popular_books: {
+        Args: { p_limit?: number }
+        Returns: {
+          author: string
+          book_id: number
+          members: number
+          title: string
+        }[]
+      }
       post_order_message: {
         Args: { p_body: string; p_order_id: string }
         Returns: string
+      }
+      public_discover_highlights: {
+        Args: { p_limit?: number }
+        Returns: {
+          caption: string
+          club_name: string
+          created_at: string
+          height: number
+          id: string
+          kind: string
+          width: number
+        }[]
+      }
+      public_stats: {
+        Args: never
+        Returns: {
+          books_funded: number
+          clubs: number
+          members: number
+          sessions_held: number
+        }[]
       }
       readrise_books_funded: { Args: { p_member_id: string }; Returns: number }
       readrise_donated_lkr: { Args: { p_member_id: string }; Returns: number }
@@ -2152,6 +2185,15 @@ export type Database = {
           p_requires_guardian?: boolean
           p_sort_order?: number
           p_type_id: string
+        }
+        Returns: undefined
+      }
+      update_discover_post: {
+        Args: {
+          p_caption: string
+          p_id: string
+          p_session_id: string
+          p_show_on_home: boolean
         }
         Returns: undefined
       }

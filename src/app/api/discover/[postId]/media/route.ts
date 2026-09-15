@@ -30,17 +30,35 @@ export async function GET(
 ) {
   const { postId } = await params;
 
-  const viewer = await getSessionMember();
-  if (!viewer) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!/^[0-9a-f-]{36}$/i.test(postId)) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const supabase = await getServerComponentSupabase();
-  const { data: post } = await supabase
-    .from("discover_posts")
-    .select("id, storage_path, poster_path")
-    .eq("id", postId)
-    .maybeSingle();
+  // A signed-in member: RLS decides, with their own client.
+  let post: { id: string; storage_path: string; poster_path: string | null } | null = null;
+  const viewer = await getSessionMember();
+  if (viewer) {
+    const supabase = await getServerComponentSupabase();
+    const { data } = await supabase
+      .from("discover_posts")
+      .select("id, storage_path, poster_path")
+      .eq("id", postId)
+      .maybeSingle();
+    post = data;
+  }
+
+  // Anyone else -- the signed-out landing page -- only for a post an admin
+  // marked for the public homepage (show_on_home, 0036). Nothing else in the
+  // bucket is reachable without an account.
+  if (!post) {
+    const { data } = await getServiceSupabaseClient()
+      .from("discover_posts")
+      .select("id, storage_path, poster_path")
+      .eq("id", postId)
+      .eq("show_on_home", true)
+      .maybeSingle();
+    post = data;
+  }
 
   // 404, not 403: saying "this exists but is not for you" is itself a
   // disclosure about another club's events.

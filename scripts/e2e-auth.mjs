@@ -58,7 +58,7 @@ relaxTimeouts(browser);
   check("member lands on /feed after login", page.url().includes("/feed"), page.url());
 
   const body = await visibleText(page);
-  check("feed greets the member by name", /Hello, Pub/.test(body ?? ""), "");
+  check("feed greets the member by name", /Welcome back, Pub/i.test(body ?? ""), "");
   check("feed shows the club name", /Public Club/.test(body ?? ""), "");
   check("member does NOT see the admin card", !/Club admin/.test(body ?? ""), "");
 
