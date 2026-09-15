@@ -28,12 +28,12 @@ const SLIDES = [
   },
 ];
 
-function Scene() {
+function Scene({ className, align }: { className: string; align: string }) {
   return (
     <svg
       viewBox="0 0 400 600"
-      preserveAspectRatio="xMidYMid slice"
-      className="absolute inset-0 h-full w-full"
+      preserveAspectRatio={align}
+      className={`absolute inset-0 h-full w-full ${className}`}
       aria-hidden
     >
       <defs>
@@ -151,7 +151,10 @@ export function AuthShowcase() {
 
   return (
     <div className="relative h-full min-h-full overflow-hidden rounded-[22px] bg-brand-900">
-      <Scene />
+      {/* The short phone banner shows the top of the scene -- sky and moon --
+          so the caption has clear ground; the tall desktop panel shows it all. */}
+      <Scene className="lg:hidden" align="xMidYMin slice" />
+      <Scene className="hidden lg:block" align="xMidYMid slice" />
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-950/85 via-brand-950/40 to-transparent px-5 pb-4 pt-12 sm:px-8 sm:pb-8 lg:pt-24">
         <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-sky-300">
           {slide.eyebrow}
