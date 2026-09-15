@@ -42,8 +42,13 @@ function fullName(row: LeaderboardRow): string {
  * says who shares what.
  */
 function Podium({ rows }: { rows: LeaderboardRow[] }) {
-  // Visual order 2, 1, 3; with fewer than three, the gaps just close up.
-  const slots = [rows[1], rows[0], rows[2]].filter(Boolean) as LeaderboardRow[];
+  // Visual order 2, 1, 3, each pinned to its own column so first stays in the
+  // middle even when only one or two people have points.
+  const slots = [
+    { row: rows[1], col: "col-start-1" },
+    { row: rows[0], col: "col-start-2" },
+    { row: rows[2], col: "col-start-3" },
+  ].filter((s): s is { row: LeaderboardRow; col: string } => s.row != null);
 
   const ring: Record<number, string> = {
     1: "ring-gold-500",
@@ -62,11 +67,14 @@ function Podium({ rows }: { rows: LeaderboardRow[] }) {
         Top of the board
       </p>
       <ol className="mt-4 grid grid-cols-3 items-end gap-2">
-        {slots.map((row) => {
+        {slots.map(({ row, col }) => {
           const first = row === rows[0];
           const tier = Math.min(row.place, 3);
           return (
-            <li key={row.memberId} className={`min-w-0 text-center ${first ? "" : "pt-6"}`}>
+            <li
+              key={row.memberId}
+              className={`row-start-1 min-w-0 text-center ${col} ${first ? "" : "pt-6"}`}
+            >
               <Link
                 href={row.isMe ? "/me" : `/members/${row.memberId}`}
                 className="group inline-flex w-full flex-col items-center"

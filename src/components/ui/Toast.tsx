@@ -17,7 +17,7 @@ import { usePathname } from "next/navigation";
  * Sits above the phone's bottom bar, and is a polite live region so a screen
  * reader hears it without losing its place.
  */
-export function Toast({ message, durationMs = 3200 }: { message: string; durationMs?: number }) {
+export function Toast({ message, durationMs = 4000 }: { message: string; durationMs?: number }) {
   const pathname = usePathname();
   const [visible, setVisible] = useState(true);
 
