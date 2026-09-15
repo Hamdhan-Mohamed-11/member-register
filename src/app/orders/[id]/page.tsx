@@ -8,12 +8,10 @@ import { Card, CardHeader } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { PayButton } from "@/app/renew/PayButton";
 import { startBookOrderPayment } from "@/app/renew/actions";
-import {
-  CancelOrderButton,
-  OrderThread,
-  QuoteResponse,
-} from "../OrderClient";
-import { STATUS, formatWhen } from "../page";
+import { CancelOrderButton, OrderThread, QuoteResponse } from "../OrderClient";
+import { OPEN_STATUSES, STATUS, formatWhen, orderRef } from "../status";
+import { BookCover } from "@/components/books/BookCover";
+import { getBookSnapshots } from "@/lib/legacy/books";
 import { requireActiveMember } from "@/lib/auth/session";
 import { getOrder } from "@/lib/orders/queries";
 import { formatLkrCents } from "@/lib/pricing";
@@ -36,7 +34,11 @@ export default async function OrderPage({
   const order = await getOrder(id);
   if (!order) notFound();
 
-  const open = ["review", "quoted", "agreed"].includes(order.status);
+  const open = OPEN_STATUSES.includes(order.status);
+
+  const snapshots = await getBookSnapshots(order.items.map((i) => i.bookId));
+  const coverOf = (bookId: number) =>
+    snapshots.ok ? (snapshots.data.get(bookId)?.imageUrl ?? null) : null;
 
   return (
     <AppShell>
@@ -44,9 +46,20 @@ export default async function OrderPage({
       <PageHeader
         className="mt-1"
         title={`${order.items.length} book${order.items.length === 1 ? "" : "s"}`}
-        description={`Sent ${formatWhen(order.createdAt)}`}
-        action={<Badge tone={STATUS[order.status].tone}>{STATUS[order.status].label}</Badge>}
+        description={`${orderRef(order.id)} · sent ${formatWhen(order.createdAt)}`}
+        action={
+          <Badge tone={STATUS[order.status].tone}>
+            {STATUS[order.status].label}
+          </Badge>
+        }
       />
+
+      {/* Up top, where it can be found -- not below the message thread. */}
+      {open ? (
+        <div className="-mt-2 mb-4">
+          <CancelOrderButton orderId={order.id} />
+        </div>
+      ) : null}
 
       <div className="space-y-4">
         <Card flush>
@@ -57,13 +70,19 @@ export default async function OrderPage({
                 item.agreedUnitPrice != null &&
                 item.agreedUnitPrice !== item.askingUnitPrice;
               return (
-                <li key={item.id} className="px-4 py-3 flex items-start justify-between gap-3">
-                  <Link href={`/books/${item.bookId}`} className="min-w-0 group">
+                <li key={item.id} className="px-4 py-3 flex items-center gap-3">
+                  <BookCover src={coverOf(item.bookId)} title={item.title} />
+                  <Link
+                    href={`/books/${item.bookId}`}
+                    className="min-w-0 flex-1 group"
+                  >
                     <p className="font-medium text-ink group-hover:text-brand-600">
                       {item.title || `Book #${item.bookId}`}
                     </p>
                     {item.author ? (
-                      <p className="text-sm text-ink-muted truncate">{item.author}</p>
+                      <p className="text-sm text-ink-muted truncate">
+                        {item.author}
+                      </p>
                     ) : null}
                     <p className="text-xs text-ink-faint mt-0.5">
                       {item.quantity} × {lkr(unit)}
@@ -84,7 +103,9 @@ export default async function OrderPage({
 
           <div className="px-4 py-3 border-t border-line flex items-baseline justify-between">
             <span className="text-sm text-ink-muted">
-              {order.agreedTotal != null ? "Confirmed total" : "Estimated total"}
+              {order.agreedTotal != null
+                ? "Confirmed total"
+                : "Estimated total"}
             </span>
             <span className="font-display text-xl text-ink tabular-nums">
               {lkr(order.agreedTotal ?? order.askingTotal)}
@@ -102,8 +123,8 @@ export default async function OrderPage({
         {order.status === "review" ? (
           <Card tone="warning">
             <p className="text-sm text-ink">
-              The club is checking the prices. They&apos;ll come back to you here,
-              and nothing is charged until you agree.
+              The club is checking the prices. They&apos;ll come back to you
+              here, and nothing is charged until you agree.
             </p>
           </Card>
         ) : null}
@@ -143,8 +164,8 @@ export default async function OrderPage({
               Paid — thank you.{" "}
               {order.readriseLkr > 0 ? (
                 <>
-                  <span className="font-medium">{lkr(order.readriseLkr)}</span> of it
-                  went to Read and Rise.
+                  <span className="font-medium">{lkr(order.readriseLkr)}</span>{" "}
+                  of it went to Read and Rise.
                 </>
               ) : null}
             </p>
@@ -172,7 +193,8 @@ export default async function OrderPage({
                 >
                   <p className="whitespace-pre-line">{m.body}</p>
                   <p className="mt-1 text-[11px] text-ink-faint">
-                    {m.fromAdmin ? "The club" : "You"} · {formatWhen(m.createdAt)}
+                    {m.fromAdmin ? "The club" : "You"} ·{" "}
+                    {formatWhen(m.createdAt)}
                   </p>
                 </li>
               ))}
@@ -181,12 +203,6 @@ export default async function OrderPage({
 
           <OrderThread orderId={order.id} canWrite={open} />
         </Card>
-
-        {open ? (
-          <div>
-            <CancelOrderButton orderId={order.id} />
-          </div>
-        ) : null}
       </div>
     </AppShell>
   );

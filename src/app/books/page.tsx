@@ -65,7 +65,10 @@ export default async function BooksPage({
   const query: BookQuery = {
     search: sp.q,
     category: sp.category,
-    language: sp.language === "tamil" || sp.language === "sinhala" ? sp.language : undefined,
+    language:
+      sp.language === "english" || sp.language === "tamil" || sp.language === "sinhala"
+        ? sp.language
+        : undefined,
     availability:
       sp.availability === "in_stock" || sp.availability === "pre_order"
         ? sp.availability
@@ -138,12 +141,6 @@ export default async function BooksPage({
           </Card>
         ) : (
           <>
-            <p className="text-sm text-ink-muted">
-              {result.data.total.toLocaleString("en-LK")} book
-              {result.data.total === 1 ? "" : "s"}
-              {result.data.pages > 1 ? ` · page ${result.data.page} of ${result.data.pages}` : ""}
-            </p>
-
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {result.data.books.map((book) => (
                 <BookCard

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Notice, TextareaField } from "@/components/ui/Field";
 import { addToCart, placeOrder, setCartQuantity } from "./actions";
 
-/** Add a book to the cart from the catalogue. */
+/** Add a book to the cart from the catalogue, then go to the cart. */
 export function AddToCartButton({
   book,
   inCart,
@@ -33,7 +33,9 @@ export function AddToCartButton({
         return;
       }
       setAdded(true);
-      router.refresh();
+      // Straight to the cart, which says "Added to cart" along the bottom
+      // (review item 7) -- a member who taps Buy wants to see it there.
+      router.push("/cart?added=1");
     });
   }
 

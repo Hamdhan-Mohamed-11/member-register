@@ -20,7 +20,7 @@ export type LegacyBook = {
 export type BookQuery = {
   search?: string;
   category?: string;
-  language?: "tamil" | "sinhala";
+  language?: "english" | "tamil" | "sinhala";
   availability?: "in_stock" | "pre_order";
   lendableOnly?: boolean;
   /**

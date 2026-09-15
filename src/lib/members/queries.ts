@@ -22,6 +22,8 @@ export type ReadingItem = {
   status: "want_to_read" | "reading" | "read";
   dateRead: string | null;
   notes: string | null;
+  /** Open Library cover id, found when the book was added. */
+  coverId: number | null;
 };
 
 export type MemberProfile = {
@@ -74,7 +76,7 @@ export async function getMemberProfile(
   // empty list instead of dropping the whole profile.
   const { data: reading } = await supabase
     .from("reading_items")
-    .select("id, title, author, status, date_read, notes")
+    .select("id, title, author, status, date_read, notes, cover_id")
     .eq("member_id", profileId)
     .order("date_read", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });
@@ -111,6 +113,7 @@ export async function getMemberProfile(
       status: r.status as ReadingItem["status"],
       dateRead: r.date_read,
       notes: r.notes,
+      coverId: r.cover_id,
     })),
   };
 }

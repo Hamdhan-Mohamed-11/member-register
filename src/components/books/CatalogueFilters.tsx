@@ -57,6 +57,7 @@ export function CatalogueFilters({
 
         <select name="language" defaultValue={current.language ?? ""} className={selectClassName}>
           <option value="">All languages</option>
+          <option value="english">English</option>
           <option value="tamil">Tamil</option>
           <option value="sinhala">Sinhala</option>
         </select>

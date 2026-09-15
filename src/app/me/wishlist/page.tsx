@@ -7,8 +7,14 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { buttonClassName } from "@/components/ui/Button";
 import { WishlistButton } from "@/components/books/BookActions";
+import { BookCover } from "@/components/books/BookCover";
+import { getBookSnapshots } from "@/lib/legacy/books";
 import { requireActiveMember } from "@/lib/auth/session";
-import { getLibraryAccess, getWishlist, type WishlistItem } from "@/lib/library/queries";
+import {
+  getLibraryAccess,
+  getWishlist,
+  type WishlistItem,
+} from "@/lib/library/queries";
 
 export const metadata: Metadata = { title: "Wishlist" };
 export const dynamic = "force-dynamic";
@@ -20,12 +26,14 @@ const TABS = [
 
 function List({
   items,
+  covers,
   kind,
   emptyTitle,
   emptyDescription,
   emptyAction,
 }: {
   items: WishlistItem[];
+  covers: Map<number, string | null>;
   kind: "buy" | "borrow";
   emptyTitle: string;
   emptyDescription: string;
@@ -34,7 +42,11 @@ function List({
   if (items.length === 0) {
     return (
       <Card flush>
-        <EmptyState title={emptyTitle} description={emptyDescription} action={emptyAction} />
+        <EmptyState
+          title={emptyTitle}
+          description={emptyDescription}
+          action={emptyAction}
+        />
       </Card>
     );
   }
@@ -43,8 +55,14 @@ function List({
     <Card flush>
       <ul className="divide-y divide-line">
         {items.map((item) => (
-          <li key={item.id} className="px-4 py-3 flex items-start justify-between gap-3">
-            <Link href={`/books/${item.bookId}`} className="min-w-0 group">
+          <li key={item.id} className="px-4 py-3 flex items-center gap-3">
+            <Link href={`/books/${item.bookId}`} tabIndex={-1} aria-hidden>
+              <BookCover src={covers.get(item.bookId)} title={item.title} />
+            </Link>
+            <Link
+              href={`/books/${item.bookId}`}
+              className="min-w-0 flex-1 group"
+            >
               <p className="font-medium text-ink truncate group-hover:text-brand-600">
                 {item.title || `Book #${item.bookId}`}
               </p>
@@ -85,10 +103,22 @@ export default async function WishlistPage({
     getLibraryAccess(member.userId),
   ]);
 
+  // Covers from the live catalogue. If it is unreachable the list still
+  // renders, with placeholders.
+  const snapshots = await getBookSnapshots(items.map((i) => i.bookId));
+  const covers = new Map<number, string | null>();
+  if (snapshots.ok) {
+    for (const [id, snap] of snapshots.data) covers.set(id, snap.imageUrl);
+  }
+
   return (
     <AppShell>
       <BackLink href="/me">Me</BackLink>
-      <PageHeader className="mt-1" title="Wishlist" description="Books you saved for later." />
+      <PageHeader
+        className="mt-1"
+        title="Wishlist"
+        description="Books you saved for later."
+      />
 
       {/* Links rather than client state, for the same reason as the
           leaderboard tabs: each list is a real, linkable URL. */}
@@ -100,7 +130,9 @@ export default async function WishlistPage({
         {TABS.map((t) => (
           <Link
             key={t.key}
-            href={t.key === "buy" ? "/me/wishlist" : `/me/wishlist?tab=${t.key}`}
+            href={
+              t.key === "buy" ? "/me/wishlist" : `/me/wishlist?tab=${t.key}`
+            }
             role="tab"
             aria-selected={tab === t.key}
             className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
@@ -117,9 +149,12 @@ export default async function WishlistPage({
       {tab === "borrow" && !access.active ? (
         <Card tone="warning" className="mb-3">
           <p className="text-sm text-ink">
-            You can keep this list, but borrowing needs the add-on before you can
-            actually request any of them.{" "}
-            <Link href="/library" className="text-brand-600 font-medium hover:underline">
+            You can keep this list, but borrowing needs the add-on before you
+            can actually request any of them.{" "}
+            <Link
+              href="/library"
+              className="text-brand-600 font-medium hover:underline"
+            >
               See what it costs
             </Link>
             .
@@ -129,8 +164,13 @@ export default async function WishlistPage({
 
       <List
         items={items}
+        covers={covers}
         kind={tab}
-        emptyTitle={tab === "buy" ? "Nothing saved to buy yet" : "Nothing saved to borrow yet"}
+        emptyTitle={
+          tab === "buy"
+            ? "Nothing saved to buy yet"
+            : "Nothing saved to borrow yet"
+        }
         emptyDescription={
           tab === "buy"
             ? "Tap Wishlist on any book in the catalogue and it lands here."

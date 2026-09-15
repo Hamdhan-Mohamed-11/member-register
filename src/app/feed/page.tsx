@@ -21,14 +21,6 @@ import { ReadRiseCard } from "@/components/books/ReadRiseCard";
 
 export const metadata: Metadata = { title: "Home" };
 
-function formatDate(value: string): string {
-  return new Date(`${value}T00:00:00`).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
 export default async function FeedPage() {
   const member = await requireActiveMember();
   const clubs = activeMemberships(member);
@@ -79,13 +71,19 @@ export default async function FeedPage() {
           />
 
           <div className="relative">
-            <div className="flex items-start gap-4">
+            {/*
+              One row: avatar, greeting and club on the left, points on the
+              right (review item 12). The renewal date is gone from here -- it
+              lives on /me and in the expiring-soon banner below, which only
+              appears when it actually matters.
+            */}
+            <div className="flex items-center gap-4">
               <Avatar
                 src={avatarUrl(member.userId, member.avatarPath)}
                 firstName={member.firstName}
                 lastName={member.lastName}
                 size="md"
-                className="mt-0.5 ring-2 ring-white/25"
+                className="ring-2 ring-white/25"
               />
               <div className="min-w-0 flex-1">
                 <h1 className="font-display text-2xl leading-tight text-white sm:text-3xl">
@@ -108,25 +106,18 @@ export default async function FeedPage() {
                   </p>
                 )}
               </div>
-            </div>
 
-            <div className="mt-5 flex flex-wrap gap-x-10 gap-y-4 border-t border-white/15 pt-4">
-              <Link href="/me/points" className="press rounded-lg">
-                <p className="font-display text-2xl leading-none text-sky-300 tabular-nums">
+              <Link
+                href="/me/points"
+                className="press shrink-0 rounded-card border border-white/15 bg-white/8 px-4 py-2.5 text-right transition-colors hover:bg-white/12"
+              >
+                <p className="font-display text-3xl leading-none text-sky-300 tabular-nums">
                   {member.pointsBalance}
                 </p>
-                <p className="mt-1.5 text-xs uppercase tracking-wide text-on-navy-muted">
+                <p className="mt-1 text-[11px] uppercase tracking-wide text-on-navy-muted">
                   points
                 </p>
               </Link>
-              <div>
-                <p className="font-display text-2xl leading-none text-white tabular-nums">
-                  {renewal ? formatDate(renewal) : "—"}
-                </p>
-                <p className="mt-1.5 text-xs uppercase tracking-wide text-on-navy-muted">
-                  {clubs.length > 1 ? "next renewal" : "renews on"}
-                </p>
-              </div>
             </div>
           </div>
         </section>

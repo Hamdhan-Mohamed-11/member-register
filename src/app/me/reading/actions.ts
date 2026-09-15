@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireActiveMember } from "@/lib/auth/session";
 import { getActionSupabase } from "@/lib/supabase/actionClient";
+import { findOpenLibraryCoverId } from "@/lib/books/openLibrary";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -27,12 +28,17 @@ export async function addReadingItem(formData: FormData): Promise<ActionResult> 
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid book." };
   }
 
+  // Looked up once, here, and kept -- not on every page view. Null when Open
+  // Library has nothing, and the list shows a placeholder instead.
+  const coverId = await findOpenLibraryCoverId(parsed.data.title, parsed.data.author);
+
   const supabase = await getActionSupabase();
   const { error } = await supabase.from("reading_items").insert({
     member_id: member.userId,
     title: parsed.data.title,
     author: parsed.data.author ?? "",
     status: parsed.data.status,
+    cover_id: coverId,
     // The schema requires date_read to be set exactly when status is 'read',
     // so adding a book straight to the history has to date it now.
     date_read: parsed.data.status === "read" ? new Date().toISOString().slice(0, 10) : null,

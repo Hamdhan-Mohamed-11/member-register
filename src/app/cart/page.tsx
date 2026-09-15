@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { buttonClassName } from "@/components/ui/Button";
+import { Toast } from "@/components/ui/Toast";
+import { BookCover } from "@/components/books/BookCover";
 import { PlaceOrderForm, QuantityStepper } from "./CartClient";
 import { requireActiveMember } from "@/lib/auth/session";
 import { getCart } from "@/lib/orders/queries";
@@ -15,8 +17,13 @@ import { formatLkrCents, priceLine } from "@/lib/pricing";
 export const metadata: Metadata = { title: "Cart" };
 export const dynamic = "force-dynamic";
 
-export default async function CartPage() {
+export default async function CartPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ added?: string }>;
+}) {
   await requireActiveMember();
+  const { added } = await searchParams;
 
   const supabase = await getServerComponentSupabase();
   const [cart, { data: settings }] = await Promise.all([
@@ -44,6 +51,7 @@ export default async function CartPage() {
       ...line,
       title: snap?.title || line.title,
       author: snap?.author || line.author,
+      imageUrl: snap?.imageUrl ?? null,
       unitCents: cents,
       lineCents: cents == null ? null : cents * line.quantity,
     };
@@ -71,7 +79,10 @@ export default async function CartPage() {
             title="Your cart is empty"
             description="Find something in the catalogue and tap Buy."
             action={
-              <Link href="/books" className={buttonClassName("secondary", "sm")}>
+              <Link
+                href="/books"
+                className={buttonClassName("secondary", "sm")}
+              >
                 Browse books
               </Link>
             }
@@ -82,28 +93,41 @@ export default async function CartPage() {
           <Card flush>
             <ul className="divide-y divide-line">
               {lines.map((line) => (
-                <li key={line.bookId} className="px-4 py-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <Link href={`/books/${line.bookId}`} className="min-w-0 group">
-                      <p className="font-medium text-ink group-hover:text-brand-600">
-                        {line.title || `Book #${line.bookId}`}
+                <li key={line.bookId} className="flex gap-3 px-4 py-3">
+                  <BookCover src={line.imageUrl} title={line.title} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-3">
+                      <Link
+                        href={`/books/${line.bookId}`}
+                        className="min-w-0 group"
+                      >
+                        <p className="font-medium text-ink group-hover:text-brand-600">
+                          {line.title || `Book #${line.bookId}`}
+                        </p>
+                        {line.author ? (
+                          <p className="text-sm text-ink-muted truncate">
+                            {line.author}
+                          </p>
+                        ) : null}
+                      </Link>
+                      <p className="text-sm font-medium text-ink shrink-0 tabular-nums">
+                        {line.lineCents == null
+                          ? "—"
+                          : formatLkrCents(line.lineCents)}
                       </p>
-                      {line.author ? (
-                        <p className="text-sm text-ink-muted truncate">{line.author}</p>
-                      ) : null}
-                    </Link>
-                    <p className="text-sm font-medium text-ink shrink-0 tabular-nums">
-                      {line.lineCents == null ? "—" : formatLkrCents(line.lineCents)}
-                    </p>
-                  </div>
+                    </div>
 
-                  <div className="mt-2 flex items-center justify-between gap-3">
-                    <QuantityStepper bookId={line.bookId} quantity={line.quantity} />
-                    <p className="text-xs text-ink-faint tabular-nums">
-                      {line.unitCents == null
-                        ? "price to be confirmed"
-                        : `${formatLkrCents(line.unitCents)} each`}
-                    </p>
+                    <div className="mt-2 flex items-center justify-between gap-3">
+                      <QuantityStepper
+                        bookId={line.bookId}
+                        quantity={line.quantity}
+                      />
+                      <p className="text-xs text-ink-faint tabular-nums">
+                        {line.unitCents == null
+                          ? "price to be confirmed"
+                          : `${formatLkrCents(line.unitCents)} each`}
+                      </p>
+                    </div>
                   </div>
                 </li>
               ))}
@@ -131,8 +155,8 @@ export default async function CartPage() {
             {readrisePercent > 0 && knownTotal > 0 ? (
               <p className="mt-2 text-sm text-brand-700 bg-brand-50 border border-brand-200 rounded-lg px-3 py-2">
                 {formatLkrCents(readriseCents)} of this goes to{" "}
-                <span className="font-medium">Read and Rise</span>, putting books
-                into schools.
+                <span className="font-medium">Read and Rise</span>, putting
+                books into schools.
               </p>
             ) : null}
 
@@ -142,6 +166,8 @@ export default async function CartPage() {
           </Card>
         </div>
       )}
+
+      {added ? <Toast message="Added to cart" /> : null}
     </AppShell>
   );
 }

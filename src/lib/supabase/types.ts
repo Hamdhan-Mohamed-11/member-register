@@ -1473,6 +1473,7 @@ export type Database = {
       reading_items: {
         Row: {
           author: string
+          cover_id: number | null
           created_at: string
           date_read: string | null
           id: string
@@ -1484,6 +1485,7 @@ export type Database = {
         }
         Insert: {
           author?: string
+          cover_id?: number | null
           created_at?: string
           date_read?: string | null
           id?: string
@@ -1495,6 +1497,7 @@ export type Database = {
         }
         Update: {
           author?: string
+          cover_id?: number | null
           created_at?: string
           date_read?: string | null
           id?: string
@@ -1966,6 +1969,10 @@ export type Database = {
         Args: never
         Returns: {
           books_funded: number
+          club_books: number
+          club_donated: number
+          club_id: string
+          club_name: string
           donated_lkr: number
           my_books: number
           my_donated: number

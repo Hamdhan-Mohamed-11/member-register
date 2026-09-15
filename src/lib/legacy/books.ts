@@ -100,7 +100,15 @@ function buildWhere(q: BookQuery): { sql: string; params: unknown[] } {
     params.push(q.category);
   }
 
-  if (q.language) {
+  if (q.language === "english") {
+    // English is the catalogue's default, and the legacy side marks only the
+    // exceptions -- a Tamil or Sinhala book says so in its title, an English
+    // one says nothing. So "English" is the absence of both markers. It will
+    // include the odd untagged book in another language; there is no column
+    // that would do better.
+    clauses.push("b.book_name not like ? and b.book_name not like ?");
+    params.push("%Tamil%", "%Sinhala%");
+  } else if (q.language) {
     // Language is encoded in the TITLE on the legacy side, not in a column.
     // Replicating their substring match is correct rather than lazy: there is
     // nothing else to match on.

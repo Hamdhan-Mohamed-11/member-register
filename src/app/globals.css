@@ -248,6 +248,11 @@
     animation: pab-fade 0.5s ease-out both;
   }
 
+  /* A toast rises from the bottom edge it is anchored to. */
+  .toast-in {
+    animation: pab-rise 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
   /*
     Stagger by nth-child rather than per-element inline delays, so a list can
     be rendered by a server component with no JavaScript at all. Capped at six:

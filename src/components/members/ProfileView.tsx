@@ -7,6 +7,8 @@ import { buttonClassName } from "@/components/ui/Button";
 import { avatarUrl, type MemberProfile } from "@/lib/members/queries";
 import { BadgeIcon } from "@/components/badges/BadgeIcon";
 import type { EarnedBadge } from "@/lib/badges/queries";
+import { BookCover } from "@/components/books/BookCover";
+import { openLibraryCoverSrc } from "@/lib/books/covers";
 
 function formatDate(value: string): string {
   return new Date(`${value}T00:00:00`).toLocaleDateString("en-GB", {
@@ -110,31 +112,32 @@ export function ProfileView({
         </div>
 
         <div className="px-4 pb-4 sm:px-5 sm:pb-5">
-
-        {profile.bio ? (
-          <p className="text-sm text-ink mt-4 whitespace-pre-line">{profile.bio}</p>
-        ) : null}
-
-        {profile.learningTags.length ? (
-          <div className="mt-4">
-            <p className="text-xs font-medium uppercase tracking-wide text-ink-faint mb-1.5">
-              Currently learning
+          {profile.bio ? (
+            <p className="text-sm text-ink mt-4 whitespace-pre-line">
+              {profile.bio}
             </p>
-            {/*
+          ) : null}
+
+          {profile.learningTags.length ? (
+            <div className="mt-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-ink-faint mb-1.5">
+                Currently learning
+              </p>
+              {/*
               These were `bg-accent-100`, a colour token that does not exist --
               Tailwind emitted nothing for it, so the tags had a transparent
               background and read as loose words. Gold is the accent the design
               actually defines.
             */}
-            <div className="flex flex-wrap gap-1.5">
-              {profile.learningTags.map((tag) => (
-                <Badge key={tag} tone="gold">
-                  {tag}
-                </Badge>
-              ))}
+              <div className="flex flex-wrap gap-1.5">
+                {profile.learningTags.map((tag) => (
+                  <Badge key={tag} tone="gold">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
         </div>
       </Card>
 
@@ -151,7 +154,10 @@ export function ProfileView({
             title={`Achievements (${badges.length})`}
             action={
               isSelf ? (
-                <Link href="/me/badges" className={buttonClassName("ghost", "sm")}>
+                <Link
+                  href="/me/badges"
+                  className={buttonClassName("ghost", "sm")}
+                >
                   All badges
                 </Link>
               ) : undefined
@@ -165,7 +171,9 @@ export function ProfileView({
                 title={badge.description ?? undefined}
               >
                 <BadgeIcon name={badge.icon} className="size-4 text-gold-700" />
-                <span className="text-xs font-medium text-gold-700">{badge.name}</span>
+                <span className="text-xs font-medium text-gold-700">
+                  {badge.name}
+                </span>
               </li>
             ))}
           </ul>
@@ -176,7 +184,10 @@ export function ProfileView({
             title="Achievements"
             description="Read, present and turn up, and badges start appearing here."
             action={
-              <Link href="/me/badges" className={buttonClassName("ghost", "sm")}>
+              <Link
+                href="/me/badges"
+                className={buttonClassName("ghost", "sm")}
+              >
                 See what&apos;s on offer
               </Link>
             }
@@ -190,7 +201,10 @@ export function ProfileView({
             title="Currently reading"
             action={
               isSelf ? (
-                <Link href="/me/reading" className={buttonClassName("ghost", "sm")}>
+                <Link
+                  href="/me/reading"
+                  className={buttonClassName("ghost", "sm")}
+                >
                   Manage
                 </Link>
               ) : undefined
@@ -201,17 +215,30 @@ export function ProfileView({
           <EmptyState
             compact
             icon="inbox"
-            title={isSelf ? "Nothing on the go" : `${profile.firstName} isn't reading anything right now`}
-            description={isSelf ? "Add a book to show it on your profile." : undefined}
+            title={
+              isSelf
+                ? "Nothing on the go"
+                : `${profile.firstName} isn't reading anything right now`
+            }
+            description={
+              isSelf ? "Add a book to show it on your profile." : undefined
+            }
           />
         ) : (
           <ul className="divide-y divide-line">
             {reading.map((item) => (
-              <li key={item.id} className="px-4 py-3">
-                <p className="font-medium text-ink">{item.title}</p>
-                {item.author ? (
-                  <p className="text-sm text-ink-muted">{item.author}</p>
-                ) : null}
+              <li key={item.id} className="flex items-center gap-3 px-4 py-3">
+                <BookCover
+                  src={openLibraryCoverSrc(item.coverId)}
+                  title={item.title}
+                  size="sm"
+                />
+                <div className="min-w-0">
+                  <p className="font-medium text-ink">{item.title}</p>
+                  {item.author ? (
+                    <p className="text-sm text-ink-muted">{item.author}</p>
+                  ) : null}
+                </div>
               </li>
             ))}
           </ul>
@@ -227,8 +254,13 @@ export function ProfileView({
         ) : (
           <ul className="divide-y divide-line">
             {read.map((item) => (
-              <li key={item.id} className="px-4 py-3 flex justify-between gap-3">
-                <div className="min-w-0">
+              <li key={item.id} className="px-4 py-3 flex items-center gap-3">
+                <BookCover
+                  src={openLibraryCoverSrc(item.coverId)}
+                  title={item.title}
+                  size="sm"
+                />
+                <div className="min-w-0 flex-1">
                   <p className="font-medium text-ink">{item.title}</p>
                   {item.author ? (
                     <p className="text-sm text-ink-muted">{item.author}</p>

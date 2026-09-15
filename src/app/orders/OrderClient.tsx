@@ -4,7 +4,11 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Notice, controlClassName } from "@/components/ui/Field";
-import { cancelOrder, postOrderMessage, respondToQuote } from "@/app/cart/actions";
+import {
+  cancelOrder,
+  postOrderMessage,
+  respondToQuote,
+} from "@/app/cart/actions";
 
 /**
  * Accept or decline a price the club has revised.
@@ -43,8 +47,8 @@ export function QuoteResponse({
       {error ? <Notice>{error}</Notice> : null}
 
       <p className="text-sm text-ink">
-        You asked at <span className="tabular-nums">{askingTotal}</span>. The club
-        says it is actually{" "}
+        You asked at <span className="tabular-nums">{askingTotal}</span>. The
+        club says it is actually{" "}
         <span className="font-medium tabular-nums">{agreedTotal}</span>.
       </p>
 
@@ -52,7 +56,11 @@ export function QuoteResponse({
         <Button onClick={() => respond(true)} disabled={pending}>
           {pending ? "Saving…" : "Yes, go ahead"}
         </Button>
-        <Button variant="secondary" onClick={() => respond(false)} disabled={pending}>
+        <Button
+          variant="secondary"
+          onClick={() => respond(false)}
+          disabled={pending}
+        >
           No thanks
         </Button>
       </div>
@@ -64,28 +72,69 @@ export function QuoteResponse({
   );
 }
 
+/**
+ * Cancel an open order.
+ *
+ * A real button, in the danger colour, and next to the order's main action --
+ * it used to be a faint grey link at the foot of the page, below the message
+ * thread, and members could not find it (review item 9). Two taps, because it
+ * cannot be undone: the first asks, the second does it.
+ */
 export function CancelOrderButton({ orderId }: { orderId: string }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  function cancel() {
+    setError(null);
+    startTransition(async () => {
+      const result = await cancelOrder(orderId);
+      if (!result.ok) {
+        setError(result.error);
+        setConfirming(false);
+      } else {
+        router.refresh();
+      }
+    });
+  }
+
+  const danger =
+    "press inline-flex min-h-9 items-center rounded-lg border border-danger-600/40 bg-surface px-3 text-sm font-medium text-danger-600 hover:bg-danger-100 disabled:opacity-50";
+
   return (
-    <span className="inline-flex flex-col gap-1">
-      <button
-        type="button"
-        disabled={pending}
-        onClick={() =>
-          startTransition(async () => {
-            const result = await cancelOrder(orderId);
-            if (!result.ok) setError(result.error);
-            else router.refresh();
-          })
-        }
-        className="min-h-9 rounded-lg border border-line px-3 text-xs font-medium text-ink-muted hover:bg-canvas disabled:opacity-50"
-      >
-        {pending ? "Cancelling…" : "Cancel this order"}
-      </button>
-      {error ? <span className="text-[11px] text-danger-600">{error}</span> : null}
+    <span className="inline-flex flex-wrap items-center gap-2">
+      {confirming ? (
+        <>
+          <button
+            type="button"
+            onClick={cancel}
+            disabled={pending}
+            className={danger}
+          >
+            {pending ? "Cancelling…" : "Yes, cancel it"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setConfirming(false)}
+            disabled={pending}
+            className="min-h-9 rounded-lg px-2 text-sm text-ink-muted hover:text-ink"
+          >
+            Keep it
+          </button>
+        </>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setConfirming(true)}
+          className={danger}
+        >
+          Cancel order
+        </button>
+      )}
+      {error ? (
+        <span className="w-full text-xs text-danger-600">{error}</span>
+      ) : null}
     </span>
   );
 }

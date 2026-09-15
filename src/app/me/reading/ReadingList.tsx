@@ -6,13 +6,27 @@ import { Button } from "@/components/ui/Button";
 import { Field, Notice, selectClassName } from "@/components/ui/Field";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { BookCover } from "@/components/books/BookCover";
+import { openLibraryCoverSrc } from "@/lib/books/covers";
 import type { ReadingItem } from "@/lib/members/queries";
 import { addReadingItem, deleteReadingItem, setReadingStatus } from "./actions";
 
 const SECTIONS = [
-  { status: "reading", label: "Currently reading", empty: "Nothing on the go right now." },
-  { status: "want_to_read", label: "Want to read", empty: "No books on the list yet." },
-  { status: "read", label: "Read", empty: "Books you finish will collect here." },
+  {
+    status: "reading",
+    label: "Currently reading",
+    empty: "Nothing on the go right now.",
+  },
+  {
+    status: "want_to_read",
+    label: "Want to read",
+    empty: "No books on the list yet.",
+  },
+  {
+    status: "read",
+    label: "Read",
+    empty: "Books you finish will collect here.",
+  },
 ] as const;
 
 function formatDate(value: string): string {
@@ -73,10 +87,18 @@ export function ReadingList({ items }: { items: ReadingItem[] }) {
           description="Type the title and author — anything you're reading counts."
         />
         <form onSubmit={onAdd} className="space-y-3">
-          <Field label="Title" name="title" required placeholder="The Remains of the Day" />
+          <Field
+            label="Title"
+            name="title"
+            required
+            placeholder="The Remains of the Day"
+          />
           <Field label="Author" name="author" placeholder="Kazuo Ishiguro" />
           <div>
-            <label htmlFor="status" className="block text-sm font-medium text-ink mb-1.5">
+            <label
+              htmlFor="status"
+              className="block text-sm font-medium text-ink mb-1.5"
+            >
               Where does it go?
             </label>
             <select
@@ -110,51 +132,71 @@ export function ReadingList({ items }: { items: ReadingItem[] }) {
               <ul className="divide-y divide-line">
                 {rows.map((item) => (
                   <li key={item.id} className="px-4 py-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="font-medium text-ink">{item.title}</p>
-                        {item.author ? (
-                          <p className="text-sm text-ink-muted">{item.author}</p>
-                        ) : null}
-                        {item.dateRead ? (
-                          <p className="text-xs text-ink-faint mt-0.5">
-                            Finished {formatDate(item.dateRead)}
-                          </p>
-                        ) : null}
-                      </div>
+                    <div className="flex items-start gap-3">
+                      <BookCover
+                        src={openLibraryCoverSrc(item.coverId)}
+                        title={item.title}
+                        size="sm"
+                      />
+                      {/* Text and buttons stack on a phone and sit side by
+                          side from sm up -- beside a cover, three columns do
+                          not fit in 360px. */}
+                      <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+                        <div className="min-w-0">
+                          <p className="font-medium text-ink">{item.title}</p>
+                          {item.author ? (
+                            <p className="text-sm text-ink-muted">
+                              {item.author}
+                            </p>
+                          ) : null}
+                          {item.dateRead ? (
+                            <p className="text-xs text-ink-faint mt-0.5">
+                              Finished {formatDate(item.dateRead)}
+                            </p>
+                          ) : null}
+                        </div>
 
-                      <div className="flex shrink-0 gap-1.5">
-                        {item.status !== "read" ? (
-                          <Button
-                            size="sm"
-                            disabled={pending}
-                            onClick={() =>
-                              run(setReadingStatus, { itemId: item.id, status: "read" })
-                            }
-                          >
-                            Mark read
-                          </Button>
-                        ) : (
+                        <div className="flex shrink-0 gap-1.5">
+                          {item.status !== "read" ? (
+                            <Button
+                              size="sm"
+                              disabled={pending}
+                              onClick={() =>
+                                run(setReadingStatus, {
+                                  itemId: item.id,
+                                  status: "read",
+                                })
+                              }
+                            >
+                              Mark read
+                            </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              disabled={pending}
+                              onClick={() =>
+                                run(setReadingStatus, {
+                                  itemId: item.id,
+                                  status: "reading",
+                                })
+                              }
+                            >
+                              Reading again
+                            </Button>
+                          )}
                           <Button
                             size="sm"
                             variant="ghost"
                             disabled={pending}
+                            aria-label={`Remove ${item.title}`}
                             onClick={() =>
-                              run(setReadingStatus, { itemId: item.id, status: "reading" })
+                              run(deleteReadingItem, { itemId: item.id })
                             }
                           >
-                            Reading again
+                            Remove
                           </Button>
-                        )}
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          disabled={pending}
-                          aria-label={`Remove ${item.title}`}
-                          onClick={() => run(deleteReadingItem, { itemId: item.id })}
-                        >
-                          Remove
-                        </Button>
+                        </div>
                       </div>
                     </div>
                   </li>

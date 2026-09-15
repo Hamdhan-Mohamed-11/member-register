@@ -100,7 +100,10 @@ export default async function LibraryPage({
   const query: BookQuery = {
     search: sp.q,
     category: sp.category,
-    language: sp.language === "tamil" || sp.language === "sinhala" ? sp.language : undefined,
+    language:
+      sp.language === "english" || sp.language === "tamil" || sp.language === "sinhala"
+        ? sp.language
+        : undefined,
     // The whole point of this page: only what can actually be borrowed.
     lendableOnly: true,
     page: Number(sp.page) || 1,
@@ -154,12 +157,6 @@ export default async function LibraryPage({
           </Card>
         ) : (
           <>
-            <p className="text-sm text-ink-muted">
-              {result.data.total.toLocaleString("en-LK")} book
-              {result.data.total === 1 ? "" : "s"} available to borrow
-              {result.data.pages > 1 ? ` · page ${result.data.page} of ${result.data.pages}` : ""}
-            </p>
-
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {result.data.books.map((book) => (
                 <BookCard

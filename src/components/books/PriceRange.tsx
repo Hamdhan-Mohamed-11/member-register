@@ -127,9 +127,6 @@ onChange={(e) => setMax(Number(e.target.value) || ceiling)}
         />
       </div>
 
-      <p className="mt-2 text-center text-xs text-ink-faint">
-        The price you pay, after your member discount.
-      </p>
     </div>
   );
 }
