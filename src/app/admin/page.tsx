@@ -101,6 +101,14 @@ export default async function AdminDashboard() {
         text: `${stats.ordersNeedingPrice} book order${stats.ordersNeedingPrice === 1 ? "" : "s"} waiting for a price`,
         icon: "book" as const,
       },
+    // New borrow requests. Only overdue books were listed here, so a fresh
+    // request produced no prompt anywhere -- one sat unnoticed that way.
+    isSuper &&
+      (stats.borrowsWaiting ?? 0) > 0 && {
+        href: "/admin/library",
+        text: `${stats.borrowsWaiting} borrow request${stats.borrowsWaiting === 1 ? "" : "s"} to approve`,
+        icon: "bookmark" as const,
+      },
     isSuper &&
       (stats.overdueBorrows ?? 0) > 0 && {
         href: "/admin/library",

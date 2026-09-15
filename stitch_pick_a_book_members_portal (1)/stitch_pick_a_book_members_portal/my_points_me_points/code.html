@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><title>Pick a Book</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "secondary": "#00658d", "on-secondary-fixed-variant": "#004c6b", "surface-container-high": "#e2e7ff", "on-secondary-fixed": "#001e2d", "navy-deep": "#16205C", "outline-variant": "#c6c5d4", "primary-container": "#293896", "outline": "#767683", "on-secondary-container": "#004866", "tertiary-fixed-dim": "#ecc14f", "navy-tint": "#4457B5", "tertiary": "#765b00", "status-success-text": "#147233", "surface-container-highest": "#dbe2fd", "status-warning-bg": "#FBEED3", "surface-container-low": "#f2f3ff", "secondary-fixed-dim": "#82cfff", "secondary-fixed": "#c6e7ff", "on-error": "#ffffff", "on-tertiary": "#ffffff", "on-error-container": "#93000a", "inverse-primary": "#bbc3ff", "surface-dim": "#d3d9f4", "error-container": "#ffdad6", "surface-bright": "#faf8ff", "ink-body": "#14162E", "surface-card": "#FFFFFF", "status-danger-text": "#B91C1C", "surface-tint": "#4756b4", "status-danger-bg": "#FBE4E4", "surface": "#faf8ff", "background": "#faf8ff", "on-tertiary-fixed": "#251a00", "border-subtle": "#E6E9F0", "surface-container": "#eaedff", "ink-faint": "#8B91A3", "surface-container-lowest": "#ffffff", "surface-variant": "#dbe2fd", "surface-bg": "#F8F9FC", "secondary-container": "#2dbcfe", "on-tertiary-container": "#503d00", "status-warning-text": "#A15C07", "primary-fixed-dim": "#bbc3ff", "gold-text": "#8A6410", "navy-wash": "#EFF2FB", "on-primary-fixed-variant": "#2e3d9b", "inverse-surface": "#293045", "navy-darkest": "#0F1640", "surface-cream": "#F8F2E9", "status-success-bg": "#DCF3E4", "on-primary-container": "#9da9ff", "on-surface-variant": "#454652", "primary-fixed": "#dfe0ff", "sky-text": "#0079A8", "on-tertiary-fixed-variant": "#594400", "navy-soft": "#C3CBEC", "tertiary-fixed": "#ffdf94", "on-background": "#141b2f", "inverse-on-surface": "#eef0ff", "on-surface": "#141b2f", "on-primary-fixed": "#000e5f", "tertiary-container": "#cea635", "on-primary": "#ffffff", "on-secondary": "#ffffff", "primary": "#0b1e80", "error": "#ba1a1a" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "gutter-desktop": "1.5rem", "space-sm": "0.5rem", "margin-desktop": "2.5rem", "space-xs": "0.25rem", "space-xl": "2.25rem", "margin": "1rem", "space-lg": "1.5rem", "space-md": "1rem", "gutter": "1rem" }, "fontFamily": { "headline-lg": ["Playfair Display"], "headline-xl": ["Playfair Display"], "headline-lg-mobile": ["Playfair Display"], "label-sm": ["DM Sans"], "headline-xl-mobile": ["Playfair Display"], "body-sm": ["DM Sans"], "headline-sm": ["Playfair Display"], "body-lg": ["DM Sans"], "headline-md": ["Playfair Display"], "caption": ["DM Sans"], "label-md": ["DM Sans"], "body-md": ["DM Sans"] }, "fontSize": { "headline-lg": ["2rem", { "lineHeight": "2.5rem", "fontWeight": "600" }], "headline-xl": ["2.5rem", { "lineHeight": "3rem", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-lg-mobile": ["1.625rem", { "lineHeight": "2.125rem", "fontWeight": "600" }], "label-sm": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.04em", "fontWeight": "600" }], "headline-xl-mobile": ["2rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-sm": ["0.875rem", { "lineHeight": "1.375rem", "fontWeight": "400" }], "headline-sm": ["1.125rem", { "lineHeight": "1.625rem", "fontWeight": "600" }], "body-lg": ["1.125rem", { "lineHeight": "1.75rem", "fontWeight": "400" }], "headline-md": ["1.375rem", { "lineHeight": "1.875rem", "fontWeight": "600" }], "caption": ["0.75rem", { "lineHeight": "1.125rem", "fontWeight": "400" }], "label-md": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.01em", "fontWeight": "600" }], "body-md": ["1rem", { "lineHeight": "1.5rem", "fontWeight": "400" }] } } } };</script></head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col antialiased"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(22,32,92,0.04)]"><div class="h-16 px-space-md flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><img alt="Clean minimalist literary book logo icon for 'Pick a Book', an elegant open book with bookmark flourish, line stroke 1.6px style in primary navy #293896 and warm accent, vector graphic mark for book club, no emoji, premium independent bookshop feel.. Design context: - Primary color: #293896
+- Font: playfairDisplay
+- Mode: light
+- Roundness: rounded-md
+. The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1UjT7AWSE90BT_3we0gsvspMHyuF3dA2XUP_iajSMcjj0vYfboNla7Y4ImcJu6jbOmU7ak8mf6Ktcton86BiQTeK5LC_-tzt2Av8kc3Q2T431foW9Lu_sb-8-0rOBWeatYvlWs6HsntQ9WfXosP9klIRrHITAfg5avJp0hlP9LsGnJaf-djFKozJyIBn-dcf6xrdzHjvLUHP0s8hEkc6k68iQdkcycUA1mNWUCucctwodznA5iRGsFD5GT7"/><div class="flex flex-col min-w-0"><span class="font-headline-sm text-headline-sm text-primary truncate tracking-tight">Pick a Book</span><span class="font-caption text-caption text-ink-faint truncate">Me</span></div></div><div class="flex items-center gap-space-xs shrink-0"><button aria-label="Search salon" class="w-11 h-11 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">search</span></button><button aria-label="Society notifications" class="w-11 h-11 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors relative" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-primary-container"></span></button><div class="w-11 h-11 flex items-center justify-center pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1Wouczgaw92PVI93mytS-PLFkX66QkSB_EvVweH_BW6s1BuFQPBh1j8Dpo9iXpGlj8Vou-BtQ3KF0fL0RG0Tpm6gDZh47UEFzs9U0W_oxTeCAWca4PXI6Be6eHP_bNXi-kV2zJMe67TqzTJUHSMCO__RZeda9eNeH9YeRh57K8aAbxsO-jM192d6wl4DT7dW9ErVtj7P_3GqJFRniL0IaGAgpRBb5AJ0L4QOP3qlzRwjhLDf-KmfZ_lH325"/></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface"><div class="flex flex-col w-full">
+<!-- Interactive Modals / Drawers (Hidden by default) -->
+<div aria-labelledby="milestones-title" aria-modal="true" class="fixed inset-0 z-50 bg-navy-darkest/60 backdrop-blur-sm hidden items-end justify-center transition-opacity" id="milestones-modal" role="dialog">
+<div class="w-full max-w-md bg-surface-card rounded-t-2xl p-space-md shadow-2xl flex flex-col max-h-[85vh] overflow-y-auto">
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[24px]">workspace_premium</span>
+<h2 class="font-headline-sm text-headline-sm text-navy-deep" id="milestones-title">Badges &amp; Tiers</h2>
+</div>
+<button aria-label="Close dialog" class="w-8 h-8 rounded-full bg-navy-wash flex items-center justify-center text-ink-body hover:bg-surface-container transition-colors" onclick="toggleModal('milestones-modal', false)" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md">Earn cumulative recognition as your literary participation deepens in our salon circles.</p>
+<div class="space-y-space-sm">
+<div class="p-space-sm rounded-xl bg-navy-wash flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-surface-card flex items-center justify-center text-sky-text shadow-sm">
+<span class="material-symbols-outlined text-[22px]">history_edu</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-navy-deep">Bronze Scribe</span>
+<span class="font-caption text-caption text-ink-faint">100 pts</span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant">Completed introductory reading circles</p>
+</div>
+<span class="material-symbols-outlined text-status-success-text text-[20px]">check_circle</span>
+</div>
+<div class="p-space-sm rounded-xl bg-surface-cream flex items-center gap-space-sm shadow-sm">
+<div class="w-10 h-10 rounded-full bg-surface-card flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[22px]">edit_note</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-navy-deep">Silver Quill (Active)</span>
+<span class="font-caption text-caption text-gold-text">480 / 500 pts</span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant">Regular presenter &amp; discussion catalyst</p>
+</div>
+<span class="material-symbols-outlined text-gold-text text-[20px]">hourglass_top</span>
+</div>
+<div class="p-space-sm rounded-xl bg-surface-bg flex items-center gap-space-sm opacity-75">
+<div class="w-10 h-10 rounded-full bg-surface-card flex items-center justify-center text-ink-faint shadow-sm">
+<span class="material-symbols-outlined text-[22px]">auto_awesome</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-ink-faint">Gold Laureate</span>
+<span class="font-caption text-caption text-ink-faint">500 pts</span>
+</div>
+<p class="font-caption text-caption text-ink-faint">Salon curator, honors dinner invitation &amp; book archiving perks</p>
+</div>
+<span class="material-symbols-outlined text-ink-faint text-[20px]">lock</span>
+</div>
+</div>
+<button class="mt-space-md w-full py-space-sm bg-primary text-on-primary rounded-lg font-label-md text-label-md shadow-sm active:scale-[0.99] transition-transform" onclick="toggleModal('milestones-modal', false)" type="button">
+        Close Details
+      </button>
+</div>
+</div>
+<div aria-labelledby="rules-title" aria-modal="true" class="fixed inset-0 z-50 bg-navy-darkest/60 backdrop-blur-sm hidden items-end justify-center transition-opacity" id="rules-modal" role="dialog">
+<div class="w-full max-w-md bg-surface-card rounded-t-2xl p-space-md shadow-2xl flex flex-col max-h-[85vh] overflow-y-auto">
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[24px]">menu_book</span>
+<h2 class="font-headline-sm text-headline-sm text-navy-deep" id="rules-title">How Points Work</h2>
+</div>
+<button aria-label="Close dialog" class="w-8 h-8 rounded-full bg-navy-wash flex items-center justify-center text-ink-body hover:bg-surface-container transition-colors" onclick="toggleModal('rules-modal', false)" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">Points honour your cultural and intellectual stewardship in Pick a Book societies. They renew your voting privileges and unlock curated manuscript proofs.</p>
+<div class="space-y-space-xs text-ink-body">
+<div class="p-space-sm rounded-lg bg-surface-bg flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[20px] mt-0.5">event_available</span>
+<div>
+<span class="font-label-md text-label-md text-navy-deep block">Active Presence</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Attending a monthly salon automatically accrues points upon arrival check-in.</span>
+</div>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-bg flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[20px] mt-0.5">record_voice_over</span>
+<div>
+<span class="font-label-md text-label-md text-navy-deep block">Critical Discourse</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Sharing a formal analysis or moderated segment earns double presenter credits.</span>
+</div>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-bg flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[20px] mt-0.5">volunteer_activism</span>
+<div>
+<span class="font-label-md text-label-md text-navy-deep block">Read &amp; Rise Outreach</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Micro-grants directly fund island rural school library collections and archival preservation.</span>
+</div>
+</div>
+</div>
+<button class="mt-space-md w-full py-space-sm bg-primary text-on-primary rounded-lg font-label-md text-label-md shadow-sm active:scale-[0.99] transition-transform" onclick="toggleModal('rules-modal', false)" type="button">
+        Understood
+      </button>
+</div>
+</div>
+<!-- Main Page Flow -->
+<div class="px-space-md flex flex-col gap-space-md pt-space-xs pb-space-lg">
+<!-- Top Nav / Back Button Row -->
+<div class="flex items-center justify-between">
+<a class="inline-flex items-center gap-space-xs py-space-xs pr-space-sm text-primary hover:text-navy-deep transition-colors group" data-path="me" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
+<span class="font-label-md text-label-md">Back to Profile</span>
+</a>
+<span class="font-caption text-caption text-ink-faint uppercase tracking-wider">Member ID #PB-7492</span>
+</div>
+<!-- Large Balance Display Card -->
+<div class="w-full rounded-[14px] bg-primary text-on-primary p-space-md shadow-[0_8px_24px_rgba(22,32,92,0.12)] relative overflow-hidden flex flex-col gap-space-md">
+<!-- Subtle Decorative Background Flourish (Linear & Editorial) -->
+<svg class="absolute -right-8 -bottom-10 w-48 h-48 opacity-10 pointer-events-none text-on-primary" fill="none" stroke="currentColor" stroke-width="1.2" viewbox="0 0 120 120">
+<circle cx="60" cy="60" r="50"></circle>
+<path d="M60 20 L60 100 M20 60 L100 60"></path>
+<circle cx="60" cy="60" r="32"></circle>
+</svg>
+<div class="flex flex-col gap-space-xs z-10">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary-fixed-dim">AVAILABLE MEMBER BALANCE</span>
+<span aria-hidden="true" class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-headline-xl-mobile text-headline-xl-mobile text-secondary-container tracking-tight">480</span>
+<span class="font-headline-sm text-headline-sm text-secondary-fixed">pts</span>
+</div>
+</div>
+<!-- Tier Progress Card Inside -->
+<div class="z-10 bg-navy-deep/80 rounded-xl p-space-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-xs min-w-0">
+<span class="material-symbols-outlined text-secondary-container text-[18px]">verified</span>
+<span class="font-label-md text-label-md text-on-primary truncate">Silver Quill Tier</span>
+</div>
+<span class="font-caption text-caption text-primary-fixed shrink-0">20 pts to Gold Tier</span>
+</div>
+<!-- Progress Bar Indicator -->
+<div aria-valuemax="500" aria-valuemin="0" aria-valuenow="480" class="w-full h-2 rounded-full bg-navy-tint/40 overflow-hidden relative" role="progressbar">
+<div class="h-full bg-secondary-container rounded-full transition-all duration-500" style="width: 96%;"></div>
+</div>
+</div>
+<!-- Quick Action Buttons -->
+<div class="grid grid-cols-2 gap-space-sm z-10 pt-space-xs">
+<button class="flex items-center justify-center gap-space-xs py-space-xs px-space-sm rounded-lg bg-on-primary text-primary hover:bg-surface-cream active:scale-[0.98] transition-all text-center" onclick="toggleModal('milestones-modal', true)" type="button">
+<span class="material-symbols-outlined text-[18px]">military_tech</span>
+<span class="font-label-sm text-label-sm">View Badges</span>
+</button>
+<button class="flex items-center justify-center gap-space-xs py-space-xs px-space-sm rounded-lg bg-primary-container text-on-primary hover:bg-navy-tint active:scale-[0.98] transition-all text-center" onclick="toggleModal('rules-modal', true)" type="button">
+<span class="material-symbols-outlined text-[18px]">help_outline</span>
+<span class="font-label-sm text-label-sm">How It Works</span>
+</button>
+</div>
+</div>
+<!-- Points Rules Explainer Callout (Warm Cream Panel) -->
+<div class="w-full rounded-[14px] bg-surface-cream p-space-md shadow-[0_2px_8px_rgba(22,32,92,0.04)] flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-gold-text text-[20px]">lightbulb</span>
+<span class="font-headline-sm text-headline-sm text-navy-deep">Accrual Standards</span>
+</div>
+<span class="font-caption text-caption text-gold-text bg-tertiary-fixed px-space-xs py-0.5 rounded-full font-medium">Session Guidelines</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-body">Members earn honorary recognition through verifiable engagement and book culture contributions:</p>
+<div class="grid grid-cols-1 gap-space-xs pt-space-xs">
+<div class="flex items-center justify-between p-space-xs rounded-lg bg-surface-card shadow-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-sky-text text-[18px]">sensor_door</span>
+<span class="font-body-sm text-body-sm text-ink-body">Attendance at club session</span>
+</div>
+<span class="font-label-md text-label-md text-status-success-text shrink-0">+10 pts</span>
+</div>
+<div class="flex items-center justify-between p-space-xs rounded-lg bg-surface-card shadow-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-sky-text text-[18px]">co_present</span>
+<span class="font-body-sm text-body-sm text-ink-body">Delivering a book presentation</span>
+</div>
+<span class="font-label-md text-label-md text-status-success-text shrink-0">+20 pts</span>
+</div>
+<div class="flex items-center justify-between p-space-xs rounded-lg bg-surface-card shadow-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-sky-text text-[18px]">favorite</span>
+<span class="font-body-sm text-body-sm text-ink-body">Read &amp; Rise contribution</span>
+</div>
+<span class="font-label-md text-label-md text-status-success-text shrink-0">+10 pts <span class="font-caption text-caption text-ink-faint">/ 500 LKR</span></span>
+</div>
+<div class="flex items-center justify-between p-space-xs rounded-lg bg-surface-card shadow-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-sky-text text-[18px]">smart_display</span>
+<span class="font-body-sm text-body-sm text-ink-body">Submitting an approved session video</span>
+</div>
+<span class="font-label-md text-label-md text-status-success-text shrink-0">+20 pts</span>
+</div>
+</div>
+</div>
+<!-- Points Ledger Section -->
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-navy-deep">Points Ledger</h2>
+<p class="font-caption text-caption text-ink-faint">Chronological audit of member activity</p>
+</div>
+<span class="font-label-sm text-label-sm text-primary bg-navy-wash px-space-xs py-0.5 rounded-full font-semibold">7 Activities</span>
+</div>
+<!-- Ledger Entry Cards List -->
+<div class="flex flex-col gap-space-xs">
+<!-- Entry 1 -->
+<div class="rounded-[14px] bg-surface-card p-space-sm shadow-[0_1px_4px_rgba(22,32,92,0.04)] flex items-start gap-space-sm hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-xl bg-navy-wash flex items-center justify-center shrink-0 text-primary">
+<span class="material-symbols-outlined text-[20px]">meeting_room</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-space-xs">
+<span class="font-label-sm text-label-sm text-status-success-text bg-status-success-bg px-2 py-0.5 rounded-full">Salon Attendance</span>
+<span class="font-caption text-caption text-ink-faint">15 Mar 2028</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-body font-medium mt-1">Attended — Discussion: The Seven Moons of Maali Almeida</p>
+<div class="flex items-center justify-between mt-1.5">
+<span class="font-caption text-caption text-ink-faint">Verified by Salon Host</span>
+<span class="font-label-md text-label-md text-sky-text font-bold">+10 pts</span>
+</div>
+</div>
+</div>
+<!-- Entry 2 -->
+<div class="rounded-[14px] bg-surface-card p-space-sm shadow-[0_1px_4px_rgba(22,32,92,0.04)] flex items-start gap-space-sm hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-xl bg-surface-cream flex items-center justify-center shrink-0 text-tertiary">
+<span class="material-symbols-outlined text-[20px]">campaign</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-space-xs">
+<span class="font-label-sm text-label-sm text-gold-text bg-status-warning-bg px-2 py-0.5 rounded-full">Presentation</span>
+<span class="font-caption text-caption text-ink-faint">15 Mar 2028</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-body font-medium mt-1">Presented — The Seven Moons Chapter Analysis</p>
+<div class="flex items-center justify-between mt-1.5">
+<span class="font-caption text-caption text-ink-faint">Archived Presentation Deck</span>
+<span class="font-label-md text-label-md text-sky-text font-bold">+20 pts</span>
+</div>
+</div>
+</div>
+<!-- Entry 3 -->
+<div class="rounded-[14px] bg-surface-card p-space-sm shadow-[0_1px_4px_rgba(22,32,92,0.04)] flex items-start gap-space-sm hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-xl bg-secondary-fixed/50 flex items-center justify-center shrink-0 text-secondary">
+<span class="material-symbols-outlined text-[20px]">handshake</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-space-xs">
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container-high px-2 py-0.5 rounded-full">Community</span>
+<span class="font-caption text-caption text-ink-faint">04 Mar 2028</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-body font-medium mt-1">Read &amp; Rise Impact Contribution (LKR 500)</p>
+<div class="flex items-center justify-between mt-1.5">
+<span class="font-caption text-caption text-ink-faint">Receipt #RR-2028-091</span>
+<span class="font-label-md text-label-md text-sky-text font-bold">+10 pts</span>
+</div>
+</div>
+</div>
+<!-- Entry 4 -->
+<div class="rounded-[14px] bg-surface-card p-space-sm shadow-[0_1px_4px_rgba(22,32,92,0.04)] flex items-start gap-space-sm hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-xl bg-navy-wash flex items-center justify-center shrink-0 text-primary">
+<span class="material-symbols-outlined text-[20px]">meeting_room</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-space-xs">
+<span class="font-label-sm text-label-sm text-status-success-text bg-status-success-bg px-2 py-0.5 rounded-full">Salon Attendance</span>
+<span class="font-caption text-caption text-ink-faint">18 Feb 2028</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-body font-medium mt-1">Attended — Ceylon Sonnets &amp; Archival Memories</p>
+<div class="flex items-center justify-between mt-1.5">
+<span class="font-caption text-caption text-ink-faint">Colombo Old Library Hall</span>
+<span class="font-label-md text-label-md text-sky-text font-bold">+10 pts</span>
+</div>
+</div>
+</div>
+<!-- Entry 5 -->
+<div class="rounded-[14px] bg-surface-card p-space-sm shadow-[0_1px_4px_rgba(22,32,92,0.04)] flex items-start gap-space-sm hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center shrink-0 text-primary">
+<span class="material-symbols-outlined text-[20px]">videocam</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-space-xs">
+<span class="font-label-sm text-label-sm text-primary bg-primary-fixed px-2 py-0.5 rounded-full">Video Contribution</span>
+<span class="font-caption text-caption text-ink-faint">10 Feb 2028</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-body font-medium mt-1">Video Submission Approved — Chinaman Breakdown</p>
+<div class="flex items-center justify-between mt-1.5">
+<span class="font-caption text-caption text-ink-faint">Media Committee Review</span>
+<span class="font-label-md text-label-md text-sky-text font-bold">+20 pts</span>
+</div>
+</div>
+</div>
+<!-- Entry 6 -->
+<div class="rounded-[14px] bg-surface-card p-space-sm shadow-[0_1px_4px_rgba(22,32,92,0.04)] flex items-start gap-space-sm hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-xl bg-navy-wash flex items-center justify-center shrink-0 text-primary">
+<span class="material-symbols-outlined text-[20px]">meeting_room</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-space-xs">
+<span class="font-label-sm text-label-sm text-status-success-text bg-status-success-bg px-2 py-0.5 rounded-full">Salon Attendance</span>
+<span class="font-caption text-caption text-ink-faint">28 Jan 2028</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-body font-medium mt-1">Attended — Sri Lankan Historical Fiction Salon</p>
+<div class="flex items-center justify-between mt-1.5">
+<span class="font-caption text-caption text-ink-faint">Online Circle Session</span>
+<span class="font-label-md text-label-md text-sky-text font-bold">+10 pts</span>
+</div>
+</div>
+</div>
+<!-- Entry 7 -->
+<div class="rounded-[14px] bg-surface-card p-space-sm shadow-[0_1px_4px_rgba(22,32,92,0.04)] flex items-start gap-space-sm hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-xl bg-surface-cream flex items-center justify-center shrink-0 text-tertiary">
+<span class="material-symbols-outlined text-[20px]">campaign</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-space-xs">
+<span class="font-label-sm text-label-sm text-gold-text bg-status-warning-bg px-2 py-0.5 rounded-full">Presentation</span>
+<span class="font-caption text-caption text-ink-faint">15 Jan 2028</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-body font-medium mt-1">Presented — Contemporary Island Satire Talk</p>
+<div class="flex items-center justify-between mt-1.5">
+<span class="font-caption text-caption text-ink-faint">Kandy Chapter Hall</span>
+<span class="font-label-md text-label-md text-sky-text font-bold">+20 pts</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Export Statement / Empty State Link Card -->
+<div class="w-full rounded-[14px] bg-surface-card p-space-md shadow-[0_2px_8px_rgba(22,32,92,0.04)] flex flex-col items-center text-center gap-space-xs mt-space-xs">
+<div class="w-12 h-12 rounded-full bg-navy-wash flex items-center justify-center text-primary mb-1">
+<span class="material-symbols-outlined text-[24px]">description</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-navy-deep">Official Society Statement</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-xs">Need an authenticated log of your cultural participation for academic or fellowship portfolios?</p>
+<button class="mt-space-xs inline-flex items-center justify-center gap-space-xs px-space-md py-space-sm rounded-lg bg-navy-wash text-primary hover:bg-surface-container active:scale-[0.98] transition-all" id="export-btn" onclick="triggerDownloadStatement()" type="button">
+<span class="material-symbols-outlined text-[20px]">download</span>
+<span class="font-label-md text-label-md">Download statement as PDF</span>
+</button>
+<div class="hidden mt-space-xs text-status-success-text font-caption text-caption items-center gap-1" id="export-toast">
+<span class="material-symbols-outlined text-[16px]">check</span>
+<span>Statement exported to your downloads folder</span>
+</div>
+</div>
+</div>
+</div>
+<script>
+  function toggleModal(modalId, show) {
+    var modal = document.getElementById(modalId);
+    if (!modal) return;
+    if (show) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    } else {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+  }
+
+  function triggerDownloadStatement() {
+    var btn = document.getElementById('export-btn');
+    var toast = document.getElementById('export-toast');
+    if (!btn || !toast) return;
+    
+    var originalHTML = btn.innerHTML;
+    btn.innerHTML = '<span class="material-symbols-outlined text-[20px] animate-spin">progress_activity</span> <span class="font-label-md text-label-md">Generating PDF...</span>';
+    btn.setAttribute('disabled', 'true');
+
+    setTimeout(function() {
+      btn.innerHTML = originalHTML;
+      btn.removeAttribute('disabled');
+      toast.classList.remove('hidden');
+      toast.classList.add('flex');
+      
+      setTimeout(function() {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex');
+      }, 3500);
+    }, 1100);
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/85 backdrop-blur-xl shadow-[0_-2px_12px_rgba(22,32,92,0.05)]" data-active-classes="text-primary font-bold"><div class="flex justify-around items-center h-16 px-space-xs"><a class="flex flex-col items-center justify-center min-w-[56px] h-12 text-on-surface-variant hover:text-primary transition-colors" data-path="home" href="#"><span class="material-symbols-outlined text-[22px]">cottage</span><span class="font-label-sm text-label-sm mt-0.5">Home</span></a><a class="flex flex-col items-center justify-center min-w-[56px] h-12 text-on-surface-variant hover:text-primary transition-colors" data-path="sessions" href="#"><span class="material-symbols-outlined text-[22px]">forum</span><span class="font-label-sm text-label-sm mt-0.5">Sessions</span></a><a class="flex flex-col items-center justify-center min-w-[56px] h-12 text-on-surface-variant hover:text-primary transition-colors" data-path="books" href="#"><span class="material-symbols-outlined text-[22px]">auto_stories</span><span class="font-label-sm text-label-sm mt-0.5">Books</span></a><a class="flex flex-col items-center justify-center min-w-[56px] h-12 text-on-surface-variant hover:text-primary transition-colors" data-path="members" href="#"><span class="material-symbols-outlined text-[22px]">groups</span><span class="font-label-sm text-label-sm mt-0.5">Members</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[56px] h-12 transition-colors text-primary font-bold" data-path="me" href="#"><span class="material-symbols-outlined text-[22px]">account_circle</span><span class="font-label-sm text-label-sm mt-0.5">Me</span></a></div></nav></body></html>

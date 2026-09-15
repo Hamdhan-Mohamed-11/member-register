@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 20;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "tertiary-fixed-dim": "#ecc14f",
+        "surface-bright": "#faf8ff",
+        "secondary-container": "#2dbcfe",
+        "surface-tint": "#4756b4",
+        "on-primary-fixed": "#000e5f",
+        "on-background": "#141b2f",
+        "outline-variant": "#c6c5d4",
+        "primary-container": "#293896",
+        "on-surface-variant": "#454652",
+        "border-subtle": "#E6E9F0",
+        "surface-cream": "#F8F2E9",
+        "background": "#faf8ff",
+        "inverse-surface": "#293045",
+        "on-error": "#ffffff",
+        "surface-container": "#eaedff",
+        "surface-card": "#FFFFFF",
+        "surface-bg": "#F8F9FC",
+        "tertiary-container": "#cea635",
+        "inverse-primary": "#bbc3ff",
+        "surface-dim": "#d3d9f4",
+        "status-warning-text": "#A15C07",
+        "navy-soft": "#C3CBEC",
+        "error": "#ba1a1a",
+        "on-tertiary-container": "#503d00",
+        "primary": "#0b1e80",
+        "primary-fixed-dim": "#bbc3ff",
+        "outline": "#767683",
+        "secondary": "#00658d",
+        "error-container": "#ffdad6",
+        "on-surface": "#141b2f",
+        "surface-container-lowest": "#ffffff",
+        "surface-container-high": "#e2e7ff",
+        "on-primary": "#ffffff",
+        "secondary-fixed": "#c6e7ff",
+        "status-danger-text": "#B91C1C",
+        "tertiary": "#765b00",
+        "surface-container-low": "#f2f3ff",
+        "on-secondary-fixed-variant": "#004c6b",
+        "on-tertiary-fixed-variant": "#594400",
+        "ink-faint": "#8B91A3",
+        "sky-text": "#0079A8",
+        "primary-fixed": "#dfe0ff",
+        "status-warning-bg": "#FBEED3",
+        "on-tertiary-fixed": "#251a00",
+        "navy-deep": "#16205C",
+        "navy-darkest": "#0F1640",
+        "on-error-container": "#93000a",
+        "on-primary-container": "#9da9ff",
+        "surface-container-highest": "#dbe2fd",
+        "on-secondary-container": "#004866",
+        "on-secondary": "#ffffff",
+        "ink-body": "#14162E",
+        "surface": "#faf8ff",
+        "inverse-on-surface": "#eef0ff",
+        "on-secondary-fixed": "#001e2d",
+        "surface-variant": "#dbe2fd",
+        "gold-text": "#8A6410",
+        "navy-wash": "#EFF2FB",
+        "navy-tint": "#4457B5",
+        "on-primary-fixed-variant": "#2e3d9b",
+        "status-success-bg": "#DCF3E4",
+        "status-danger-bg": "#FBE4E4",
+        "status-success-text": "#147233",
+        "tertiary-fixed": "#ffdf94",
+        "on-tertiary": "#ffffff",
+        "secondary-fixed-dim": "#82cfff"
+      },
+      "borderRadius": {
+        "DEFAULT": "0.25rem",
+        "lg": "0.5rem",
+        "xl": "0.75rem",
+        "full": "9999px"
+      },
+      "spacing": {
+        "space-lg": "1.5rem",
+        "margin-desktop": "2.5rem",
+        "gutter": "1rem",
+        "gutter-desktop": "1.5rem",
+        "space-xl": "2.25rem",
+        "margin": "1rem",
+        "space-sm": "0.5rem",
+        "space-md": "1rem",
+        "space-xs": "0.25rem"
+      },
+      "fontFamily": {
+        "body-md": ["DM Sans"],
+        "body-sm": ["DM Sans"],
+        "headline-sm": ["Playfair Display"],
+        "body-lg": ["DM Sans"],
+        "caption": ["DM Sans"],
+        "headline-md": ["Playfair Display"],
+        "label-sm": ["DM Sans"],
+        "headline-lg-mobile": ["Playfair Display"],
+        "headline-xl": ["Playfair Display"],
+        "headline-lg": ["Playfair Display"],
+        "label-md": ["DM Sans"],
+        "headline-xl-mobile": ["Playfair Display"]
+      },
+      "fontSize": {
+        "body-md": ["1rem", {"lineHeight": "1.5rem", "fontWeight": "400"}],
+        "body-sm": ["0.875rem", {"lineHeight": "1.375rem", "fontWeight": "400"}],
+        "headline-sm": ["1.125rem", {"lineHeight": "1.625rem", "fontWeight": "600"}],
+        "body-lg": ["1.125rem", {"lineHeight": "1.75rem", "fontWeight": "400"}],
+        "caption": ["0.75rem", {"lineHeight": "1.125rem", "fontWeight": "400"}],
+        "headline-md": ["1.375rem", {"lineHeight": "1.875rem", "fontWeight": "600"}],
+        "label-sm": ["0.75rem", {"lineHeight": "1rem", "letterSpacing": "0.04em", "fontWeight": "600"}],
+        "headline-lg-mobile": ["1.625rem", {"lineHeight": "2.125rem", "fontWeight": "600"}],
+        "headline-xl": ["2.5rem", {"lineHeight": "3rem", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+        "headline-lg": ["2rem", {"lineHeight": "2.5rem", "fontWeight": "600"}],
+        "label-md": ["0.875rem", {"lineHeight": "1.25rem", "letterSpacing": "0.01em", "fontWeight": "600"}],
+        "headline-xl-mobile": ["2rem", {"lineHeight": "2.5rem", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+      }
+    }
+  }
+}</script></head><body class="bg-surface-bg font-body-md text-on-surface antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 h-16 z-50 bg-surface-card/95 backdrop-blur-md shadow-[0_1px_8px_rgba(22,32,92,0.05)]"><div class="w-full h-full px-space-lg flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg shrink-0"><div class="flex items-center gap-space-sm"><img alt="Clean minimalist literary book logo icon for 'Pick a Book', an elegant open book with bookmark flourish, line stroke 1.6px style in primary navy #293896 and warm accent, vector graphic mark for book club, no emoji, premium independent bookshop feel.. Design context: - Primary color: #293896
+- Font: playfairDisplay
+- Mode: light
+- Roundness: rounded-md
+. The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UjT7AWSE90BT_3we0gsvspMHyuF3dA2XUP_iajSMcjj0vYfboNla7Y4ImcJu6jbOmU7ak8mf6Ktcton86BiQTeK5LC_-tzt2Av8kc3Q2T431foW9Lu_sb-8-0rOBWeatYvlWs6HsntQ9WfXosP9klIRrHITAfg5avJp0hlP9LsGnJaf-djFKozJyIBn-dcf6xrdzHjvLUHP0s8hEkc6k68iQdkcycUA1mNWUCucctwodznA5iRGsFD5GT7"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-ink-body leading-none tracking-tight">Pick a Book</span><span class="font-label-sm text-label-sm uppercase tracking-widest text-navy-tint leading-none mt-1">Desk • Secretary</span></div></div><div class="h-6 w-px bg-border-subtle hidden xl:block"></div><div class="hidden xl:flex items-center gap-space-xs bg-surface-cream px-3 py-1.5 rounded-lg shadow-[0_1px_2px_rgba(22,32,92,0.03)]"><span class="material-symbols-outlined text-gold-text text-sm">location_on</span><span class="font-label-sm text-label-sm text-ink-body font-semibold">Colombo Central Public Club</span><span class="font-caption text-caption text-ink-faint px-1.5 py-0.5 rounded bg-surface-card text-on-surface-variant font-medium">Ch. 014</span><span class="material-symbols-outlined text-ink-faint text-sm">unfold_more</span></div></div><nav class="hidden lg:flex items-center gap-1 xl:gap-2 flex-1 justify-center max-w-3xl overflow-x-auto" data-active-classes="bg-navy-wash text-primary-container font-semibold rounded-lg"><a class="px-3 py-2 text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors whitespace-nowrap" data-path="admin-hub" href="#">Admin Hub</a><a class="px-3 py-2 text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors whitespace-nowrap" data-path="live-attendance" href="#">Live Attendance</a><a class="px-3 py-2 text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors whitespace-nowrap" data-path="book-orders" href="#">Book Orders</a><a class="px-3 py-2 text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors whitespace-nowrap" data-path="session-manager" href="#">Session Manager</a><a class="px-3 py-2 text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors whitespace-nowrap" data-path="payments-and-dues" href="#">Payments &amp; Dues</a><a class="px-3 py-2 text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors whitespace-nowrap" data-path="admissions" href="#">Admissions</a><a class="px-3 py-2 text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors whitespace-nowrap" data-path="video-archive" href="#">Video Archive</a></nav><div class="flex items-center gap-space-sm shrink-0"><div class="hidden md:flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-lg text-ink-faint hover:text-on-surface transition-colors cursor-pointer"><span class="material-symbols-outlined text-sm">search</span><span class="font-body-sm text-body-sm text-on-surface-variant">Search records</span><kbd class="font-caption text-caption bg-surface-card px-1.5 py-0.5 rounded text-ink-faint shadow-[0_1px_2px_rgba(22,32,92,0.03)]">⌘K</kbd></div><button class="relative p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-lg">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span></button><a class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-label-sm text-label-sm text-secondary hover:bg-navy-wash transition-colors" data-path="member-portal" href="#"><span class="material-symbols-outlined text-sm">logout</span><span>Exit to Portal</span></a><div class="h-6 w-px bg-border-subtle hidden sm:block"></div><div class="flex items-center gap-2.5 pl-1"><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-[0_1px_3px_rgba(22,32,92,0.12)]" src="https://lh3.googleusercontent.com/aida/AEtjO1Wouczgaw92PVI93mytS-PLFkX66QkSB_EvVweH_BW6s1BuFQPBh1j8Dpo9iXpGlj8Vou-BtQ3KF0fL0RG0Tpm6gDZh47UEFzs9U0W_oxTeCAWca4PXI6Be6eHP_bNXi-kV2zJMe67TqzTJUHSMCO__RZeda9eNeH9YeRh57K8aAbxsO-jM192d6wl4DT7dW9ErVtj7P_3GqJFRniL0IaGAgpRBb5AJ0L4QOP3qlzRwjhLDf-KmfZ_lH325"/><div class="hidden 2xl:flex flex-col text-left"><span class="font-label-md text-label-md text-ink-body font-semibold leading-tight">Nimali Perera</span><span class="font-caption text-caption text-on-surface-variant leading-tight">Chapter Secretary</span></div></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-72 bg-surface-card z-40 flex flex-col justify-between shadow-[1px_0_12px_rgba(22,32,92,0.03)]"><div class="p-space-lg"><div class="flex items-center justify-between pb-space-sm mb-space-sm"><div class="flex flex-col"><span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-faint font-semibold">Chapter Media &amp; Archive</span><span class="font-caption text-caption text-on-surface-variant">Curatorial Records</span></div><span class="material-symbols-outlined text-ink-faint text-sm">video_library</span></div><nav class="flex flex-col gap-1" data-active-classes="bg-navy-wash text-primary-container font-semibold rounded-lg"><a aria-current="page" class="flex items-center gap-3 px-3.5 py-2.5 transition-colors bg-navy-wash text-primary-container font-semibold rounded-lg" data-path="video-submissions" href="#"><span class="material-symbols-outlined text-base">cloud_upload</span><span class="flex-1 truncate">Video Submissions</span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors font-body-sm text-body-sm" data-path="archival-salon-reels" href="#"><span class="material-symbols-outlined text-base">movie</span><span class="flex-1 truncate">Archival Salon Reels</span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors font-body-sm text-body-sm" data-path="keynote-recordings" href="#"><span class="material-symbols-outlined text-base">mic</span><span class="flex-1 truncate">Keynote Recordings</span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors font-body-sm text-body-sm" data-path="submission-guidelines-and-bylaws" href="#"><span class="material-symbols-outlined text-base">gavel</span><span class="flex-1 truncate">Submission Guidelines &amp; Bylaws</span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors font-body-sm text-body-sm" data-path="youtube-cloud-storage-sync" href="#"><span class="material-symbols-outlined text-base">sync_alt</span><span class="flex-1 truncate">YouTube / Cloud Storage Sync</span></a></nav></div><div class="p-space-lg"><div class="bg-surface-cream rounded-xl p-space-md shadow-[0_1px_3px_rgba(22,32,92,0.03)]"><div class="flex items-center gap-2 mb-1"><span class="material-symbols-outlined text-gold-text text-sm">verified</span><span class="font-label-sm text-label-sm text-gold-text font-semibold uppercase tracking-wider">Secretariat Desk</span></div><p class="font-caption text-caption text-ink-body leading-relaxed">Colombo Chapter Session 118 ledger is open for attendance verification and record keeping.</p></div></div></aside><div class="pl-72"><main class="relative pt-16 w-full px-space-lg min-h-screen bg-surface-bg"><div class="flex flex-col w-full pb-16">
+<!-- Top Breadcrumb & Administrative Header Bar -->
+<div class="flex flex-col gap-4 mb-6">
+<nav class="flex items-center gap-2 text-ink-faint font-label-sm text-label-sm">
+<span class="hover:text-ink-body transition-colors cursor-pointer">Admin Hub</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="hover:text-ink-body transition-colors cursor-pointer">Media &amp; Public Archive</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-primary font-semibold">Video Submissions &amp; Salon Recordings</span>
+</nav>
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-2 border-b-0">
+<div class="flex flex-col">
+<div class="flex items-center gap-3">
+<h1 class="font-headline-lg text-headline-lg text-navy-darkest tracking-tight">
+            Chapter Video Submissions &amp; Archival Recordings
+          </h1>
+<span class="px-2.5 py-1 rounded-full bg-surface-cream text-gold-text font-label-sm text-label-sm font-semibold border-0">
+            Colombo Central • Session 118 Desk
+          </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-4xl mt-1">
+          Review member video reflections, certify keynote recording submissions, curate Barefoot Cafe salon archives, and manage society broadcast sync.
+        </p>
+</div>
+<div class="flex items-center gap-2.5 shrink-0">
+<button class="flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-surface-card hover:bg-navy-wash text-ink-body font-label-md text-label-md transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-sky-text text-base">sync_alt</span>
+<span>Cloud Sync (YouTube / Drive)</span>
+</button>
+<button class="flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-surface-card hover:bg-navy-wash text-ink-body font-label-md text-label-md transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-navy-tint text-base">download_for_offline</span>
+<span>Export Media Manifest</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary hover:bg-navy-deep text-on-primary font-label-md text-label-md transition-all shadow-md hover:shadow-lg" type="button">
+<span class="material-symbols-outlined text-base">video_call</span>
+<span>+ Direct Secretarial Upload</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Top 4-Column Metric / KPI Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+<!-- Metric 1: Pending Review -->
+<div class="bg-surface-card rounded-xl p-5 shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-faint font-semibold">Pending Review</span>
+<span class="px-2 py-0.5 rounded-full bg-status-warning-bg text-status-warning-text font-label-sm text-label-sm font-semibold">
+          2 Priority Keynotes
+        </span>
+</div>
+<div class="my-3">
+<div class="flex items-baseline gap-2">
+<span class="font-headline-xl text-headline-xl text-navy-darkest leading-none">4</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Submissions</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-caption font-caption text-ink-faint border-0 pt-1">
+<span>Avg audit time: 24h</span>
+<span class="text-status-success-text font-medium">SLA Target &lt; 48h</span>
+</div>
+</div>
+<!-- Metric 2: Archived Reels -->
+<div class="bg-surface-card rounded-xl p-5 shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-faint font-semibold">Archived Reels</span>
+<span class="px-2 py-0.5 rounded-full bg-navy-wash text-primary font-label-sm text-label-sm font-semibold">
+          Peliyagoda Archive Cloud
+        </span>
+</div>
+<div class="my-3">
+<div class="flex items-baseline gap-2">
+<span class="font-headline-xl text-headline-xl text-navy-darkest leading-none">38</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Concluded</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-caption font-caption text-ink-faint border-0 pt-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-status-success-text text-sm">graphic_eq</span> 100% audio cleaned</span>
+<span>4K Master Vaulted</span>
+</div>
+</div>
+<!-- Metric 3: Member Participation -->
+<div class="bg-surface-card rounded-xl p-5 shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-faint font-semibold">Member Participation</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-cream text-gold-text font-label-sm text-label-sm font-semibold">
+          Cycle 14 Active
+        </span>
+</div>
+<div class="my-3">
+<div class="flex items-baseline gap-2">
+<span class="font-headline-xl text-headline-xl text-navy-darkest leading-none">24</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Active Orators</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-caption font-caption text-ink-faint border-0 pt-1">
+<span>Curatorial Incentive</span>
+<span class="text-primary font-semibold">+15-20 pts / video</span>
+</div>
+</div>
+<!-- Metric 4: Public Broadcast -->
+<div class="bg-surface-card rounded-xl p-5 shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-faint font-semibold">Public Broadcast</span>
+<span class="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text font-label-sm text-label-sm font-semibold">
+          Live &amp; Syndicated
+        </span>
+</div>
+<div class="my-3">
+<div class="flex items-baseline gap-2">
+<span class="font-headline-xl text-headline-xl text-navy-darkest leading-none">16</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Published</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-caption font-caption text-ink-faint border-0 pt-1">
+<span class="truncate">Barefoot Cafe YouTube feed</span>
+<span class="text-navy-deep font-semibold">4.8k Views Cycle 14</span>
+</div>
+</div>
+</div>
+<!-- Main Administrative Layout: 70% Left / 30% Right -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- LEFT COLUMN (Submissions Review Desk & Archival Catalog - 70% ~ 8 cols) -->
+<section class="lg:col-span-8 flex flex-col gap-6">
+<!-- Filter & Search Console -->
+<div class="bg-surface-card rounded-xl p-4 shadow-sm flex flex-col gap-3">
+<!-- Filter Tabs -->
+<div class="flex items-center gap-2 overflow-x-auto pb-1">
+<button class="px-3.5 py-1.5 rounded-lg bg-navy-wash text-primary font-label-md text-label-md font-semibold whitespace-nowrap shadow-sm" type="button">
+            Pending Review (4)
+          </button>
+<button class="px-3.5 py-1.5 rounded-lg hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface font-label-md text-label-md whitespace-nowrap transition-colors" type="button">
+            Approved &amp; Catalogued (32)
+          </button>
+<button class="px-3.5 py-1.5 rounded-lg hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface font-label-md text-label-md whitespace-nowrap transition-colors" type="button">
+            Keynote Speeches (14)
+          </button>
+<button class="px-3.5 py-1.5 rounded-lg hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface font-label-md text-label-md whitespace-nowrap transition-colors" type="button">
+            Drafts / Re-edit (2)
+          </button>
+<button class="px-3.5 py-1.5 rounded-lg hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface font-label-md text-label-md whitespace-nowrap transition-colors" type="button">
+            All Media (48)
+          </button>
+</div>
+<!-- Controls Row: Search + Category + Sort -->
+<div class="flex flex-col sm:flex-row items-center gap-3 pt-2">
+<div class="relative flex-1 w-full">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-ink-faint text-lg">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-bg rounded-lg font-body-sm text-body-sm text-ink-body focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder-ink-faint transition-all" placeholder="Search by fellow, book title, keynote session..." type="text"/>
+</div>
+<div class="flex items-center gap-2 w-full sm:w-auto">
+<div class="relative flex-1 sm:flex-initial">
+<select class="w-full appearance-none pl-3 pr-8 py-2 bg-surface-bg rounded-lg font-label-md text-label-md text-on-surface-variant focus:outline-none cursor-pointer">
+<option>All Types (Keynote, 3-Min, Panel)</option>
+<option>Salon Keynote (15m)</option>
+<option>3-Min Member Review</option>
+<option>Archival Salon Panel</option>
+<option>Youth Spotlight</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-2.5 text-ink-faint text-sm pointer-events-none">expand_more</span>
+</div>
+<div class="relative shrink-0">
+<select class="appearance-none pl-3 pr-8 py-2 bg-surface-bg rounded-lg font-label-md text-label-md text-on-surface-variant focus:outline-none cursor-pointer">
+<option>Sort: Newest First</option>
+<option>Sort: Priority Audit</option>
+<option>Sort: Duration</option>
+<option>Sort: Fellow Seniority</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-2.5 text-ink-faint text-sm pointer-events-none">sort</span>
+</div>
+</div>
+</div>
+</div>
+<!-- DOSSIER CARD 1: Under Review - High Priority Keynote -->
+<article class="bg-surface-card rounded-xl p-6 shadow-sm flex flex-col gap-5 hover:shadow-md transition-shadow relative overflow-hidden">
+<!-- Top Status Banner -->
+<div class="flex flex-wrap items-center justify-between gap-2 pb-3">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-full bg-status-warning-bg text-status-warning-text font-label-sm text-label-sm font-semibold">
+              High Priority Review
+            </span>
+<span class="px-2.5 py-1 rounded-full bg-navy-wash text-primary font-label-sm text-label-sm font-semibold">
+              Salon Keynote
+            </span>
+<span class="px-2 py-0.5 rounded bg-surface-cream text-gold-text font-caption text-caption font-semibold">
+              Bylaw §4.2 Quota
+            </span>
+</div>
+<span class="font-caption text-caption text-ink-faint">Submitted 4 hours ago • Cycle 14, Salon #2</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+<!-- Video Thumbnail Column (5 cols) -->
+<div class="md:col-span-5 relative rounded-lg overflow-hidden group aspect-[16/9] shadow-inner bg-navy-darkest">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90" data-alt="Scholarly Sri Lankan female professor presenting an animated literary discourse at a warm outdoor courtyard salon lit by twilight lanterns, holding Shehan Karunatilaka novel, cinematic atmosphere, warm wood and tropical greenery backdrop in deep navy and sepia tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA21-2e6Yorg_eP00Oh3Oied_3HRu8QRRwYCPf0ACxm0r9qHdImjZE_O18I1RaM6jWGQFgssw7-thl1XuTp7f5vcmEUzET6pioc1Y-_2nyacy-8bc0c3mi16FpmoY97imQjcgMCNX05IPKzV7hxE4Dxwt23zxA3D4dr_E9LhtMHDKyt5jTIHGemnS96CVqjg6AwaU90CW9o7BZQlP0yXgH2CCQKZN10sRT_05BVVEsDquZtX8wpo2YUaw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-navy-darkest/80 via-transparent to-black/30"></div>
+<!-- Video Play Trigger -->
+<button class="absolute inset-0 m-auto w-12 h-12 rounded-full bg-surface-card/90 text-primary flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform" type="button">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<!-- Media Meta Badges -->
+<div class="absolute bottom-2 left-2 flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-black/70 text-white font-caption text-caption font-semibold tracking-wider">
+                14:28
+              </span>
+<span class="px-1.5 py-0.5 rounded bg-primary text-white font-caption text-caption uppercase font-semibold">
+                1080p HD
+              </span>
+</div>
+<div class="absolute top-2 right-2">
+<span class="px-2 py-0.5 rounded bg-black/60 text-surface-bright font-caption text-caption flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-secondary-container">mic</span> -14 LUFS
+              </span>
+</div>
+</div>
+<!-- Content Dossier Column (7 cols) -->
+<div class="md:col-span-7 flex flex-col justify-between gap-3">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-sm">menu_book</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold tracking-wide uppercase">
+                  The Seven Moons of Maali Almeida • Shehan Karunatilaka
+                </span>
+</div>
+<h2 class="font-headline-md text-headline-md text-navy-darkest leading-snug">
+                The Metaphysics of Post-War Colombo: A 15-Minute Keynote Analysis of Maali Almeida
+              </h2>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed line-clamp-2">
+              Exploration of karmic limbo, forensic truth, and state accountability through magical realism. Includes nuanced reading of Chapter 4 excerpts and commentary on 1989 Colombo press censorship.
+            </p>
+<div class="flex items-center justify-between text-caption font-caption text-ink-faint bg-surface-bg p-2.5 rounded-lg">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-navy-wash text-primary flex items-center justify-center font-bold text-caption">
+                  R
+                </div>
+<span class="text-ink-body font-semibold">Dr. Rohini de Silva</span>
+<span>(Senior Fellow · #CL-104)</span>
+</div>
+<span class="text-navy-tint font-medium">Barefoot Courtyard Gathering</span>
+</div>
+</div>
+</div>
+<!-- Secretarial Verification Checklist Bar -->
+<div class="bg-surface-bg rounded-lg p-3 flex flex-wrap items-center justify-between gap-2">
+<div class="flex flex-wrap items-center gap-4 text-caption font-caption">
+<span class="text-ink-faint font-semibold uppercase tracking-wider">Secretariat Audit:</span>
+<label class="flex items-center gap-1.5 text-status-success-text cursor-pointer">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>Sound Clarity Verified</span>
+</label>
+<label class="flex items-center gap-1.5 text-status-success-text cursor-pointer">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>No Commercial Branding</span>
+</label>
+<label class="flex items-center gap-1.5 text-status-success-text cursor-pointer">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>Charter Bylaws Met</span>
+</label>
+<label class="flex items-center gap-1.5 text-status-success-text cursor-pointer">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>15-Min Cap Observed</span>
+</label>
+</div>
+<span class="text-xs font-label-sm text-ink-faint">Video Specs: MP4 • 1080p60 • Lapel Mic</span>
+</div>
+<!-- Action CTAs -->
+<div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+<div class="flex items-center gap-2">
+<button class="px-4 py-2 rounded-lg bg-primary hover:bg-navy-deep text-on-primary font-label-md text-label-md transition-all shadow-sm flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-sm">verified</span>
+<span>Approve &amp; Award +20 Pts</span>
+</button>
+<button class="px-3.5 py-2 rounded-lg bg-navy-wash hover:bg-surface-container-highest text-primary font-label-md text-label-md transition-colors flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-sm">content_cut</span>
+<span>Request Trim / Audio Clean</span>
+</button>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-2 rounded-lg hover:bg-status-danger-bg text-status-danger-text font-label-md text-label-md transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-sm">cancel</span>
+<span>Decline Submission</span>
+</button>
+<button class="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors" title="Media Inspector" type="button">
+<span class="material-symbols-outlined text-base">info</span>
+</button>
+</div>
+</div>
+</article>
+<!-- DOSSIER CARD 2: Under Review - Member 3-Min Vertical Review -->
+<article class="bg-surface-card rounded-xl p-6 shadow-sm flex flex-col gap-5 hover:shadow-md transition-shadow relative overflow-hidden">
+<div class="flex flex-wrap items-center justify-between gap-2 pb-1">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-full bg-navy-wash text-secondary font-label-sm text-label-sm font-semibold">
+              Member 3-Min Review
+            </span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">
+              Short-form Reel (9:16)
+            </span>
+</div>
+<span class="font-caption text-caption text-ink-faint">Submitted 9 hours ago • Colombo North Circle</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+<!-- Video Vertical Preview (4 cols) -->
+<div class="md:col-span-4 flex justify-center">
+<div class="relative rounded-lg overflow-hidden group aspect-[9/14] w-48 shadow-inner bg-navy-darkest">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90" data-alt="Young Sri Lankan man with glasses speaking candidly holding a vintage cricket book in front of high bookshelf filled with South Asian literature, warm tungsten study lamp illumination, portrait orientation framing." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwQgmga4qHstPYCJB-TmeHH2XqVV7gQD7KIAFkSLJQX4KJj5JX4WD2lP0Hxo5Fz5hHYtMs_tM5lYy1cAjUOzhntPTQFug82ihIROgSmIhAbipw52rEjTDgH8YAO7aK2MXT4GMEFIQxCC1mpbw2MlNX5nCS7IA5PZ01wwkdZoTe8yqRbBiSRloEllkA72qshe9KLg-kwsUSJiogHWSINtqvAh_k-bfpDqTAG_LRPCABut8XN1G_KgYo6A"/>
+<div class="absolute inset-0 bg-gradient-to-t from-navy-darkest/90 via-transparent to-black/20"></div>
+<button class="absolute inset-0 m-auto w-10 h-10 rounded-full bg-surface-card/90 text-primary flex items-center justify-center shadow-md group-hover:scale-110 transition-transform" type="button">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<div class="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+<span class="px-1.5 py-0.5 rounded bg-black/75 text-white font-caption text-caption font-semibold">
+                  03:45
+                </span>
+<span class="px-1.5 py-0.5 rounded bg-secondary text-white font-caption text-caption uppercase font-semibold">
+                  720p Mobile
+                </span>
+</div>
+</div>
+</div>
+<!-- Content Details (8 cols) -->
+<div class="md:col-span-8 flex flex-col justify-between gap-3 h-full">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-secondary text-sm">auto_stories</span>
+<span class="font-label-sm text-label-sm text-secondary font-semibold uppercase tracking-wide">
+                  Chinaman: The Legend of Pradeep Mathew • Shehan Karunatilaka
+                </span>
+</div>
+<h2 class="font-headline-md text-headline-md text-navy-darkest leading-snug">
+                Cricket, Trauma, and Unrecorded History: On Karunatilaka’s Chinaman
+              </h2>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              A 3-minute rapid critique exploring the fictional spin bowler Pradeep Mathew as a cultural metaphor for forgotten minority genius in Sri Lankan sporting and national history. Sharp pacing intended for the Society Instagram &amp; YouTube Shorts channels.
+            </p>
+<div class="flex items-center gap-3 text-caption font-caption text-ink-faint bg-surface-bg p-2.5 rounded-lg">
+<div class="w-6 h-6 rounded-full bg-surface-cream text-gold-text flex items-center justify-center font-bold text-caption">
+                K
+              </div>
+<span class="text-ink-body font-semibold">Kusal Mendis</span>
+<span>(Archival Fellow · #CL-412)</span>
+<span class="ml-auto text-on-surface-variant">Target Reward: <strong>+15 Society Pts</strong></span>
+</div>
+<!-- Audit bar -->
+<div class="bg-surface-bg rounded-lg p-2.5 flex items-center justify-between text-caption font-caption">
+<div class="flex items-center gap-3">
+<span class="text-status-success-text flex items-center gap-1 font-medium">
+<span class="material-symbols-outlined text-sm">check</span> Duration &lt; 4m
+                </span>
+<span class="text-status-success-text flex items-center gap-1 font-medium">
+<span class="material-symbols-outlined text-sm">check</span> Fellow Identity Confirmed
+                </span>
+<span class="text-status-warning-text flex items-center gap-1 font-medium">
+<span class="material-symbols-outlined text-sm">priority_high</span> Lighting Low in Segment 2
+                </span>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-wrap items-center gap-2 pt-2">
+<button class="px-4 py-2 rounded-lg bg-primary hover:bg-navy-deep text-on-primary font-label-md text-label-md transition-all shadow-sm flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+<span>Approve &amp; Award +15 Pts</span>
+</button>
+<button class="px-3.5 py-2 rounded-lg bg-navy-wash hover:bg-surface-container-highest text-primary font-label-md text-label-md transition-colors flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-sm">replay</span>
+<span>Request Re-shoot</span>
+</button>
+<button class="px-3 py-2 rounded-lg text-ink-faint hover:text-ink-body font-label-md text-label-md transition-colors ml-auto" type="button">
+                Open in Inspector
+              </button>
+</div>
+</div>
+</div>
+</article>
+<!-- DOSSIER CARD 3: Under Review - Youth Fellow Entry -->
+<article class="bg-surface-card rounded-xl p-6 shadow-sm flex flex-col gap-5 hover:shadow-md transition-shadow relative overflow-hidden">
+<div class="flex flex-wrap items-center justify-between gap-2 pb-1">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-full bg-surface-cream text-gold-text font-label-sm text-label-sm font-semibold">
+              Poetry Salon Extract
+            </span>
+<span class="px-2.5 py-1 rounded-full bg-navy-wash text-navy-deep font-label-sm text-label-sm">
+              Youth Fellow Spotlight
+            </span>
+</div>
+<span class="font-caption text-caption text-ink-faint">Submitted 18 hours ago • Royal Asiatic Society Hall</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+<div class="md:col-span-5 relative rounded-lg overflow-hidden group aspect-[16/9] shadow-inner bg-navy-darkest">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90" data-alt="Young South Asian student standing in an old library lectern surrounded by leather-bound colonial Ceylon folios, reciting poetry earnestly with expressive hands, chiaroscuro golden sunlight filtering through high windows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAy7T7ODK6X7L1j5NZypgdt8ATtRAsjJFkrvB5KsFt1Q_rr0_qSBPFHyYvZdTJ1dLPWCyHBIrS8a1OPqmVdJmfVLwUvR7TYc05Jj1gTeic7Gno7nwVisbpLrp2TsBH692cidCStVI-UEBsBAV35uRB6YG_xEF0IrhjN1jJG6lC5NoCkXk8mo0IKwm-CN1MlVRC79q4AkIZyNTxB84LXYuGSo5kuS-Eq5hu-XNDigEJ9ailg8lbM0L27iQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-navy-darkest/80 via-transparent to-black/30"></div>
+<button class="absolute inset-0 m-auto w-11 h-11 rounded-full bg-surface-card/90 text-primary flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform" type="button">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<div class="absolute bottom-2 left-2 flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-black/70 text-white font-caption text-caption font-semibold">
+                08:10
+              </span>
+<span class="px-1.5 py-0.5 rounded bg-primary text-white font-caption text-caption uppercase font-semibold">
+                1080p
+              </span>
+</div>
+</div>
+<div class="md:col-span-7 flex flex-col justify-between gap-2.5">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-gold-text text-sm">history_edu</span>
+<span class="font-label-sm text-label-sm text-gold-text font-semibold uppercase tracking-wide">
+                  Selected Poems • Lakdhas Wikkramasinha
+                </span>
+</div>
+<h2 class="font-headline-md text-headline-md text-navy-darkest leading-snug">
+                Modernist Colombo Poetry: Reading Lakdhas Wikkramasinha in 2028
+              </h2>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed line-clamp-2">
+              Deconstructs post-colonial linguistic tensions in “Don't Talk to Me About Charlie Parker” and bilingual vernacular poetics in Sri Lankan English poetry.
+            </p>
+<div class="flex items-center justify-between text-caption font-caption text-ink-faint bg-surface-bg p-2 rounded-lg">
+<div class="flex items-center gap-2">
+<span class="font-semibold text-ink-body">Ravindu Bandara</span>
+<span>(Youth Fellow · Dept. of English, Univ. of Colombo)</span>
+</div>
+<span class="text-status-success-text font-medium">Bylaw Standards Met</span>
+</div>
+<div class="flex items-center gap-2 pt-1">
+<button class="px-4 py-2 rounded-lg bg-primary hover:bg-navy-deep text-on-primary font-label-md text-label-md transition-all shadow-sm flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-sm">verified</span>
+<span>Approve &amp; Award +15 Pts</span>
+</button>
+<button class="px-3.5 py-2 rounded-lg bg-surface-bg hover:bg-navy-wash text-ink-body font-label-md text-label-md transition-colors flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-sm">archive</span>
+<span>Assign to Archive Shelf</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- DOSSIER CARD 4: Approved & Catalogued (Recent Record) -->
+<article class="bg-surface-card rounded-xl p-5 shadow-sm opacity-90 hover:opacity-100 transition-opacity flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-4 w-full md:w-auto">
+<div class="w-16 h-16 rounded-lg bg-navy-wash shrink-0 flex items-center justify-center text-primary relative overflow-hidden">
+<span class="material-symbols-outlined text-2xl">check_circle</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text font-caption text-caption font-semibold">
+                Archived &amp; Live
+              </span>
+<span class="font-caption text-caption text-ink-faint">Catalog ID #ARCH-2028-092</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-navy-darkest leading-snug mt-0.5">
+              Architectural Heritage as Fiction: Michael Ondaatje’s Spatial Memories
+            </h3>
+<p class="font-body-sm text-body-sm text-ink-faint">
+              Orator: Devinda Alwis • Approved by Nimali Perera 2 days ago • +15 Society Points Disbursed
+            </p>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0 self-end md:self-center">
+<span class="px-2.5 py-1 rounded-lg bg-surface-cream text-gold-text font-caption text-caption font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">open_in_new</span> YouTube Live Sync
+          </span>
+<button class="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors" title="View Public Landing Page" type="button">
+<span class="material-symbols-outlined text-base">visibility</span>
+</button>
+</div>
+</article>
+</section>
+<!-- RIGHT COLUMN (Archive Controls, Bylaws, Storage & Sync - 30% ~ 4 cols) -->
+<aside class="lg:col-span-4 flex flex-col gap-6">
+<!-- Panel 1: Cloud & Broadcast Sync Channel -->
+<div class="bg-surface-card rounded-xl p-5 shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sky-text text-xl">cloud_sync</span>
+<h2 class="font-headline-sm text-headline-sm text-navy-darkest">Broadcast &amp; Cloud Sync</h2>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text font-caption text-caption font-semibold">
+            Connected
+          </span>
+</div>
+<div class="flex flex-col gap-3">
+<div class="p-3 bg-surface-bg rounded-lg flex flex-col gap-1.5">
+<div class="flex items-center justify-between text-caption font-caption">
+<span class="text-ink-faint uppercase tracking-wider font-semibold">YouTube Society Channel</span>
+<span class="text-status-success-text font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success-text"></span> Live &amp; Ready
+              </span>
+</div>
+<p class="font-label-md text-label-md text-navy-darkest font-semibold">
+              Pick a Book Ceylon - Public Salons
+            </p>
+<span class="font-caption text-caption text-ink-faint">Auto-syncs 1080p outputs on Secretary Approval</span>
+</div>
+<div class="p-3 bg-surface-bg rounded-lg flex flex-col gap-2">
+<div class="flex items-center justify-between text-caption font-caption">
+<span class="text-ink-faint uppercase tracking-wider font-semibold">Peliyagoda Cloud Vault</span>
+<span class="text-ink-body font-semibold">74.2 GB / 200 GB</span>
+</div>
+<!-- Storage Progress Bar -->
+<div class="w-full h-2 rounded-full bg-surface-container-high overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 37.1%;"></div>
+</div>
+<span class="font-caption text-caption text-ink-faint">Google Workspace Chapter Drive (Zero compressed masters)</span>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-1">
+<button class="flex-1 py-2 px-3 rounded-lg bg-navy-wash hover:bg-surface-container-highest text-primary font-label-md text-label-md text-center transition-colors font-semibold" type="button">
+            Sync Now
+          </button>
+<button class="flex-1 py-2 px-3 rounded-lg bg-surface-bg hover:bg-surface-container-low text-ink-body font-label-md text-label-md text-center transition-colors" type="button">
+            Studio Dashboard
+          </button>
+</div>
+</div>
+<!-- Panel 2: Bylaw §7.3 Media Submission Standards -->
+<div class="bg-surface-cream rounded-xl p-5 shadow-sm flex flex-col gap-3.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-gold-text text-xl">gavel</span>
+<h2 class="font-headline-sm text-headline-sm text-ink-body">Bylaw §7.3 Standards</h2>
+</div>
+<p class="font-caption text-caption text-ink-body leading-relaxed">
+          Approved records enter the official Ceylon Literary Society permanent public repository. Curators must audit against the Society Charter:
+        </p>
+<div class="flex flex-col gap-2.5 font-body-sm text-body-sm">
+<div class="flex items-start gap-2 text-ink-body">
+<span class="material-symbols-outlined text-gold-text text-base shrink-0 mt-0.5">timer</span>
+<span><strong>Max Duration:</strong> 15-minute strict cutoff for keynotes; 4-minute cap for reviews.</span>
+</div>
+<div class="flex items-start gap-2 text-ink-body">
+<span class="material-symbols-outlined text-gold-text text-base shrink-0 mt-0.5">volume_up</span>
+<span><strong>Acoustic Spec:</strong> Minimum 1080p video, lapel audio without street noise.</span>
+</div>
+<div class="flex items-start gap-2 text-ink-body">
+<span class="material-symbols-outlined text-gold-text text-base shrink-0 mt-0.5">copyright</span>
+<span><strong>Integrity:</strong> Zero commercial plugs; full citation of recited literary works.</span>
+</div>
+</div>
+<div class="bg-surface-card p-3 rounded-lg flex flex-col gap-1.5 mt-1 shadow-sm">
+<span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-gold-text">Point Allocation Table</span>
+<div class="flex justify-between items-center text-caption font-caption text-ink-body py-0.5">
+<span>Verified Keynote Recording</span>
+<strong class="text-primary font-semibold">+20 Society Pts</strong>
+</div>
+<div class="flex justify-between items-center text-caption font-caption text-ink-body py-0.5">
+<span>3-Minute Book Reflection</span>
+<strong class="text-primary font-semibold">+15 Society Pts</strong>
+</div>
+<div class="flex justify-between items-center text-caption font-caption text-ink-body py-0.5">
+<span>Archival Salon Co-Host</span>
+<strong class="text-primary font-semibold">+10 Society Pts</strong>
+</div>
+</div>
+</div>
+<!-- Panel 3: Storage Trunk & Media Inventory -->
+<div class="bg-surface-card rounded-xl p-5 shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-navy-tint text-xl">inventory_2</span>
+<h2 class="font-headline-sm text-headline-sm text-navy-darkest">Storage Inventory</h2>
+</div>
+<span class="font-caption text-caption text-ink-faint">Cold Archive</span>
+</div>
+<div class="flex flex-col gap-2 text-body-sm font-body-sm">
+<div class="flex items-center justify-between p-2.5 bg-surface-bg rounded-lg">
+<span class="text-ink-body">Raw 4K Master Reels</span>
+<span class="font-semibold text-primary">18 Reels (ProRes)</span>
+</div>
+<div class="flex items-center justify-between p-2.5 bg-surface-bg rounded-lg">
+<span class="text-ink-body">High-Res Audio Masters</span>
+<span class="font-semibold text-primary">42 Sessions (FLAC)</span>
+</div>
+<div class="flex items-center justify-between p-2.5 bg-surface-bg rounded-lg">
+<span class="text-ink-body">Transcripts &amp; Excerpt PDFs</span>
+<span class="font-semibold text-primary">64 Dossiers</span>
+</div>
+</div>
+<button class="w-full py-2.5 px-3 rounded-lg bg-surface-bg hover:bg-navy-wash text-navy-deep font-label-md text-label-md text-center transition-colors flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined text-base">cloud_download</span>
+<span>Initiate Quarterly Cloud Backup</span>
+</button>
+</div>
+<!-- Panel 4: Secretary Verification Desk Badge -->
+<div class="bg-surface-card rounded-xl p-5 shadow-sm flex flex-col gap-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-navy-wash flex items-center justify-center text-primary font-headline-sm">
+            NP
+          </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-ink-body">Nimali Perera</span>
+<span class="font-caption text-caption text-ink-faint">General Secretary • Seal ID #SEC-89</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-caption font-caption text-ink-faint bg-surface-bg p-2.5 rounded-lg">
+<span class="material-symbols-outlined text-gold-text text-sm">lock</span>
+<span>All published video records digitally signed with Pick a Book Chapter 014 Seal</span>
+</div>
+</div>
+</aside>
+</div>
+</div></main></div></body></html>

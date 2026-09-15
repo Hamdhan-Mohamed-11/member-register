@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><title>Pick a Book</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "secondary": "#00658d", "on-secondary-fixed-variant": "#004c6b", "surface-container-high": "#e2e7ff", "on-secondary-fixed": "#001e2d", "navy-deep": "#16205C", "outline-variant": "#c6c5d4", "primary-container": "#293896", "outline": "#767683", "on-secondary-container": "#004866", "tertiary-fixed-dim": "#ecc14f", "navy-tint": "#4457B5", "tertiary": "#765b00", "status-success-text": "#147233", "surface-container-highest": "#dbe2fd", "status-warning-bg": "#FBEED3", "surface-container-low": "#f2f3ff", "secondary-fixed-dim": "#82cfff", "secondary-fixed": "#c6e7ff", "on-error": "#ffffff", "on-tertiary": "#ffffff", "on-error-container": "#93000a", "inverse-primary": "#bbc3ff", "surface-dim": "#d3d9f4", "error-container": "#ffdad6", "surface-bright": "#faf8ff", "ink-body": "#14162E", "surface-card": "#FFFFFF", "status-danger-text": "#B91C1C", "surface-tint": "#4756b4", "status-danger-bg": "#FBE4E4", "surface": "#faf8ff", "background": "#faf8ff", "on-tertiary-fixed": "#251a00", "border-subtle": "#E6E9F0", "surface-container": "#eaedff", "ink-faint": "#8B91A3", "surface-container-lowest": "#ffffff", "surface-variant": "#dbe2fd", "surface-bg": "#F8F9FC", "secondary-container": "#2dbcfe", "on-tertiary-container": "#503d00", "status-warning-text": "#A15C07", "primary-fixed-dim": "#bbc3ff", "gold-text": "#8A6410", "navy-wash": "#EFF2FB", "on-primary-fixed-variant": "#2e3d9b", "inverse-surface": "#293045", "navy-darkest": "#0F1640", "surface-cream": "#F8F2E9", "status-success-bg": "#DCF3E4", "on-primary-container": "#9da9ff", "on-surface-variant": "#454652", "primary-fixed": "#dfe0ff", "sky-text": "#0079A8", "on-tertiary-fixed-variant": "#594400", "navy-soft": "#C3CBEC", "tertiary-fixed": "#ffdf94", "on-background": "#141b2f", "inverse-on-surface": "#eef0ff", "on-surface": "#141b2f", "on-primary-fixed": "#000e5f", "tertiary-container": "#cea635", "on-primary": "#ffffff", "on-secondary": "#ffffff", "primary": "#0b1e80", "error": "#ba1a1a" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "gutter-desktop": "1.5rem", "space-sm": "0.5rem", "margin-desktop": "2.5rem", "space-xs": "0.25rem", "space-xl": "2.25rem", "margin": "1rem", "space-lg": "1.5rem", "space-md": "1rem", "gutter": "1rem" }, "fontFamily": { "headline-lg": ["Playfair Display"], "headline-xl": ["Playfair Display"], "headline-lg-mobile": ["Playfair Display"], "label-sm": ["DM Sans"], "headline-xl-mobile": ["Playfair Display"], "body-sm": ["DM Sans"], "headline-sm": ["Playfair Display"], "body-lg": ["DM Sans"], "headline-md": ["Playfair Display"], "caption": ["DM Sans"], "label-md": ["DM Sans"], "body-md": ["DM Sans"] }, "fontSize": { "headline-lg": ["2rem", { "lineHeight": "2.5rem", "fontWeight": "600" }], "headline-xl": ["2.5rem", { "lineHeight": "3rem", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-lg-mobile": ["1.625rem", { "lineHeight": "2.125rem", "fontWeight": "600" }], "label-sm": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.04em", "fontWeight": "600" }], "headline-xl-mobile": ["2rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-sm": ["0.875rem", { "lineHeight": "1.375rem", "fontWeight": "400" }], "headline-sm": ["1.125rem", { "lineHeight": "1.625rem", "fontWeight": "600" }], "body-lg": ["1.125rem", { "lineHeight": "1.75rem", "fontWeight": "400" }], "headline-md": ["1.375rem", { "lineHeight": "1.875rem", "fontWeight": "600" }], "caption": ["0.75rem", { "lineHeight": "1.125rem", "fontWeight": "400" }], "label-md": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.01em", "fontWeight": "600" }], "body-md": ["1rem", { "lineHeight": "1.5rem", "fontWeight": "400" }] } } } };</script></head><body class="bg-surface-bg font-body-md text-body-md text-ink-body flex flex-col antialiased"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-card/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(22,32,92,0.04)]"><div class="h-16 px-space-md flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-xs min-w-0"><button aria-label="Go back" class="w-11 h-11 -ml-space-xs flex items-center justify-center text-ink-body hover:text-primary-container transition-colors" onclick="window.history.back()" type="button"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><div class="flex flex-col min-w-0"><h1 class="font-headline-sm text-headline-sm text-navy-deep truncate tracking-tight">My Reading List</h1><span class="font-caption text-caption text-ink-faint truncate">Pick a Book</span></div></div><div class="flex items-center gap-space-xs shrink-0"><a aria-label="Nimali's Profile" class="w-11 h-11 flex items-center justify-center" data-path="me" href="#"><img alt="Nimali Profile Avatar" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-container/20" src="https://lh3.googleusercontent.com/aida/AEtjO1Wouczgaw92PVI93mytS-PLFkX66QkSB_EvVweH_BW6s1BuFQPBh1j8Dpo9iXpGlj8Vou-BtQ3KF0fL0RG0Tpm6gDZh47UEFzs9U0W_oxTeCAWca4PXI6Be6eHP_bNXi-kV2zJMe67TqzTJUHSMCO__RZeda9eNeH9YeRh57K8aAbxsO-jM192d6wl4DT7dW9ErVtj7P_3GqJFRniL0IaGAgpRBb5AJ0L4QOP3qlzRwjhLDf-KmfZ_lH325"/></a></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-surface-bg"><div class="flex flex-col w-full">
+<!-- Top Editorial Header & Intro -->
+<div class="px-space-md pt-space-lg pb-space-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<a class="inline-flex items-center gap-space-xs text-secondary hover:text-navy-deep transition-colors py-1" data-path="me" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span class="font-label-md text-label-md">Back to Account</span>
+</a>
+<span class="font-caption text-caption text-ink-faint tracking-wide uppercase font-medium">9 Titles Catalogued</span>
+</div>
+<div class="mt-space-xs">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-navy-deep tracking-tight">My Reading List</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-relaxed">Personal catalogue of salon selections, wishlist volumes, and completed reads.</p>
+</div>
+</div>
+<!-- Quick Add Accordion / Module -->
+<div class="px-space-md py-space-sm">
+<div class="bg-surface-cream rounded-xl p-space-md shadow-sm">
+<button aria-expanded="false" class="w-full flex items-center justify-between text-left focus:outline-none" id="toggle-add-btn" type="button">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-tertiary-container/30 flex items-center justify-center text-gold-text">
+<span class="material-symbols-outlined text-[20px]">auto_stories</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-navy-deep">Add a book to list</h3>
+<p class="font-caption text-caption text-on-surface-variant">Log a title to your private salon shelf</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-navy-deep text-[22px] transition-transform duration-200" id="add-chevron">expand_more</span>
+</button>
+<form class="hidden flex-col gap-space-md pt-space-md mt-space-sm" id="add-book-form">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-navy-deep" for="book-title">Book Title</label>
+<input class="h-11 px-space-md bg-surface-card rounded-lg font-body-sm text-body-sm text-ink-body placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-primary-container shadow-sm" id="book-title" placeholder="e.g. Anil's Ghost" type="text"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-navy-deep" for="book-author">Author</label>
+<input class="h-11 px-space-md bg-surface-card rounded-lg font-body-sm text-body-sm text-ink-body placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-primary-container shadow-sm" id="book-author" placeholder="e.g. Michael Ondaatje" type="text"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-navy-deep" for="shelf-target">Destination Shelf</label>
+<div class="relative">
+<select class="h-11 w-full appearance-none px-space-md bg-surface-card rounded-lg font-body-sm text-body-sm text-ink-body focus:outline-none focus:ring-2 focus:ring-primary-container shadow-sm pr-10" id="shelf-target">
+<option value="want-to-read">Want to Read</option>
+<option value="currently-reading">Currently Reading</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-ink-faint text-[20px]">expand_more</span>
+</div>
+</div>
+<button class="h-11 mt-space-xs px-space-lg bg-primary-container text-on-primary rounded-lg font-label-md text-label-md flex items-center justify-center gap-space-xs hover:bg-navy-deep transition-all shadow-sm active:scale-[0.99]" type="button">
+<span class="material-symbols-outlined text-[18px]">bookmark_add</span>
+<span>Add to Reading List</span>
+</button>
+</form>
+</div>
+</div>
+<!-- Section 1: Currently Reading -->
+<section class="px-space-md pt-space-md pb-space-xs flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-primary-container">menu_book</span>
+<h3 class="font-headline-sm text-headline-sm text-navy-deep">Currently Reading</h3>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-navy-wash font-label-sm text-label-sm text-primary-container">2</span>
+</div>
+<!-- Currently Reading Book 1 -->
+<article class="bg-surface-card rounded-xl p-space-md shadow-[0_2px_8px_rgba(22,32,92,0.04)] flex flex-col gap-space-md">
+<div class="flex gap-space-md">
+<!-- Cover Art -->
+<div class="w-20 shrink-0 aspect-[2/3] rounded-lg overflow-hidden relative shadow-[0_4px_12px_rgba(22,32,92,0.12)]">
+<img alt="The Seven Moons of Maali Almeida cover" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1XEH2Ps_fWICL66wOstI49vbzddrhg4cmAidoTYuGbQ8ni8dcU0PhIIFUcIDdHIV7DHvSpMtenyCBd-N6VTPVpuuFYUXLDfzBXYWgng3D9hVBnnbsjfpmAbTHw3qEnrc1UumfdcxyHQBkrK_iFZbXVXoPQ9b0jPSdIR9_xDPwZTqAp7fVeOVo7qqf-6MC-7R--JRyvqF8AVOh6M1nqZPPANhH7AOU9E_OFmxKJ6XET1no_MwPM4NkYImGY"/>
+<div class="absolute inset-y-0 left-0 w-1 bg-gradient-to-r from-black/25 to-transparent"></div>
+</div>
+<!-- Meta -->
+<div class="flex flex-col justify-between min-w-0 flex-1">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-sky-text uppercase tracking-wider mb-0.5 truncate">Colombo Central March Salon</span>
+<h4 class="font-headline-sm text-headline-sm text-ink-body truncate leading-snug">The Seven Moons of Maali Almeida</h4>
+<p class="font-body-sm text-body-sm text-ink-faint">Shehan Karunatilaka</p>
+</div>
+<div class="flex flex-col gap-1.5 mt-space-xs">
+<div class="flex justify-between items-center font-caption text-caption">
+<span class="text-on-surface-variant font-medium">Page 184 of 400</span>
+<span class="text-primary-container font-semibold">46%</span>
+</div>
+<div class="w-full h-1.5 bg-navy-wash rounded-full overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 46%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Row -->
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="h-11 flex-1 px-space-sm bg-navy-wash text-primary-container hover:bg-surface-container rounded-lg font-label-md text-label-md flex items-center justify-center gap-1.5 transition-colors active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+<span>Mark Read</span>
+</button>
+<button class="h-11 px-space-md bg-surface-cream text-gold-text hover:bg-status-warning-bg rounded-lg font-label-md text-label-md flex items-center justify-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">edit_note</span>
+<span>Update Progress</span>
+</button>
+<button aria-label="Remove book" class="w-11 h-11 shrink-0 flex items-center justify-center text-ink-faint hover:text-error hover:bg-status-danger-bg/50 rounded-lg transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">delete_outline</span>
+</button>
+</div>
+</article>
+<!-- Currently Reading Book 2 -->
+<article class="bg-surface-card rounded-xl p-space-md shadow-[0_2px_8px_rgba(22,32,92,0.04)] flex flex-col gap-space-md">
+<div class="flex gap-space-md">
+<!-- Graphic Placeholder Cover -->
+<div class="w-20 shrink-0 aspect-[2/3] rounded-lg overflow-hidden relative shadow-[0_4px_12px_rgba(22,32,92,0.12)]">
+<img class="w-full h-full object-cover" data-alt="Minimalist artistic book cover for the memoir Wave by Sonali Deraniyagala, featuring serene ocean blue watercolor gradients, foaming white sea brushstrokes, subtle gold typography, clean editorial layout" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhedH4PFsG9kW0TltfnzoebrSxT1tBmIN5vLKvGVKS-SH7qzxiZGDAPr5oiqFnEUi55gcUiR_3gsIvBK_6BCe-THEqrGSYcfiI_-GAjlCW-LmFDbJW9vek9IALQX3-3ujwEgavT44yrXP6EX-XuMZhI7dMNEVsdW4tKpKauDpOxK66aimThx2r7AIq3OZz5WwRmhGmU1Ziq0g2YNHWn_OIW5kZeq55W3M27Ingrjk2lBEkQ0pjJkZaBQ"/>
+<div class="absolute inset-y-0 left-0 w-1 bg-gradient-to-r from-black/25 to-transparent"></div>
+</div>
+<!-- Meta -->
+<div class="flex flex-col justify-between min-w-0 flex-1">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-sky-text uppercase tracking-wider mb-0.5 truncate">Independent Memoir</span>
+<h4 class="font-headline-sm text-headline-sm text-ink-body truncate leading-snug">Wave</h4>
+<p class="font-body-sm text-body-sm text-ink-faint">Sonali Deraniyagala</p>
+</div>
+<div class="flex flex-col gap-1.5 mt-space-xs">
+<div class="flex justify-between items-center font-caption text-caption">
+<span class="text-on-surface-variant font-medium">Page 62 of 224</span>
+<span class="text-primary-container font-semibold">28%</span>
+</div>
+<div class="w-full h-1.5 bg-navy-wash rounded-full overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 28%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Row -->
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="h-11 flex-1 px-space-sm bg-navy-wash text-primary-container hover:bg-surface-container rounded-lg font-label-md text-label-md flex items-center justify-center gap-1.5 transition-colors active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+<span>Mark Read</span>
+</button>
+<button aria-label="Remove book" class="w-11 h-11 shrink-0 flex items-center justify-center text-ink-faint hover:text-error hover:bg-status-danger-bg/50 rounded-lg transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">delete_outline</span>
+</button>
+</div>
+</article>
+</section>
+<!-- Section 2: Want to Read -->
+<section class="px-space-md pt-space-lg pb-space-xs flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-tertiary">bookmark</span>
+<h3 class="font-headline-sm text-headline-sm text-navy-deep">Want to Read</h3>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-status-warning-bg font-label-sm text-label-sm text-status-warning-text">4</span>
+</div>
+<!-- Want to Read Book 1 -->
+<article class="bg-surface-card rounded-xl p-space-md shadow-[0_2px_8px_rgba(22,32,92,0.04)] flex flex-col gap-space-md">
+<div class="flex gap-space-md">
+<!-- Cover Art -->
+<div class="w-20 shrink-0 aspect-[2/3] rounded-lg overflow-hidden relative shadow-[0_4px_12px_rgba(22,32,92,0.12)]">
+<img alt="Chinaman: The Legend of Pradeep Mathew cover" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1X7bUNaZVEN1Wty8YgpU1rNlHDuMmejpv0c2dNND-A7Yb7EDBbv92XYeCmyaAOfAl_ZbR6JW2HGvTJqPFetWPtnnoxG1VKxv7IpgNgsIUrgSaeqspUcYT0UGF3y93pssxMMsNa-m3PyscqkBZKoxaKaYl6aPvmsYduYpkIzXuX59Jcgn8LlcZLYzgTDFAJvN3xX-HT5VqoOkbyISPMwXc_Ticxgnv9RhXny1ElxIJmV5RsJURIbXyr_3-Q"/>
+<div class="absolute inset-y-0 left-0 w-1 bg-gradient-to-r from-black/25 to-transparent"></div>
+</div>
+<div class="flex flex-col justify-between min-w-0 flex-1">
+<div class="flex flex-col">
+<span class="inline-block px-2 py-0.5 rounded-full bg-surface-cream text-gold-text font-label-sm text-label-sm w-max mb-1">April Salon Discussion</span>
+<h4 class="font-headline-sm text-headline-sm text-ink-body truncate leading-snug">Chinaman</h4>
+<p class="font-caption text-caption text-on-surface-variant font-medium truncate">The Legend of Pradeep Mathew</p>
+<p class="font-body-sm text-body-sm text-ink-faint mt-0.5">Shehan Karunatilaka</p>
+</div>
+<p class="font-caption text-caption text-ink-faint italic mt-1">Scheduled for discussion in 3 weeks</p>
+</div>
+</div>
+<!-- Action Row -->
+<div class="flex items-center gap-space-xs pt-space-xs flex-wrap">
+<button class="h-11 flex-1 min-w-[120px] px-space-sm bg-primary-container text-on-primary hover:bg-navy-deep rounded-lg font-label-md text-label-md flex items-center justify-center gap-1 transition-colors active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[18px]">play_circle</span>
+<span>Start Reading</span>
+</button>
+<button class="h-11 px-space-sm bg-navy-wash text-navy-deep hover:bg-surface-container rounded-lg font-label-md text-label-md flex items-center justify-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">local_library</span>
+<span>Borrow</span>
+</button>
+<button aria-label="Remove book" class="w-11 h-11 shrink-0 flex items-center justify-center text-ink-faint hover:text-error hover:bg-status-danger-bg/50 rounded-lg transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">delete_outline</span>
+</button>
+</div>
+</article>
+<!-- Want to Read Book 2 -->
+<article class="bg-surface-card rounded-xl p-space-md shadow-[0_2px_8px_rgba(22,32,92,0.04)] flex flex-col gap-space-md">
+<div class="flex gap-space-md">
+<!-- Cover Art -->
+<div class="w-20 shrink-0 aspect-[2/3] rounded-lg overflow-hidden relative shadow-[0_4px_12px_rgba(22,32,92,0.12)]">
+<img class="w-full h-full object-cover" data-alt="Book cover illustration of An Island of a Thousand Mirrors by Nayomi Munaweera, featuring delicate Sri Lankan coastal motifs, tropical palm silhouettes, mirrored silver water ripples, warm terracotta and indigo hues" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJUdUtY15v4_cRCzknaf-BM_McjLqv3n2EjFDZEbUmohfXflaWhQv9c3OwZYuEXY7AQyd_VC6KbbebR-c_iVZlBZEiuEA9jYJ_8cbYQ1uu7gbwYw8c829hdskPA0uco_d_uO8rxGS77VARDr15ZJAIlyhjz943_AqOjSwwkUg1FRoxoHCTQMDCTl_iQrtafoNQTIC7OmPb2VplOgBQu_cqc-SMGp1POEyJyXt8P3Fu-5U_c0UUvWUnxw"/>
+<div class="absolute inset-y-0 left-0 w-1 bg-gradient-to-r from-black/25 to-transparent"></div>
+</div>
+<div class="flex flex-col justify-between min-w-0 flex-1">
+<div class="flex flex-col">
+<span class="inline-block px-2 py-0.5 rounded-full bg-navy-wash text-primary-container font-label-sm text-label-sm w-max mb-1">Book Club Recommendation</span>
+<h4 class="font-headline-sm text-headline-sm text-ink-body truncate leading-snug">An Island of a Thousand Mirrors</h4>
+<p class="font-body-sm text-body-sm text-ink-faint mt-0.5">Nayomi Munaweera</p>
+</div>
+<p class="font-caption text-caption text-ink-faint italic mt-1">Recommended by Salon Curators</p>
+</div>
+</div>
+<!-- Action Row -->
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="h-11 flex-1 px-space-sm bg-primary-container text-on-primary hover:bg-navy-deep rounded-lg font-label-md text-label-md flex items-center justify-center gap-1 transition-colors active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[18px]">play_circle</span>
+<span>Start Reading</span>
+</button>
+<button aria-label="Remove book" class="w-11 h-11 shrink-0 flex items-center justify-center text-ink-faint hover:text-error hover:bg-status-danger-bg/50 rounded-lg transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">delete_outline</span>
+</button>
+</div>
+</article>
+</section>
+<!-- Section 3: Finished Reads -->
+<section class="px-space-md pt-space-lg pb-space-xl flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-status-success-text">verified</span>
+<h3 class="font-headline-sm text-headline-sm text-navy-deep">Finished</h3>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-status-success-bg font-label-sm text-label-sm text-status-success-text">3</span>
+</div>
+<!-- Finished Book 1 -->
+<article class="bg-surface-card rounded-xl p-space-md shadow-[0_2px_8px_rgba(22,32,92,0.04)] flex flex-col gap-space-sm">
+<div class="flex gap-space-md">
+<div class="w-16 shrink-0 aspect-[2/3] rounded-lg overflow-hidden relative shadow-[0_2px_8px_rgba(22,32,92,0.08)]">
+<img class="w-full h-full object-cover" data-alt="Book cover for Running in the Family by Michael Ondaatje, featuring vintage sepia photographs of 1930s Ceylon, faded botanical sketches, textured cream paper backdrop, elegant dark blue serif titles" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXDg6yagUA9rFlJNFqDi90Lziud7mOd6RBFlbdKx9ESseY5gCKmSjZEn6BJmK_VnkOoEqcD97kI0CtmjSy6NDqg1b3lAUcmwiZLDhxRTVQ3xm5At0IiaPa7vnS4AEAPjaASmHMh2F9v27cgCDGGzJS5y8zqQZNvwnNayMnU0xpWsyex5v1fXDHs5PzfEwtPAtIMMoo5yGr8KWgRw90gt9BV6B5CERuH_5NMelFKfUxrF_Ork3mMqyWag"/>
+<div class="absolute inset-y-0 left-0 w-1 bg-gradient-to-r from-black/20 to-transparent"></div>
+</div>
+<div class="flex flex-col min-w-0 flex-1 justify-between">
+<div class="flex flex-col">
+<h4 class="font-headline-sm text-headline-sm text-ink-body truncate leading-snug">Running in the Family</h4>
+<p class="font-body-sm text-body-sm text-ink-faint">Michael Ondaatje</p>
+<div class="flex items-center gap-1.5 mt-1">
+<span class="material-symbols-outlined text-[16px] text-status-success-text">event_available</span>
+<span class="font-label-sm text-label-sm text-status-success-text font-semibold">Finished on 18 Feb 2028</span>
+</div>
+</div>
+<!-- Rating & Notes counter -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center text-gold-text gap-0.5">
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+</div>
+<span class="font-caption text-caption text-ink-faint flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">edit_note</span>
+              14 margin annotations
+            </span>
+</div>
+</div>
+</div>
+<!-- Action Row -->
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="h-11 flex-1 px-space-sm bg-navy-wash text-navy-deep hover:bg-surface-container rounded-lg font-label-md text-label-md flex items-center justify-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">replay</span>
+<span>Re-read</span>
+</button>
+<button class="h-11 px-space-md bg-surface-cream text-gold-text hover:bg-status-warning-bg rounded-lg font-label-md text-label-md flex items-center justify-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">notes</span>
+<span>View Notes</span>
+</button>
+<button aria-label="Remove book" class="w-11 h-11 shrink-0 flex items-center justify-center text-ink-faint hover:text-error hover:bg-status-danger-bg/50 rounded-lg transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">delete_outline</span>
+</button>
+</div>
+</article>
+<!-- Finished Book 2 -->
+<article class="bg-surface-card rounded-xl p-space-md shadow-[0_2px_8px_rgba(22,32,92,0.04)] flex flex-col gap-space-sm">
+<div class="flex gap-space-md">
+<div class="w-16 shrink-0 aspect-[2/3] rounded-lg overflow-hidden relative shadow-[0_2px_8px_rgba(22,32,92,0.08)]">
+<img class="w-full h-full object-cover" data-alt="Classic book cover for The Jam Fruit Tree by Carl Muller, warm tropical vibrant colors, Colombo colonial house veranda drawing, vintage Sri Lankan Burghers literary styling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqS1NOg8v9JTacg2fPdVpe-ixyC-L7Jk2QePuK4QPD4pE1a8HrYWfU2xeJERk-8Eq79HRYk_sr3kkpaYaUc65lYamO_mCpX5b9jKCcemy4U3J2JbG96f3aIy_mOi6OhfhbNVG5OnfMizUPcXdCd-JeaaHpu4yvAk9ijGWQMKDjvbkx0MD-QMOWvN00ZQLCa2wCT7FqqyTQH3hNEtvmgm6PU8Lp6mylgNvUwZQ4SwPRklipei-9M5E36Q"/>
+<div class="absolute inset-y-0 left-0 w-1 bg-gradient-to-r from-black/20 to-transparent"></div>
+</div>
+<div class="flex flex-col min-w-0 flex-1 justify-between">
+<div class="flex flex-col">
+<h4 class="font-headline-sm text-headline-sm text-ink-body truncate leading-snug">The Jam Fruit Tree</h4>
+<p class="font-body-sm text-body-sm text-ink-faint">Carl Muller</p>
+<div class="flex items-center gap-1.5 mt-1">
+<span class="material-symbols-outlined text-[16px] text-status-success-text">event_available</span>
+<span class="font-label-sm text-label-sm text-status-success-text font-semibold">Finished on 12 Jan 2028</span>
+</div>
+</div>
+<div class="flex items-center text-gold-text gap-0.5 pt-1">
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span class="material-symbols-outlined text-[16px] text-outline-variant">star</span>
+</div>
+</div>
+</div>
+<!-- Action Row -->
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="h-11 flex-1 px-space-sm bg-navy-wash text-navy-deep hover:bg-surface-container rounded-lg font-label-md text-label-md flex items-center justify-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">replay</span>
+<span>Re-read</span>
+</button>
+<button aria-label="Remove book" class="w-11 h-11 shrink-0 flex items-center justify-center text-ink-faint hover:text-error hover:bg-status-danger-bg/50 rounded-lg transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">delete_outline</span>
+</button>
+</div>
+</article>
+<!-- Finished Book 3 -->
+<article class="bg-surface-card rounded-xl p-space-md shadow-[0_2px_8px_rgba(22,32,92,0.04)] flex flex-col gap-space-sm">
+<div class="flex gap-space-md">
+<div class="w-16 shrink-0 aspect-[2/3] rounded-lg overflow-hidden relative shadow-[0_2px_8px_rgba(22,32,92,0.08)]">
+<img class="w-full h-full object-cover" data-alt="Cover illustration of Funny Boy by Shyam Selvadurai, delicate Colombo garden flora, subtle pastel morning light, poignant coming-of-age literary book aesthetic with refined serif typography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBR2UuF33ik3O2BjMxGHJirqiPB4sOJCl101fAwMR-65SiJVBfA1Nga_CWa8ZMG39kM4oBDpoJEGs1mZO2Aplf6bu_GZEHd8NLhAHN_Cr2Mxf9v4mSKVuyWfYJSDZIxuYoQ2fjpye3aagxqXUEzRBUzBHR7-kd6km4db9DXkgExW36OVRE5Ol4ZyhsuHTBP5Js3cPSABozyjTFwtAQRA60PT2-ws8kx4MjC5NlFYZ9e3LYT0EPp-thlpw"/>
+<div class="absolute inset-y-0 left-0 w-1 bg-gradient-to-r from-black/20 to-transparent"></div>
+</div>
+<div class="flex flex-col min-w-0 flex-1 justify-between">
+<div class="flex flex-col">
+<h4 class="font-headline-sm text-headline-sm text-ink-body truncate leading-snug">Funny Boy</h4>
+<p class="font-body-sm text-body-sm text-ink-faint">Shyam Selvadurai</p>
+<div class="flex items-center gap-1.5 mt-1">
+<span class="material-symbols-outlined text-[16px] text-status-success-text">event_available</span>
+<span class="font-label-sm text-label-sm text-status-success-text font-semibold">Finished on 28 Dec 2027</span>
+</div>
+</div>
+<div class="flex items-center text-gold-text gap-0.5 pt-1">
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+</div>
+</div>
+</div>
+<!-- Action Row -->
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="h-11 flex-1 px-space-sm bg-navy-wash text-navy-deep hover:bg-surface-container rounded-lg font-label-md text-label-md flex items-center justify-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">replay</span>
+<span>Re-read</span>
+</button>
+<button aria-label="Remove book" class="w-11 h-11 shrink-0 flex items-center justify-center text-ink-faint hover:text-error hover:bg-status-danger-bg/50 rounded-lg transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">delete_outline</span>
+</button>
+</div>
+</article>
+</section>
+<!-- Editorial Footnote Banner -->
+<div class="px-space-md pb-space-xl">
+<div class="p-space-md rounded-xl bg-navy-wash/70 flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-navy-tint text-[24px]">workspace_premium</span>
+<p class="font-caption text-caption text-ink-body">Your finished reading milestones automatically synchronize with your Salon Reader profile badge and annual reading quota.</p>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    const toggleBtn = document.getElementById('toggle-add-btn');
+    const form = document.getElementById('add-book-form');
+    const chevron = document.getElementById('add-chevron');
+
+    if (toggleBtn && form && chevron) {
+      toggleBtn.addEventListener('click', function() {
+        const isHidden = form.classList.contains('hidden');
+        if (isHidden) {
+          form.classList.remove('hidden');
+          form.classList.add('flex');
+          chevron.style.transform = 'rotate(180deg)';
+          toggleBtn.setAttribute('aria-expanded', 'true');
+        } else {
+          form.classList.add('hidden');
+          form.classList.remove('flex');
+          chevron.style.transform = 'rotate(0deg)';
+          toggleBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+  })();
+</script></main></body></html>

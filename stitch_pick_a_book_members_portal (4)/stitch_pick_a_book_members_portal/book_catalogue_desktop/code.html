@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-container-high": "#e2e7ff", "surface-tint": "#4756b4", "primary-container": "#293896", "tertiary-fixed": "#ffdf94", "status-danger-text": "#B91C1C", "secondary-fixed-dim": "#82cfff", "on-surface": "#141b2f", "on-tertiary-fixed-variant": "#594400", "primary-fixed": "#dfe0ff", "on-tertiary": "#ffffff", "inverse-primary": "#bbc3ff", "tertiary-fixed-dim": "#ecc14f", "on-secondary-fixed-variant": "#004c6b", "surface-dim": "#d3d9f4", "surface-bright": "#faf8ff", "surface-container-low": "#f2f3ff", "inverse-on-surface": "#eef0ff", "tertiary": "#765b00", "navy-soft": "#C3CBEC", "gold-text": "#8A6410", "on-error": "#ffffff", "sky-text": "#0079A8", "error-container": "#ffdad6", "navy-darkest": "#0F1640", "border-subtle": "#E6E9F0", "status-success-bg": "#DCF3E4", "status-success-text": "#147233", "outline-variant": "#c6c5d4", "on-secondary-container": "#004866", "surface-variant": "#dbe2fd", "surface-card": "#FFFFFF", "status-danger-bg": "#FBE4E4", "surface-container-highest": "#dbe2fd", "outline": "#767683", "surface-bg": "#F8F9FC", "navy-deep": "#16205C", "on-error-container": "#93000a", "status-warning-text": "#A15C07", "navy-tint": "#4457B5", "surface-cream": "#F8F2E9", "background": "#faf8ff", "ink-faint": "#8B91A3", "on-primary": "#ffffff", "inverse-surface": "#293045", "navy-wash": "#EFF2FB", "secondary-fixed": "#c6e7ff", "secondary": "#00658d", "primary-fixed-dim": "#bbc3ff", "on-surface-variant": "#454652", "tertiary-container": "#cea635", "on-secondary": "#ffffff", "secondary-container": "#2dbcfe", "error": "#ba1a1a", "surface-container": "#eaedff", "ink-body": "#14162E", "surface": "#faf8ff", "primary": "#0b1e80", "on-primary-fixed": "#000e5f", "status-warning-bg": "#FBEED3", "on-background": "#141b2f", "on-primary-container": "#9da9ff", "on-primary-fixed-variant": "#2e3d9b", "on-tertiary-fixed": "#251a00", "on-secondary-fixed": "#001e2d", "surface-container-lowest": "#ffffff", "on-tertiary-container": "#503d00" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xs": "0.25rem", "space-sm": "0.5rem", "margin": "1rem", "space-xl": "2.25rem", "space-lg": "1.5rem", "space-md": "1rem", "gutter-desktop": "1.5rem", "margin-desktop": "2.5rem", "gutter": "1rem" }, "fontFamily": { "headline-xl-mobile": [ "Playfair Display" ], "headline-lg-mobile": [ "Playfair Display" ], "body-lg": [ "DM Sans" ], "headline-xl": [ "Playfair Display" ], "caption": [ "DM Sans" ], "label-md": [ "DM Sans" ], "body-sm": [ "DM Sans" ], "label-sm": [ "DM Sans" ], "headline-sm": [ "Playfair Display" ], "headline-md": [ "Playfair Display" ], "body-md": [ "DM Sans" ], "headline-lg": [ "Playfair Display" ] }, "fontSize": { "headline-xl-mobile": [ "2rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "headline-lg-mobile": [ "1.625rem", { "lineHeight": "2.125rem", "fontWeight": "600" } ], "body-lg": [ "1.125rem", { "lineHeight": "1.75rem", "fontWeight": "400" } ], "headline-xl": [ "2.5rem", { "lineHeight": "3rem", "letterSpacing": "-0.02em", "fontWeight": "600" } ], "caption": [ "0.75rem", { "lineHeight": "1.125rem", "fontWeight": "400" } ], "label-md": [ "0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.01em", "fontWeight": "600" } ], "body-sm": [ "0.875rem", { "lineHeight": "1.375rem", "fontWeight": "400" } ], "label-sm": [ "0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.04em", "fontWeight": "600" } ], "headline-sm": [ "1.125rem", { "lineHeight": "1.625rem", "fontWeight": "600" } ], "headline-md": [ "1.375rem", { "lineHeight": "1.875rem", "fontWeight": "600" } ], "body-md": [ "1rem", { "lineHeight": "1.5rem", "fontWeight": "400" } ], "headline-lg": [ "2rem", { "lineHeight": "2.5rem", "fontWeight": "600" } ] } } } };</script></head><body class="bg-surface-bg font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-full w-[260px] bg-surface-card z-50 flex flex-col justify-between p-space-md shadow-[0_1px_8px_rgba(22,32,92,0.04)]"><div class="flex flex-col gap-space-md"><div class="flex items-center gap-space-sm px-space-xs pt-space-xs"><img alt="Clean minimalist literary book logo icon for 'Pick a Book', an elegant open book with bookmark flourish, line stroke 1.6px style in primary navy #293896 and warm accent, vector graphic mark for book club, no emoji, premium independent bookshop feel.. Design context: - Primary color: #293896
+- Font: playfairDisplay
+- Mode: light
+- Roundness: rounded-md
+. The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UjT7AWSE90BT_3we0gsvspMHyuF3dA2XUP_iajSMcjj0vYfboNla7Y4ImcJu6jbOmU7ak8mf6Ktcton86BiQTeK5LC_-tzt2Av8kc3Q2T431foW9Lu_sb-8-0rOBWeatYvlWs6HsntQ9WfXosP9klIRrHITAfg5avJp0hlP9LsGnJaf-djFKozJyIBn-dcf6xrdzHjvLUHP0s8hEkc6k68iQdkcycUA1mNWUCucctwodznA5iRGsFD5GT7"/><div class="flex flex-col leading-tight"><span class="font-headline-sm text-headline-sm text-navy-darkest font-semibold tracking-tight">Pick a Book</span><span class="font-caption text-caption uppercase tracking-wider text-ink-faint">Members Guild</span></div></div><div class="p-space-sm rounded-lg bg-surface-cream"><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-status-success-text"></span><span class="font-label-sm text-label-sm text-gold-text font-medium truncate">Colombo Central Club</span></div><p class="font-caption text-caption text-on-surface-variant mt-1">Chapter Lead</p></div><nav class="flex flex-col gap-1" data-active-classes="bg-navy-wash text-primary-container font-semibold rounded-lg"><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-primary-container transition-colors" data-path="home" href="#"><span class="material-symbols-outlined text-lg">cottage</span><span class="font-label-md text-label-md">Home</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-primary-container transition-colors" data-path="sessions" href="#"><span class="material-symbols-outlined text-lg">forum</span><span class="font-label-md text-label-md">Sessions</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-sm py-space-sm transition-colors bg-navy-wash text-primary-container font-semibold rounded-lg" data-path="book-catalogue" href="#"><span class="material-symbols-outlined text-lg">auto_stories</span><span class="font-label-md text-label-md">Book Catalogue / Library</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-primary-container transition-colors" data-path="members-directory" href="#"><span class="material-symbols-outlined text-lg">groups</span><span class="font-label-md text-label-md">Members &amp; Directory</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-primary-container transition-colors" data-path="discover-journal" href="#"><span class="material-symbols-outlined text-lg">menu_book</span><span class="font-label-md text-label-md">Discover Journal</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-primary-container transition-colors" data-path="leaderboard-badges" href="#"><span class="material-symbols-outlined text-lg">military_tech</span><span class="font-label-md text-label-md">Leaderboard &amp; Badges</span></a></nav></div><div class="p-space-sm rounded-lg bg-navy-wash flex items-center gap-space-sm"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1Wouczgaw92PVI93mytS-PLFkX66QkSB_EvVweH_BW6s1BuFQPBh1j8Dpo9iXpGlj8Vou-BtQ3KF0fL0RG0Tpm6gDZh47UEFzs9U0W_oxTeCAWca4PXI6Be6eHP_bNXi-kV2zJMe67TqzTJUHSMCO__RZeda9eNeH9YeRh57K8aAbxsO-jM192d6wl4DT7dW9ErVtj7P_3GqJFRniL0IaGAgpRBb5AJ0L4QOP3qlzRwjhLDf-KmfZ_lH325"/><div class="flex flex-col min-w-0 flex-1"><span class="font-label-md text-label-md text-navy-darkest truncate font-medium">Nimali Perera</span><span class="inline-flex items-center gap-1 font-caption text-caption text-gold-text font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></span>480 pts · Curator IV</span></div></div></aside><div class="pl-[260px]"><header class="fixed top-0 left-[260px] right-0 z-40 bg-surface-card/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(22,32,92,0.04)]"><div class="h-16 w-full px-gutter-desktop flex items-center justify-between gap-space-lg"><div class="flex-1 max-w-xl"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-ink-faint text-lg">search</span><input class="w-full h-11 pl-10 pr-4 rounded-lg bg-surface-bg font-body-sm text-body-sm text-ink-body placeholder:text-ink-faint focus:outline-none focus:ring-1 focus:ring-primary-container" placeholder="Search catalog, authors, salon reading guides... (⌘K)" type="text"/></div></div><div class="flex items-center gap-space-md"><button class="relative p-space-xs rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-status-danger-text"></span></button><button class="flex items-center gap-space-xs px-space-md py-space-sm rounded-lg bg-surface-bg text-on-surface-variant hover:bg-navy-wash hover:text-primary-container transition-colors" type="button"><span class="material-symbols-outlined text-lg">local_mall</span><span class="font-label-sm text-label-sm font-medium">Cart</span></button><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1Wouczgaw92PVI93mytS-PLFkX66QkSB_EvVweH_BW6s1BuFQPBh1j8Dpo9iXpGlj8Vou-BtQ3KF0fL0RG0Tpm6gDZh47UEFzs9U0W_oxTeCAWca4PXI6Be6eHP_bNXi-kV2zJMe67TqzTJUHSMCO__RZeda9eNeH9YeRh57K8aAbxsO-jM192d6wl4DT7dW9ErVtj7P_3GqJFRniL0IaGAgpRBb5AJ0L4QOP3qlzRwjhLDf-KmfZ_lH325"/></div></div></header><main class="w-full pt-16 px-gutter-desktop pb-margin-desktop bg-surface-bg min-h-screen"><div class="flex flex-col w-full">
+<!-- Page Header & Atmosphere -->
+<section class="mb-space-xl">
+<div class="flex flex-col gap-2 max-w-4xl">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-gold-text"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-gold-text font-semibold">Sri Lanka Literary Archive &amp; Salon Editions</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-navy-darkest tracking-tight">Book Catalogue &amp; Chapter Depots</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+        Curated editions, Booker-shortlisted South Asian fiction, and discussion volumes reserved for society fellows. Synchronized with chapter reading circles across the island.
+      </p>
+</div>
+<!-- Curator Note Callout / Archival Announcement -->
+<div class="mt-space-lg p-space-md rounded-xl bg-surface-cream flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md shadow-sm">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-card flex items-center justify-center text-primary-container shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-xl">auto_stories</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-navy-darkest">March Salon Focus: The Contemporary Colombo Canon</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Selected titles include verified chapter discussion prompts, author annotations, and library checkout vouchers.</span>
+</div>
+</div>
+<div class="flex items-center gap-2 flex-shrink-0">
+<span class="px-3 py-1 rounded-full bg-status-success-bg font-label-sm text-label-sm text-status-success-text">Barefoot Depot Synced</span>
+<span class="font-caption text-caption text-ink-faint">Updated 24 mins ago</span>
+</div>
+</div>
+</section>
+<!-- Controls Bar: Category Pills, Sorter, View Switcher -->
+<div class="mb-space-lg flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md bg-surface-card p-space-sm rounded-xl shadow-sm">
+<!-- Category Pills -->
+<div class="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-none" id="categoryPillContainer">
+<button class="category-pill active-pill px-4 py-2 rounded-lg bg-navy-wash text-primary-container font-label-md text-label-md transition-all whitespace-nowrap" type="button">
+        All Titles (128)
+      </button>
+<button class="category-pill px-4 py-2 rounded-lg bg-surface-card text-on-surface-variant hover:bg-navy-wash hover:text-primary-container font-label-md text-label-md transition-all whitespace-nowrap" type="button">
+        Salon Current Reading
+      </button>
+<button class="category-pill px-4 py-2 rounded-lg bg-surface-card text-on-surface-variant hover:bg-navy-wash hover:text-primary-container font-label-md text-label-md transition-all whitespace-nowrap" type="button">
+        Booker Laureates
+      </button>
+<button class="category-pill px-4 py-2 rounded-lg bg-surface-card text-on-surface-variant hover:bg-navy-wash hover:text-primary-container font-label-md text-label-md transition-all whitespace-nowrap" type="button">
+        Ceylon History &amp; Memoir
+      </button>
+<button class="category-pill px-4 py-2 rounded-lg bg-surface-card text-on-surface-variant hover:bg-navy-wash hover:text-primary-container font-label-md text-label-md transition-all whitespace-nowrap" type="button">
+        Poetry Chapbooks
+      </button>
+<button class="category-pill px-4 py-2 rounded-lg bg-surface-card text-on-surface-variant hover:bg-navy-wash hover:text-primary-container font-label-md text-label-md transition-all whitespace-nowrap" type="button">
+        Read &amp; Rise Specials
+      </button>
+</div>
+<!-- Secondary Controls: Sort & Grid/List Switch -->
+<div class="flex items-center justify-between lg:justify-end gap-space-sm pt-2 lg:pt-0">
+<div class="relative flex items-center">
+<label class="font-caption text-caption uppercase tracking-wider text-ink-faint mr-2 hidden sm:inline-block" for="sortSelector">Sort:</label>
+<select class="h-10 pl-3 pr-8 rounded-lg bg-surface-bg text-on-surface font-label-sm text-label-sm appearance-none focus:outline-none focus:ring-1 focus:ring-primary-container cursor-pointer" id="sortSelector">
+<option value="curator">Curator's Pick</option>
+<option value="newest">Newest Acquisitions</option>
+<option value="price-asc">Price: Low to High</option>
+<option value="discussed">Most Discussed</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 pointer-events-none text-ink-faint text-sm">unfold_more</span>
+</div>
+<div class="flex items-center bg-surface-bg p-1 rounded-lg">
+<button class="p-1.5 rounded bg-surface-card text-primary-container shadow-xs hover:text-navy-deep transition-colors" id="btnGridView" title="Grid View" type="button">
+<span class="material-symbols-outlined text-lg">grid_view</span>
+</button>
+<button class="p-1.5 rounded text-on-surface-variant hover:text-primary-container transition-colors" id="btnListView" title="List View" type="button">
+<span class="material-symbols-outlined text-lg">view_list</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Dual-Pane Layout: Filter Rail & Main Catalog Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- Left Filter Rail (280px equivalent: lg:col-span-3) -->
+<aside class="lg:col-span-3 sticky top-24 flex flex-col gap-space-md">
+<!-- Member Status Perk Box -->
+<div class="p-space-md rounded-xl bg-navy-wash flex flex-col gap-2 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-primary-container font-semibold">Tier Privileges</span>
+<span class="material-symbols-outlined text-primary-container text-base">verified</span>
+</div>
+<p class="font-headline-sm text-headline-sm text-navy-darkest">Fellow Member Pricing Applied</p>
+<p class="font-caption text-caption text-on-surface-variant">
+          You save 15% to 25% on all archive editions. Society lending quota: <strong>3 books active</strong>.
+        </p>
+</div>
+<!-- Filters Surface Container -->
+<div class="p-space-md rounded-xl bg-surface-card shadow-sm flex flex-col gap-space-lg">
+<div class="flex items-center justify-between pb-space-sm">
+<span class="font-headline-sm text-headline-sm text-navy-darkest">Refine Vault</span>
+<button class="font-caption text-caption text-gold-text hover:underline" id="clearFiltersBtn" type="button">Reset All</button>
+</div>
+<!-- Availability & Depot Filter -->
+<div class="flex flex-col gap-3">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-faint font-semibold">Availability &amp; Depot</span>
+<label class="flex items-center justify-between cursor-pointer group">
+<div class="flex items-center gap-space-xs">
+<input checked="" class="w-4 h-4 rounded bg-surface-bg text-primary-container focus:ring-0 cursor-pointer" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-ink-body group-hover:text-primary transition-colors">Colombo Central Depot</span>
+</div>
+<span class="font-caption text-caption text-ink-faint bg-surface-bg px-2 py-0.5 rounded-full">42</span>
+</label>
+<label class="flex items-center justify-between cursor-pointer group">
+<div class="flex items-center gap-space-xs">
+<input checked="" class="w-4 h-4 rounded bg-surface-bg text-primary-container focus:ring-0 cursor-pointer" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-ink-body group-hover:text-primary transition-colors">Barefoot Cafe Salon Shelf</span>
+</div>
+<span class="font-caption text-caption text-ink-faint bg-surface-bg px-2 py-0.5 rounded-full">18</span>
+</label>
+<label class="flex items-center justify-between cursor-pointer group">
+<div class="flex items-center gap-space-xs">
+<input class="w-4 h-4 rounded bg-surface-bg text-primary-container focus:ring-0 cursor-pointer" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-ink-body group-hover:text-primary transition-colors">Central Island Delivery</span>
+</div>
+<span class="font-caption text-caption text-ink-faint bg-surface-bg px-2 py-0.5 rounded-full">86</span>
+</label>
+</div>
+<!-- Binding & Format Filter -->
+<div class="flex flex-col gap-3">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-faint font-semibold">Binding &amp; Format</span>
+<label class="flex items-center gap-space-xs cursor-pointer group">
+<input checked="" class="w-4 h-4 rounded bg-surface-bg text-primary-container focus:ring-0 cursor-pointer" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-ink-body group-hover:text-primary transition-colors">Hardcover Collector Editions</span>
+</label>
+<label class="flex items-center gap-space-xs cursor-pointer group">
+<input checked="" class="w-4 h-4 rounded bg-surface-bg text-primary-container focus:ring-0 cursor-pointer" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-ink-body group-hover:text-primary transition-colors">Trade Paperback</span>
+</label>
+<label class="flex items-center gap-space-xs cursor-pointer group">
+<input class="w-4 h-4 rounded bg-surface-bg text-primary-container focus:ring-0 cursor-pointer" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-ink-body group-hover:text-primary transition-colors">Archival Folio / Rare Print</span>
+</label>
+</div>
+<!-- Read & Rise Matching Program Toggle -->
+<div class="p-space-sm rounded-lg bg-surface-cream flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-gold-text font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-base">school</span> Read &amp; Rise Program
+            </span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" id="readRiseToggle" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-high rounded-full peer peer-checked:bg-primary-container peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-card after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+</label>
+</div>
+<p class="font-caption text-caption text-on-surface-variant">
+            Eligible for School Book Matching: society buys 1 school copy for every order (+10 community pts).
+          </p>
+</div>
+<!-- Price Range Slider LKR -->
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-faint font-semibold">Price Range (LKR)</span>
+<span class="font-caption text-caption font-semibold text-primary-container" id="priceRangeLabel">1,500 - 4,800</span>
+</div>
+<!-- Dual Range Bar Illustration -->
+<div class="relative w-full h-6 flex items-center">
+<div class="w-full h-1.5 bg-surface-container rounded-full relative">
+<div class="absolute left-[15%] right-[25%] top-0 bottom-0 bg-primary-container rounded-full"></div>
+<div class="absolute left-[15%] top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-surface-card shadow-md flex items-center justify-center cursor-pointer">
+<div class="w-2 h-2 rounded-full bg-primary-container"></div>
+</div>
+<div class="absolute right-[25%] top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-4 rounded-full bg-surface-card shadow-md flex items-center justify-center cursor-pointer">
+<div class="w-2 h-2 rounded-full bg-primary-container"></div>
+</div>
+</div>
+</div>
+<!-- Numeric Range Inputs -->
+<div class="grid grid-cols-2 gap-2">
+<div class="flex flex-col">
+<span class="font-caption text-caption text-ink-faint">Min</span>
+<input class="h-9 px-2 rounded-lg bg-surface-bg text-on-surface font-label-sm text-label-sm focus:outline-none focus:ring-1 focus:ring-primary-container text-center" type="text" value="LKR 1,500"/>
+</div>
+<div class="flex flex-col">
+<span class="font-caption text-caption text-ink-faint">Max</span>
+<input class="h-9 px-2 rounded-lg bg-surface-bg text-on-surface font-label-sm text-label-sm focus:outline-none focus:ring-1 focus:ring-primary-container text-center" type="text" value="LKR 4,800"/>
+</div>
+</div>
+<button class="w-full py-2 rounded-lg bg-navy-wash text-primary-container hover:bg-surface-container-high transition-colors font-label-sm text-label-sm font-semibold mt-1" type="button">
+            Apply Filter
+          </button>
+</div>
+</div>
+</aside>
+<!-- Main Content Grid (lg:col-span-9) -->
+<main class="lg:col-span-9 flex flex-col gap-space-lg">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-space-lg" id="catalogGrid">
+<!-- CARD 1: SPOTLIGHT - The Seven Moons of Maali Almeida -->
+<article class="bg-surface-card rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-all group relative">
+<!-- Top Badges & Wishlist -->
+<div>
+<div class="flex items-start justify-between gap-2 mb-space-sm">
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-0.5 rounded-full bg-gold-text/10 text-gold-text font-label-sm text-label-sm font-semibold">Booker Prize 2022</span>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-cream text-gold-text font-label-sm text-label-sm">March Salon Pick</span>
+</div>
+<button class="wishlist-btn text-ink-faint hover:text-status-danger-text transition-colors p-1" title="Save to reading list" type="button">
+<span class="material-symbols-outlined text-xl">bookmark</span>
+</button>
+</div>
+<!-- Book Cover Frame -->
+<div class="w-full aspect-[2/3] max-h-72 rounded-lg overflow-hidden bg-navy-darkest relative shadow-inner mb-space-md flex items-center justify-center">
+<img class="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-300" data-alt="Cover of The Seven Moons of Maali Almeida by Shehan Karunatilaka, featuring an intricate gold celestial mandalic wheel with crescent moons, stars, dancing spirits, and Colombo architectural motifs on an archival deep royal blue cloth bound cover, illuminated with vintage bookstore warmth and crisp gold foil embossing details." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAp1ZeoufOuJrjH3vtDJ_ogKQWU9G165cAgVyzvnSoaOasu5I2-xOe5g_25cbFGgHDNZkcP-WwtCJ5UDbq_yYEoNjz53yQq5BL02ku7lhqqc07EtPqyjGhuhoNPEDHVwaG1Y3mYg1Gk3IaQHLRnkj8TA8CGulW1VUu_GVWcfKnS9SVQGHgQ6HZZNgREBSiD1qeCM2wDm3bumAmGCiHvfHsR387oxzsaJugmtYphRjSgkoAAVIYvKejJg"/>
+</div>
+<!-- Meta details -->
+<div class="flex flex-col gap-1">
+<span class="font-caption text-caption uppercase tracking-wider text-ink-faint">Shehan Karunatilaka · Fiction</span>
+<h2 class="font-headline-md text-headline-md text-navy-darkest tracking-tight group-hover:text-primary transition-colors">
+                The Seven Moons of Maali Almeida
+              </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">
+                A dead war photographer has seven moons to solve his own demise in the bureaucratic underworld of 1989 Colombo.
+              </p>
+</div>
+</div>
+<!-- Footer Info & Actions -->
+<div class="mt-space-md pt-space-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<div class="flex items-baseline gap-1.5">
+<span class="font-headline-sm text-headline-sm font-bold text-navy-darkest">LKR 2,650</span>
+<span class="font-caption text-caption line-through text-ink-faint">LKR 3,200</span>
+</div>
+<span class="font-caption text-caption text-status-success-text font-medium">Fellow Save 17%</span>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1 font-caption text-caption text-sky-text">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  Barefoot Depot (4 left)
+                </span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-1">
+<button class="btn-add-bag h-11 rounded-lg bg-primary-container hover:bg-navy-deep text-on-primary font-label-md text-label-md flex items-center justify-center gap-1.5 shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-base">local_mall</span>
+                Add to Bag
+              </button>
+<button class="btn-borrow h-11 rounded-lg bg-navy-wash hover:bg-surface-container-high text-primary-container font-label-md text-label-md flex items-center justify-center gap-1 transition-all" type="button">
+<span class="material-symbols-outlined text-base">import_contacts</span>
+                Borrow Pass
+              </button>
+</div>
+</div>
+</article>
+<!-- CARD 2: Chinaman -->
+<article class="bg-surface-card rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-all group relative">
+<div>
+<div class="flex items-start justify-between gap-2 mb-space-sm">
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-0.5 rounded-full bg-gold-text/10 text-gold-text font-label-sm text-label-sm font-semibold">Commonwealth Prize</span>
+<span class="px-2.5 py-0.5 rounded-full bg-navy-wash text-primary-container font-label-sm text-label-sm">Essential Canon</span>
+</div>
+<button class="wishlist-btn text-ink-faint hover:text-status-danger-text transition-colors p-1" title="Save to reading list" type="button">
+<span class="material-symbols-outlined text-xl">bookmark</span>
+</button>
+</div>
+<!-- Book Cover Frame -->
+<div class="w-full aspect-[2/3] max-h-72 rounded-lg overflow-hidden bg-surface-cream relative shadow-inner mb-space-md flex items-center justify-center">
+<img class="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-300" data-alt="Cover of the book Chinaman: The Legend of Pradeep Mathew by Shehan Karunatilaka. Vintage textured parchment cream dust jacket featuring an ink and watercolor illustration of a journalist typing at a rustic wooden desk with Colombo cricket stadium in the backdrop, arrack bottle, cricket balls, and vintage sports news clippings." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1KA2RHuVaJ6LtRdfZeB2_cqV7I5m0zDCrF3wXoPdWNpOq1ZfiUpEOuztEK-UC0qLUF8AKH02ipy6j_Z24Eo36RmIYPqhFGJUqZ8ElHEyetmw10sVNpnWc_A65GFg6-yFztR3SRy5CgbXZK6y_xht3xvMoTP1x2MnE0C32ngMF6kl7pe-CfzAOw2X3vqGlWsjUjKMLS40T7C-fIdfPamAgon4vg-RVAwyW1xt8Cmk5Cebx30UkP-f1Ig"/>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-caption text-caption uppercase tracking-wider text-ink-faint">Shehan Karunatilaka · Fiction</span>
+<h2 class="font-headline-md text-headline-md text-navy-darkest tracking-tight group-hover:text-primary transition-colors">
+                Chinaman: The Legend of Pradeep Mathew
+              </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">
+                An alcoholic sportswriter embarks on an obsessive quest to unearth the greatest cricketer Ceylon ever spawned.
+              </p>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<div class="flex items-baseline gap-1.5">
+<span class="font-headline-sm text-headline-sm font-bold text-navy-darkest">LKR 2,400</span>
+<span class="font-caption text-caption line-through text-ink-faint">LKR 2,850</span>
+</div>
+<span class="font-caption text-caption text-status-success-text font-medium">Save LKR 450</span>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1 font-caption text-caption text-status-success-text">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success-text"></span>
+                  Colombo Central (Ready)
+                </span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-1">
+<button class="btn-add-bag h-11 rounded-lg bg-primary-container hover:bg-navy-deep text-on-primary font-label-md text-label-md flex items-center justify-center gap-1.5 shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-base">local_mall</span>
+                Add to Bag
+              </button>
+<button class="btn-borrow h-11 rounded-lg bg-navy-wash hover:bg-surface-container-high text-primary-container font-label-md text-label-md flex items-center justify-center gap-1 transition-all" type="button">
+<span class="material-symbols-outlined text-base">import_contacts</span>
+                Borrow Pass
+              </button>
+</div>
+</div>
+</article>
+<!-- CARD 3: Anil's Ghost -->
+<article class="bg-surface-card rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-all group relative">
+<div>
+<div class="flex items-start justify-between gap-2 mb-space-sm">
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-0.5 rounded-full bg-gold-text/10 text-gold-text font-label-sm text-label-sm font-semibold">Prix Médicis Étranger</span>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container text-navy-tint font-label-sm text-label-sm">Giller Prize</span>
+</div>
+<button class="wishlist-btn text-ink-faint hover:text-status-danger-text transition-colors p-1" title="Save to reading list" type="button">
+<span class="material-symbols-outlined text-xl">bookmark</span>
+</button>
+</div>
+<!-- Book Cover Frame -->
+<div class="w-full aspect-[2/3] max-h-72 rounded-lg overflow-hidden bg-navy-deep relative shadow-inner mb-space-md flex items-center justify-center">
+<img class="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-300" data-alt="Cover of Anil's Ghost by Michael Ondaatje. Elegant minimalist vintage book design featuring deep lapis lazuli navy background, delicate gilded stone temple relief carvings, an archaeological skull outline, and refined ivory serif typography in an archival literary salon aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9ZPLxMCpuRSH-GKu3RrRXJ8CahJRVLoI0OAI20WOCOOa-LJonuwYMiSZmUkZUbA-yjsF1iz1k543k8_jYopqlhkEwRAp09Tum08yRHagVAFIulL-C6BKqv1NN9xtTsPLRr-hyYklRPXoyRot-0ir4_LVj8g39TvWRvWXAcMp6fMxv8EsHJcMhSl27Y8iYVJ4L8Md3tGDaRKXHKFZiGTWTgGjOEDGE5BLFD6Yukh5gVfBSDsXQ4uJtFA"/>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-caption text-caption uppercase tracking-wider text-ink-faint">Michael Ondaatje · Literary Fiction</span>
+<h2 class="font-headline-md text-headline-md text-navy-darkest tracking-tight group-hover:text-primary transition-colors">
+                Anil's Ghost
+              </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">
+                A forensic anthropologist returns to her homeland amidst turbulent historical upheaval to identify an unknown victim.
+              </p>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<div class="flex items-baseline gap-1.5">
+<span class="font-headline-sm text-headline-sm font-bold text-navy-darkest">LKR 2,150</span>
+<span class="font-caption text-caption line-through text-ink-faint">LKR 2,500</span>
+</div>
+<span class="font-caption text-caption text-gold-text font-medium">+15 pts bonus</span>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1 font-caption text-caption text-sky-text">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  Ready for Collection
+                </span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-1">
+<button class="btn-add-bag h-11 rounded-lg bg-primary-container hover:bg-navy-deep text-on-primary font-label-md text-label-md flex items-center justify-center gap-1.5 shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-base">local_mall</span>
+                Add to Bag
+              </button>
+<button class="btn-borrow h-11 rounded-lg bg-navy-wash hover:bg-surface-container-high text-primary-container font-label-md text-label-md flex items-center justify-center gap-1 transition-all" type="button">
+<span class="material-symbols-outlined text-base">import_contacts</span>
+                Borrow Pass
+              </button>
+</div>
+</div>
+</article>
+<!-- CARD 4: Wave: A Memoir -->
+<article class="bg-surface-card rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-all group relative">
+<div>
+<div class="flex items-start justify-between gap-2 mb-space-sm">
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-0.5 rounded-full bg-gold-text/10 text-gold-text font-label-sm text-label-sm font-semibold">PEN/Ackerley Prize</span>
+<span class="px-2.5 py-0.5 rounded-full bg-status-warning-bg text-status-warning-text font-label-sm text-label-sm">Non-Fiction</span>
+</div>
+<button class="wishlist-btn text-ink-faint hover:text-status-danger-text transition-colors p-1" title="Save to reading list" type="button">
+<span class="material-symbols-outlined text-xl">bookmark</span>
+</button>
+</div>
+<!-- Book Cover Frame -->
+<div class="w-full aspect-[2/3] max-h-72 rounded-lg overflow-hidden bg-secondary-fixed-dim relative shadow-inner mb-space-md flex items-center justify-center">
+<img class="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-300" data-alt="Cover of Wave: A Memoir of Life After the Tsunami by Sonali Deraniyagala. Poetic minimalist sea blue, cerulean ocean tones, subtle textured line art of an undulating oceanic crest on handmade deckle-edge paper with clean modern serif typography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAe9-fYyZKqYw_N2gf-eBq90zlg4Qz6hi-95O2fDTvBFdElQ3jZv31HYoCPGn1TdS3jof2txIK_MQcOTWadrVsS1Ljmf1WOkiVFBMZd2V6wZPpOYK1OCD0K0Gn4UrDpwZmsVunq_O23fYn5xoJPP7QJJLYSZvxT8bDSYo2FkGjhHHSXTHesmSxmhpuPRdB0q7OTQxUp76_o9eNjd8yGvkP9TTK25J9IKPdSaGYEstWsSrbeKEuREqtPSw"/>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-caption text-caption uppercase tracking-wider text-ink-faint">Sonali Deraniyagala · Memoir</span>
+<h2 class="font-headline-md text-headline-md text-navy-darkest tracking-tight group-hover:text-primary transition-colors">
+                Wave: A Memoir of Life
+              </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">
+                A harrowing, luminous account of unfathomable loss and the slow reclamation of memory following the 2004 Indian Ocean tsunami.
+              </p>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<div class="flex items-baseline gap-1.5">
+<span class="font-headline-sm text-headline-sm font-bold text-navy-darkest">LKR 1,950</span>
+<span class="font-caption text-caption line-through text-ink-faint">LKR 2,300</span>
+</div>
+<span class="font-caption text-caption text-status-success-text font-medium">Member Special</span>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1 font-caption text-caption text-status-warning-text font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-status-warning-text"></span>
+                  3 copies remaining
+                </span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-1">
+<button class="btn-add-bag h-11 rounded-lg bg-primary-container hover:bg-navy-deep text-on-primary font-label-md text-label-md flex items-center justify-center gap-1.5 shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-base">local_mall</span>
+                Add to Bag
+              </button>
+<button class="btn-borrow h-11 rounded-lg bg-navy-wash hover:bg-surface-container-high text-primary-container font-label-md text-label-md flex items-center justify-center gap-1 transition-all" type="button">
+<span class="material-symbols-outlined text-base">import_contacts</span>
+                Borrow Pass
+              </button>
+</div>
+</div>
+</article>
+<!-- CARD 5: Running in the Family -->
+<article class="bg-surface-card rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-all group relative">
+<div>
+<div class="flex items-start justify-between gap-2 mb-space-sm">
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-0.5 rounded-full bg-surface-cream text-gold-text font-label-sm text-label-sm font-semibold">Memoir Classic</span>
+<span class="px-2.5 py-0.5 rounded-full bg-navy-wash text-primary-container font-label-sm text-label-sm">Archival Edition</span>
+</div>
+<button class="wishlist-btn text-ink-faint hover:text-status-danger-text transition-colors p-1" title="Save to reading list" type="button">
+<span class="material-symbols-outlined text-xl">bookmark</span>
+</button>
+</div>
+<!-- Book Cover Frame -->
+<div class="w-full aspect-[2/3] max-h-72 rounded-lg overflow-hidden bg-surface-cream relative shadow-inner mb-space-md flex items-center justify-center">
+<img class="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-300" data-alt="Cover of Running in the Family by Michael Ondaatje. Warm archival sepia tones, aged Sri Lankan tea plantation flora photographs, hand-scripted letters, tropical silhouettes, vintage colonial map fragments, and refined classic literary typography on cream canvas." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4tyGTeYAAyaY5y2sOfx4keBe5gCXkLAobYehnwkCCA-A2sk_DphLzAPYPf5L_H3D7YzQOAoE1mYvjs2qQqJQwZQ0J0OA-HAKMvL7AQs-HA1lMysFgirF_PmBWCthSiycnubkA7bXDfvZzdILvNmqa4D672ITLGIpasyb0LurjlMSGynJVDqW9lu-bCPAsSQ7B32QDdLh43nDX1pTiuefVPjFnnnz_yI240qIRiFQ9SdHrEpixpeCSDQ"/>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-caption text-caption uppercase tracking-wider text-ink-faint">Michael Ondaatje · Memoir &amp; Poetry</span>
+<h2 class="font-headline-md text-headline-md text-navy-darkest tracking-tight group-hover:text-primary transition-colors">
+                Running in the Family
+              </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">
+                A fictionalized memoir of childhood eccentricity, jazz-age Ceylon, family feuds, and monsoon-drenched memories.
+              </p>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<div class="flex items-baseline gap-1.5">
+<span class="font-headline-sm text-headline-sm font-bold text-navy-darkest">LKR 2,100</span>
+</div>
+<span class="font-caption text-caption text-ink-faint">Hardbound Cloth</span>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1 font-caption text-caption text-status-success-text">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success-text"></span>
+                  Restocked this week
+                </span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-1">
+<button class="btn-add-bag h-11 rounded-lg bg-primary-container hover:bg-navy-deep text-on-primary font-label-md text-label-md flex items-center justify-center gap-1.5 shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-base">local_mall</span>
+                Add to Bag
+              </button>
+<button class="btn-borrow h-11 rounded-lg bg-navy-wash hover:bg-surface-container-high text-primary-container font-label-md text-label-md flex items-center justify-center gap-1 transition-all" type="button">
+<span class="material-symbols-outlined text-base">import_contacts</span>
+                Borrow Pass
+              </button>
+</div>
+</div>
+</article>
+<!-- CARD 6: An Island of a Thousand Mirrors -->
+<article class="bg-surface-card rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-all group relative">
+<div>
+<div class="flex items-start justify-between gap-2 mb-space-sm">
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-0.5 rounded-full bg-gold-text/10 text-gold-text font-label-sm text-label-sm font-semibold">Commonwealth Winner</span>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-cream text-gold-text font-label-sm text-label-sm">Pre-Order Batch</span>
+</div>
+<button class="wishlist-btn text-ink-faint hover:text-status-danger-text transition-colors p-1" title="Save to reading list" type="button">
+<span class="material-symbols-outlined text-xl">bookmark</span>
+</button>
+</div>
+<!-- Book Cover Frame -->
+<div class="w-full aspect-[2/3] max-h-72 rounded-lg overflow-hidden bg-navy-darkest relative shadow-inner mb-space-md flex items-center justify-center">
+<img class="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-300" data-alt="Cover of Island of a Thousand Mirrors by Nayomi Munaweera. Deep emerald green and iridescent gold foil aesthetic with intricate mirror mosaic patterns, tropical palm fronds, delicate ocean waves, and rich gilded typography of high literary prestige." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRQZ7-3nhF7CGR4xBNi1lYN4vNpgHvVU1Bkn2oUpF5mBPnNNC7xMNJyeFO463ECkASupI46c8xkOs5017X_6ePc_jDTvGJ9DHGTKWAmSuz2TXeJ9MwzaZhJ9nXafsLTq39WC8p2omnj93i1bLokx6yWEJ6tvlowiD0pEb-oVNQ-wOLQPU1H8mBiOC09dvhABf6ALoSbBFKUoqYzMgxdIkGctlDqjU1ltUJnILjXInbjoz5VrtJjYdwPg"/>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-caption text-caption uppercase tracking-wider text-ink-faint">Nayomi Munaweera · Fiction</span>
+<h2 class="font-headline-md text-headline-md text-navy-darkest tracking-tight group-hover:text-primary transition-colors">
+                Island of a Thousand Mirrors
+              </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">
+                The interwoven destinies of two young women on opposite ends of a prolonged civil divide, bound by heritage and longing.
+              </p>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<div class="flex items-baseline gap-1.5">
+<span class="font-headline-sm text-headline-sm font-bold text-navy-darkest">LKR 2,250</span>
+<span class="font-caption text-caption line-through text-ink-faint">LKR 2,700</span>
+</div>
+<span class="font-caption text-caption text-gold-text font-medium">Batch Release Apr 2028</span>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1 font-caption text-caption text-ink-faint">
+<span class="w-1.5 h-1.5 rounded-full bg-ink-faint"></span>
+                  Dispatches April 10
+                </span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-1">
+<button class="btn-preorder h-11 rounded-lg bg-tertiary-container hover:bg-gold-text text-navy-darkest font-label-md text-label-md flex items-center justify-center gap-1 font-semibold transition-all" type="button">
+<span class="material-symbols-outlined text-base">calendar_today</span>
+                Pre-Order
+              </button>
+<button class="btn-notify h-11 rounded-lg bg-surface-bg hover:bg-navy-wash text-on-surface-variant font-label-md text-label-md flex items-center justify-center gap-1 transition-all" type="button">
+<span class="material-symbols-outlined text-base">notifications_active</span>
+                Notify Me
+              </button>
+</div>
+</div>
+</article>
+</div>
+<!-- Pagination & Result Summary -->
+<div class="p-space-md rounded-xl bg-surface-card shadow-sm flex flex-col sm:flex-row items-center justify-between gap-space-md mt-space-md">
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+            Showing <strong class="text-navy-darkest font-semibold">6</strong> of <strong class="text-navy-darkest font-semibold">128</strong> curated titles
+          </span>
+<span class="text-ink-faint">·</span>
+<span class="font-caption text-caption text-ink-faint">Ceylon Salon Depot Network</span>
+</div>
+<nav aria-label="Pagination" class="flex items-center gap-1">
+<button class="w-9 h-9 rounded-lg flex items-center justify-center text-ink-faint hover:bg-navy-wash hover:text-navy-deep transition-colors" disabled="" type="button">
+<span class="material-symbols-outlined text-base">chevron_left</span>
+</button>
+<button class="w-9 h-9 rounded-lg bg-primary-container text-on-primary font-label-sm text-label-sm font-semibold" type="button">1</button>
+<button class="w-9 h-9 rounded-lg hover:bg-navy-wash text-on-surface-variant hover:text-navy-deep font-label-sm text-label-sm transition-colors" type="button">2</button>
+<button class="w-9 h-9 rounded-lg hover:bg-navy-wash text-on-surface-variant hover:text-navy-deep font-label-sm text-label-sm transition-colors" type="button">3</button>
+<span class="px-2 text-ink-faint font-caption text-caption">…</span>
+<button class="w-9 h-9 rounded-lg hover:bg-navy-wash text-on-surface-variant hover:text-navy-deep font-label-sm text-label-sm transition-colors" type="button">12</button>
+<button class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-navy-wash hover:text-navy-deep transition-colors" type="button">
+<span class="material-symbols-outlined text-base">chevron_right</span>
+</button>
+</nav>
+</div>
+</main>
+</div>
+<!-- Persistent Floating Checkout Bar (Fixed at bottom for quick member transactions) -->
+<div class="sticky bottom-6 z-30 mt-space-xl p-space-md rounded-2xl bg-navy-darkest text-surface shadow-xl flex flex-col md:flex-row items-center justify-between gap-space-md transition-all" id="persistentCartBar">
+<div class="flex items-center gap-space-md">
+<div class="relative w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center text-on-primary flex-shrink-0">
+<span class="material-symbols-outlined text-2xl">local_mall</span>
+<span class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-tertiary-container text-navy-darkest font-label-sm text-label-sm font-bold flex items-center justify-center">2</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-surface tracking-tight">Active Bag Preview</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-container/60 text-secondary-fixed text-caption font-semibold">+30 pts Read &amp; Rise bonus</span>
+</div>
+<p class="font-body-sm text-body-sm text-surface-container-high">
+          2 editions reserved · Subtotal: <span class="text-surface font-bold">LKR 5,050</span> (Pick up free at Barefoot Depot)
+        </p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm w-full md:w-auto justify-end">
+<button class="p-2 rounded-lg text-surface-container-high hover:text-surface hover:bg-primary-container/40 transition-colors" id="dismissCartBar" title="Hide temporary bar" type="button">
+<span class="material-symbols-outlined text-lg">close</span>
+</button>
+<a class="w-full md:w-auto px-space-lg h-12 rounded-xl bg-tertiary-container hover:bg-tertiary-fixed text-navy-darkest font-label-md text-label-md font-bold flex items-center justify-center gap-2 shadow-sm transition-all whitespace-nowrap" data-path="cart" href="#">
+<span>Proceed to Checkout &amp; Confirmation</span>
+<span class="material-symbols-outlined text-lg">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    // Interactive Wishlist Buttons
+    const wishlistBtns = document.querySelectorAll('.wishlist-btn');
+    wishlistBtns.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const icon = this.querySelector('.material-symbols-outlined');
+        const isFilled = icon.getAttribute('style') && icon.getAttribute('style').includes("'FILL' 1");
+        if (isFilled) {
+          icon.style.fontVariationSettings = "'FILL' 0";
+          icon.classList.remove('text-status-danger-text');
+        } else {
+          icon.style.fontVariationSettings = "'FILL' 1";
+          icon.classList.add('text-status-danger-text');
+        }
+      });
+    });
+
+    // Category Pill Toggle Interaction
+    const pills = document.querySelectorAll('.category-pill');
+    pills.forEach(pill => {
+      pill.addEventListener('click', function() {
+        pills.forEach(p => {
+          p.classList.remove('bg-navy-wash', 'text-primary-container');
+          p.classList.add('bg-surface-card', 'text-on-surface-variant');
+        });
+        this.classList.remove('bg-surface-card', 'text-on-surface-variant');
+        this.classList.add('bg-navy-wash', 'text-primary-container');
+      });
+    });
+
+    // Grid vs List Layout Switcher
+    const btnGrid = document.getElementById('btnGridView');
+    const btnList = document.getElementById('btnListView');
+    const catalogGrid = document.getElementById('catalogGrid');
+
+    if (btnGrid && btnList && catalogGrid) {
+      btnList.addEventListener('click', function() {
+        catalogGrid.classList.remove('md:grid-cols-2', 'xl:grid-cols-3');
+        catalogGrid.classList.add('grid-cols-1');
+        btnList.classList.add('bg-surface-card', 'text-primary-container', 'shadow-xs');
+        btnList.classList.remove('text-on-surface-variant');
+        btnGrid.classList.remove('bg-surface-card', 'text-primary-container', 'shadow-xs');
+        btnGrid.classList.add('text-on-surface-variant');
+      });
+
+      btnGrid.addEventListener('click', function() {
+        catalogGrid.classList.add('md:grid-cols-2', 'xl:grid-cols-3');
+        catalogGrid.classList.remove('grid-cols-1');
+        btnGrid.classList.add('bg-surface-card', 'text-primary-container', 'shadow-xs');
+        btnGrid.classList.remove('text-on-surface-variant');
+        btnList.classList.remove('bg-surface-card', 'text-primary-container', 'shadow-xs');
+        btnList.classList.add('text-on-surface-variant');
+      });
+    }
+
+    // Dismiss Cart preview bar
+    const dismissCartBar = document.getElementById('dismissCartBar');
+    const persistentCartBar = document.getElementById('persistentCartBar');
+    if (dismissCartBar && persistentCartBar) {
+      dismissCartBar.addEventListener('click', function() {
+        persistentCartBar.style.display = 'none';
+      });
+    }
+
+    // Micro feedback for Add to Bag
+    const bagButtons = document.querySelectorAll('.btn-add-bag');
+    bagButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const originalText = this.innerHTML;
+        this.innerHTML = `<span class="material-symbols-outlined text-base">check</span> Added!`;
+        this.classList.add('bg-status-success-text');
+        setTimeout(() => {
+          this.innerHTML = originalText;
+          this.classList.remove('bg-status-success-text');
+        }, 1500);
+      });
+    });
+  })();
+</script></main></div></body></html>

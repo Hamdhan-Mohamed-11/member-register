@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"surface-container-lowest":"#ffffff","error-container":"#ffdad6","background":"#faf8ff","on-surface":"#141b2f","on-secondary":"#ffffff","inverse-primary":"#bbc3ff","sky-text":"#0079A8","navy-tint":"#4457B5","navy-wash":"#EFF2FB","outline":"#767683","outline-variant":"#c6c5d4","surface-container-highest":"#dbe2fd","tertiary-fixed-dim":"#ecc14f","status-warning-bg":"#FBEED3","surface-cream":"#F8F2E9","secondary":"#00658d","secondary-fixed-dim":"#82cfff","inverse-surface":"#293045","primary":"#0b1e80","tertiary":"#765b00","ink-faint":"#8B91A3","on-surface-variant":"#454652","on-primary-fixed":"#000e5f","surface-variant":"#dbe2fd","on-background":"#141b2f","secondary-fixed":"#c6e7ff","surface-container-high":"#e2e7ff","on-error":"#ffffff","status-success-text":"#147233","surface-container-low":"#f2f3ff","surface-card":"#FFFFFF","tertiary-container":"#cea635","on-secondary-fixed":"#001e2d","primary-fixed":"#dfe0ff","secondary-container":"#2dbcfe","gold-text":"#8A6410","on-primary-container":"#9da9ff","surface":"#faf8ff","status-danger-bg":"#FBE4E4","surface-tint":"#4756b4","surface-bright":"#faf8ff","status-warning-text":"#A15C07","navy-soft":"#C3CBEC","on-tertiary-container":"#503d00","surface-container":"#eaedff","error":"#ba1a1a","inverse-on-surface":"#eef0ff","navy-darkest":"#0F1640","on-primary":"#ffffff","on-tertiary":"#ffffff","border-subtle":"#E6E9F0","on-tertiary-fixed":"#251a00","status-danger-text":"#B91C1C","surface-bg":"#F8F9FC","on-error-container":"#93000a","on-primary-fixed-variant":"#2e3d9b","status-success-bg":"#DCF3E4","tertiary-fixed":"#ffdf94","primary-container":"#293896","on-secondary-container":"#004866","navy-deep":"#16205C","primary-fixed-dim":"#bbc3ff","on-secondary-fixed-variant":"#004c6b","ink-body":"#14162E","on-tertiary-fixed-variant":"#594400","surface-dim":"#d3d9f4"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-sm":"0.5rem","space-xl":"2.25rem","gutter-desktop":"1.5rem","margin-desktop":"2.5rem","margin":"1rem","space-lg":"1.5rem","space-xs":"0.25rem","space-md":"1rem","gutter":"1rem"},"fontFamily":{"headline-lg":["Playfair Display"],"body-md":["DM Sans"],"label-md":["DM Sans"],"headline-xl":["Playfair Display"],"label-sm":["DM Sans"],"headline-lg-mobile":["Playfair Display"],"caption":["DM Sans"],"headline-sm":["Playfair Display"],"body-sm":["DM Sans"],"headline-md":["Playfair Display"],"body-lg":["DM Sans"],"headline-xl-mobile":["Playfair Display"]},"fontSize":{"headline-lg":["2rem",{"lineHeight":"2.5rem","fontWeight":"600"}],"body-md":["1rem",{"lineHeight":"1.5rem","fontWeight":"400"}],"label-md":["0.875rem",{"lineHeight":"1.25rem","letterSpacing":"0.01em","fontWeight":"600"}],"headline-xl":["2.5rem",{"lineHeight":"3rem","letterSpacing":"-0.02em","fontWeight":"600"}],"label-sm":["0.75rem",{"lineHeight":"1rem","letterSpacing":"0.04em","fontWeight":"600"}],"headline-lg-mobile":["1.625rem",{"lineHeight":"2.125rem","fontWeight":"600"}],"caption":["0.75rem",{"lineHeight":"1.125rem","fontWeight":"400"}],"headline-sm":["1.125rem",{"lineHeight":"1.625rem","fontWeight":"600"}],"body-sm":["0.875rem",{"lineHeight":"1.375rem","fontWeight":"400"}],"headline-md":["1.375rem",{"lineHeight":"1.875rem","fontWeight":"600"}],"body-lg":["1.125rem",{"lineHeight":"1.75rem","fontWeight":"400"}],"headline-xl-mobile":["2rem",{"lineHeight":"2.5rem","letterSpacing":"-0.01em","fontWeight":"600"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-screen w-[260px] bg-surface-container-low shadow-[0_1px_8px_rgba(22,32,92,0.04)] z-50 flex flex-col justify-between overflow-y-auto"><div class="p-space-md flex flex-col"><div class="flex items-center gap-space-sm px-space-xs mb-space-lg"><img alt="Pick a Book Members Guild" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UjT7AWSE90BT_3we0gsvspMHyuF3dA2XUP_iajSMcjj0vYfboNla7Y4ImcJu6jbOmU7ak8mf6Ktcton86BiQTeK5LC_-tzt2Av8kc3Q2T431foW9Lu_sb-8-0rOBWeatYvlWs6HsntQ9WfXosP9klIRrHITAfg5avJp0hlP9LsGnJaf-djFKozJyIBn-dcf6xrdzHjvLUHP0s8hEkc6k68iQdkcycUA1mNWUCucctwodznA5iRGsFD5GT7"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-ink-body font-bold leading-tight">Pick a Book</span><span class="font-caption text-caption text-gold-text uppercase tracking-wider font-semibold">Members Guild</span></div></div><div class="mb-space-lg bg-surface-cream rounded-lg p-space-sm shadow-[0_1px_2px_rgba(22,32,92,0.02)]"><div class="flex items-center justify-between mb-1"><div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-status-success-text inline-block"></span><span class="font-caption text-caption text-ink-faint font-semibold uppercase tracking-wider">Active Chapter</span></div><span class="bg-status-success-bg text-status-success-text font-caption text-caption px-1.5 py-0.5 rounded-full font-semibold">Lead</span></div><div class="flex items-center justify-between"><span class="font-label-md text-label-md text-navy-deep font-semibold truncate pr-1">Colombo Central Club</span><span class="material-symbols-outlined text-on-surface-variant text-base">unfold_more</span></div></div><div class="mb-space-lg"><div class="px-space-xs mb-space-xs"><span class="font-caption text-caption text-ink-faint uppercase font-bold tracking-wider">Navigation</span></div><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary font-semibold shadow-sm"><a class="px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="home" href="#">Home</a><a class="px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="sessions" href="#">Sessions</a><a class="px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="book-catalogue-library" href="#">Book Catalogue / Library</a><a class="px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="members-directory" href="#">Members &amp; Directory</a><a class="px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="discover-journal" href="#">Discover Journal</a><a class="px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="leaderboard-badges" href="#">Leaderboard &amp; Badges</a></nav></div></div><div class="p-space-md bg-surface-container rounded-xl mx-2 mb-3 shadow-[0_1px_2px_rgba(22,32,92,0.02)]"><div class="flex items-center gap-space-sm"><img alt="Nimali Perera" class="w-9 h-9 rounded-full object-cover ring-2 ring-primary-fixed" src="https://lh3.googleusercontent.com/aida/AEtjO1Wouczgaw92PVI93mytS-PLFkX66QkSB_EvVweH_BW6s1BuFQPBh1j8Dpo9iXpGlj8Vou-BtQ3KF0fL0RG0Tpm6gDZh47UEFzs9U0W_oxTeCAWca4PXI6Be6eHP_bNXi-kV2zJMe67TqzTJUHSMCO__RZeda9eNeH9YeRh57K8aAbxsO-jM192d6wl4DT7dW9ErVtj7P_3GqJFRniL0IaGAgpRBb5AJ0L4QOP3qlzRwjhLDf-KmfZ_lH325"/><div class="flex-1 min-w-0"><span class="font-label-md text-label-md text-ink-body font-semibold truncate block">Nimali Perera</span><div class="flex items-center gap-1"><span class="font-caption text-caption text-status-warning-text font-semibold">Chapter Lead</span></div><span class="font-caption text-caption text-ink-faint truncate block">480 pts · Curator IV</span></div></div></div></aside><div class="pl-[260px]"><header class="fixed top-0 left-[260px] right-0 h-16 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(22,32,92,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center flex-1 max-w-xl"><div class="w-full flex items-center bg-surface-container-low rounded-lg px-space-md py-2 shadow-sm text-on-surface-variant focus-within:bg-surface-card focus-within:text-ink-body transition-all"><span class="material-symbols-outlined text-xl text-ink-faint mr-space-sm">search</span><input class="bg-transparent w-full text-body-sm font-body-sm focus:outline-none placeholder:text-ink-faint text-ink-body" placeholder="Universal search titles, authors, marginalia... (⌘K)" type="text"/><span class="font-caption text-caption text-ink-faint bg-surface-container px-1.5 py-0.5 rounded font-semibold ml-2">⌘K</span></div></div><div class="flex items-center gap-space-sm"><button aria-label="Cart" class="relative p-2 rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-xl">shopping_cart</span></button><button aria-label="Notifications" class="relative p-2 rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-xl">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-status-danger-text"></span></button><div class="flex items-center gap-2 pl-space-xs"><img alt="Member Avatar" class="w-8 h-8 rounded-full object-cover ring-1 ring-border-subtle" src="https://lh3.googleusercontent.com/aida/AEtjO1Wouczgaw92PVI93mytS-PLFkX66QkSB_EvVweH_BW6s1BuFQPBh1j8Dpo9iXpGlj8Vou-BtQ3KF0fL0RG0Tpm6gDZh47UEFzs9U0W_oxTeCAWca4PXI6Be6eHP_bNXi-kV2zJMe67TqzTJUHSMCO__RZeda9eNeH9YeRh57K8aAbxsO-jM192d6wl4DT7dW9ErVtj7P_3GqJFRniL0IaGAgpRBb5AJ0L4QOP3qlzRwjhLDf-KmfZ_lH325"/></div></div></header><main class="relative pt-16 w-full px-space-lg bg-surface min-h-screen"><div class="flex flex-col w-full pb-space-xl">
+<!-- Top Breadcrumb & Quick Actions Bar -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md py-space-md mb-space-md">
+<div class="flex flex-col gap-1 min-w-0">
+<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-ink-faint font-body-sm text-body-sm">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-base">arrow_back</span>
+<span>Members Directory</span>
+</a>
+<span class="text-outline-variant">/</span>
+<span class="hover:text-ink-body transition-colors">Colombo Poetry Circle</span>
+<span class="text-outline-variant">/</span>
+<span class="text-ink-body font-semibold truncate">Dr. Rohini de Silva</span>
+</nav>
+<span class="font-caption text-caption text-gold-text uppercase tracking-widest font-semibold">
+        Archival Member Profile · Dossier #CPC-1049
+      </span>
+</div>
+<!-- Top Right Action Cluster -->
+<div class="flex items-center flex-wrap gap-space-sm">
+<button class="inline-flex items-center gap-2 h-11 px-4 rounded-lg bg-surface-card text-primary font-label-md text-label-md shadow-sm hover:bg-navy-wash hover:shadow transition-all duration-200" type="button">
+<span class="material-symbols-outlined text-lg">auto_stories</span>
+<span>Send Book Recommendation</span>
+</button>
+<button class="inline-flex items-center gap-2 h-11 px-4 rounded-lg bg-surface-container-high text-navy-deep font-label-md text-label-md shadow-sm hover:bg-surface-container-highest transition-all duration-200" type="button">
+<span class="material-symbols-outlined text-lg">drafts</span>
+<span>Contact Club Secretary</span>
+</button>
+<button class="inline-flex items-center gap-2 h-11 px-5 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md shadow-md hover:bg-navy-deep transition-all duration-200" type="button">
+<span class="material-symbols-outlined text-lg">campaign</span>
+<span>Propose Salon Keynote</span>
+</button>
+</div>
+</div>
+<!-- Main Asymmetric 2-Column Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT COLUMN: Sticky Member Dossier & Credentials (lg:col-span-4) -->
+<div class="lg:col-span-4 flex flex-col gap-space-md lg:sticky lg:top-20">
+<!-- Primary Profile Card -->
+<div class="bg-surface-card rounded-xl p-space-lg shadow-sm flex flex-col items-center text-center relative overflow-hidden">
+<!-- Subtle Academic Motif Backdrop -->
+<div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-navy-wash/60 pointer-events-none"></div>
+<div class="absolute -left-6 bottom-16 w-24 h-24 rounded-full bg-surface-cream/80 pointer-events-none"></div>
+<!-- High-Resolution Member Avatar with Verification & Pulse -->
+<div class="relative mb-space-md">
+<div class="w-32 h-32 rounded-full overflow-hidden shadow-md ring-4 ring-surface-card bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Distinguished South Asian female literature professor Dr. Rohini de Silva in her late 40s wearing elegant spectacles and an indigo linen saree with gold trim, smiling warmly in a sunlit university archive library surrounded by mahogany book stacks and parchment manuscripts." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEl5nquICyal9kuySm0k8PcEvykZCnOOmQNQNAF0KEfmrygBw8LH3M0NRpdaoJvK2tb5odA5dDnCgZwOSAV690v2D4oHytF8Z38G1oSEW6Dl8ZrZcEQWAVTx2c2RRxK-xV4UTAwdwU5BRs4VCCbbqU3rKEWMuR584sc4otsKfbbJAogvhFJhfEh-CqRu9XDfQY2hCRuvgH-KII2lXmDnLfH2J-OPzllQ9Si7RyZiIuc0K4V-G_Fm1gvw"/>
+</div>
+<!-- Academic Distinction Crest Badge -->
+<div class="absolute bottom-1 right-1 w-9 h-9 rounded-full bg-navy-deep text-on-primary flex items-center justify-center shadow-md ring-2 ring-surface-card" title="Fellow of the Royal Asiatic Society / PAB Academic Chair">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">school</span>
+</div>
+<!-- Active Salon Pulse -->
+<div class="absolute top-1 left-1 flex items-center gap-1.5 bg-status-success-bg text-status-success-text px-2 py-0.5 rounded-full font-caption text-caption font-semibold shadow-xs ring-2 ring-surface-card">
+<span class="w-2 h-2 rounded-full bg-status-success-text animate-pulse"></span>
+<span>Active in Salon</span>
+</div>
+</div>
+<!-- Name & Academic Title -->
+<h1 class="font-headline-lg text-headline-lg text-ink-body mb-1">
+          Dr. Rohini de Silva
+        </h1>
+<div class="flex items-center justify-center gap-1.5 text-navy-tint mb-1">
+<span class="material-symbols-outlined text-base text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-md text-label-md text-secondary font-semibold">Colombo Poetry Circle</span>
+</div>
+<span class="font-caption text-caption text-ink-faint mb-space-sm">Fellow since 2026 · Colombo, Sri Lanka</span>
+<!-- Curator Distinction Pill -->
+<div class="inline-flex items-center gap-1.5 bg-surface-cream px-3 py-1.5 rounded-full mb-space-md shadow-xs">
+<span class="material-symbols-outlined text-sm text-gold-text" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+<span class="font-caption text-caption text-gold-text font-bold uppercase tracking-wider">Senior Literary Fellow · Level IV Curator</span>
+</div>
+<!-- Bio Statement -->
+<p class="font-body-sm text-body-sm text-on-surface-variant text-left leading-relaxed mb-space-lg bg-surface-bg p-space-sm rounded-lg">
+          Literature educator &amp; archival poetry researcher. Passionate about post-colonial Sri Lankan verse, translations, and salon debate. Regular presenter at Barefoot Cafe Courtyard gatherings and curator of the Ceylon Monsoonal Folio.
+        </p>
+<!-- Society Stats Grid (4 Metrics) -->
+<div class="grid grid-cols-2 gap-2 w-full mb-space-md">
+<div class="bg-surface-container-low rounded-lg p-3 text-center transition-transform hover:-translate-y-0.5 duration-200">
+<span class="font-headline-md text-headline-md text-navy-deep block font-bold">46</span>
+<span class="font-caption text-caption text-ink-faint uppercase font-semibold">Books Read</span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-3 text-center transition-transform hover:-translate-y-0.5 duration-200">
+<span class="font-headline-md text-headline-md text-gold-text block font-bold">680</span>
+<span class="font-caption text-caption text-ink-faint uppercase font-semibold">Society Points</span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-3 text-center transition-transform hover:-translate-y-0.5 duration-200">
+<span class="font-headline-md text-headline-md text-primary block font-bold">14</span>
+<span class="font-caption text-caption text-ink-faint uppercase font-semibold">Earned Badges</span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-3 text-center transition-transform hover:-translate-y-0.5 duration-200">
+<span class="font-headline-md text-headline-md text-secondary block font-bold">18</span>
+<span class="font-caption text-caption text-ink-faint uppercase font-semibold">Salon Sessions</span>
+</div>
+</div>
+<!-- Accreditation Shield Seal -->
+<div class="w-full flex items-center justify-center gap-2 p-2.5 rounded-lg bg-navy-wash text-navy-deep">
+<span class="material-symbols-outlined text-base text-navy-tint">shield</span>
+<span class="font-caption text-caption font-semibold">Verified Chapter Keynote Lead · Barefoot Salon Committee</span>
+</div>
+</div>
+<!-- Society Marginalia & Exchange Note Dispatcher Card -->
+<div class="bg-surface-cream rounded-xl p-space-md shadow-sm">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-gold-text">history_edu</span>
+<h2 class="font-headline-sm text-headline-sm text-ink-body">Exchange Literary Notes</h2>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md leading-relaxed">
+          Propose a rare volume for Dr. Rohini’s curated shelf or dispatch an introduction through the Colombo chapter desk.
+        </p>
+<div class="flex flex-col gap-2">
+<button class="w-full h-10 px-4 rounded-lg bg-surface-card text-ink-body font-label-md text-label-md shadow-xs hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined text-base text-secondary">menu_book</span>
+<span>Propose Volume</span>
+</button>
+<button class="w-full h-10 px-4 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md shadow-xs hover:bg-navy-deep transition-colors flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined text-base">rate_review</span>
+<span>Send Direct Marginalia Note</span>
+</button>
+</div>
+</div>
+<!-- Salon Schedule & Attendance Frequency Minimal Chart -->
+<div class="bg-surface-card rounded-xl p-space-md shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<span class="font-label-md text-label-md text-ink-body">2027–2028 Salon Cadence</span>
+<span class="font-caption text-caption text-status-success-text font-semibold bg-status-success-bg px-2 py-0.5 rounded-full">100% Attended</span>
+</div>
+<!-- Minimal SVG Cadence Rhythm Chart -->
+<svg class="w-full h-12 text-primary" fill="none" viewbox="0 0 280 44" xmlns="http://www.w3.org/2000/svg">
+<rect fill="#DFE0FF" height="22" rx="3" width="16" x="0" y="22"></rect>
+<rect fill="#DFE0FF" height="30" rx="3" width="16" x="24" y="14"></rect>
+<rect fill="#293896" height="34" rx="3" width="16" x="48" y="10"></rect>
+<rect fill="#DFE0FF" height="26" rx="3" width="16" x="72" y="18"></rect>
+<rect fill="#293896" height="36" rx="3" width="16" x="96" y="8"></rect>
+<rect fill="#293896" height="40" rx="3" width="16" x="120" y="4"></rect>
+<rect fill="#DFE0FF" height="32" rx="3" width="16" x="144" y="12"></rect>
+<rect fill="#293896" height="38" rx="3" width="16" x="168" y="6"></rect>
+<rect fill="#293896" height="34" rx="3" width="16" x="192" y="10"></rect>
+<rect fill="#DFE0FF" height="28" rx="3" width="16" x="216" y="16"></rect>
+<rect fill="#293896" height="40" rx="3" width="16" x="240" y="4"></rect>
+<rect fill="#CEA635" height="44" rx="3" width="16" x="264" y="0"></rect>
+</svg>
+<div class="flex justify-between items-center text-ink-faint font-caption text-caption mt-2">
+<span>Mar '27</span>
+<span class="text-gold-text font-bold">Feb '28 (Keynote)</span>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Deep Literary Dossier & Active Activity (lg:col-span-8) -->
+<div class="lg:col-span-8 flex flex-col gap-space-lg">
+<!-- SECTION 1: Currently Reading & Active Salon Focus -->
+<section class="bg-surface-card rounded-xl p-space-lg shadow-sm overflow-hidden relative">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-container animate-ping"></span>
+<span class="font-caption text-caption text-ink-faint uppercase font-bold tracking-wider">Current Circle Reading</span>
+</div>
+<span class="bg-navy-wash text-navy-deep font-caption text-caption px-2.5 py-1 rounded-full font-semibold">
+            Cycle 14 Salon Choice
+          </span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-space-md items-start">
+<!-- Book Cover Graphic -->
+<div class="md:col-span-4 flex flex-col items-center">
+<div class="w-44 h-64 rounded-lg overflow-hidden shadow-lg relative bg-surface-container-high">
+<img class="w-full h-full object-cover" data-alt="Refined book cover of Michael Ondaatje's novel Anil's Ghost against an earthy sepia background with antique archaeological imagery, featuring a gold embossed Booker Prize seal and clean typography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3heHeyYt3wV68uruzJeBOtzN_Ga7-rC6TXserClCcAAa8VS-Ix_7kaKmnqbNqlDundiIyRlU542E3ZiD3i5shW3GAwmdlAzv5iHAE2zcnnmU3TRYmgym7A5Hdi-HQGfSzHPkBP4cMvBewbKIwe0EkrgkcLCiq6grvwikOFBJbWNl3wsCPT9YACQMIY0f5wP2_otD79xQIf_ODfHMfjqIJp9iaV8fElQfK0BbOb3aHklwrQb_IrQFYYQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-navy-darkest/60 via-transparent to-transparent"></div>
+<div class="absolute bottom-2 left-2 right-2 flex items-center justify-between text-on-primary">
+<span class="font-caption text-caption font-bold bg-navy-deep/80 backdrop-blur px-2 py-0.5 rounded">Giller &amp; Kiriyama Prize</span>
+<span class="material-symbols-outlined text-sm">bookmark</span>
+</div>
+</div>
+<span class="font-caption text-caption text-ink-faint mt-2">ISBN 978-0-330-48243-1</span>
+</div>
+<!-- Book Metadata & Keynote Annotation -->
+<div class="md:col-span-8 flex flex-col justify-between h-full">
+<div>
+<div class="flex items-start justify-between">
+<div>
+<h3 class="font-headline-md text-headline-md text-ink-body font-bold">Anil's Ghost</h3>
+<p class="font-label-md text-label-md text-on-surface-variant mb-space-sm">by Michael Ondaatje · Vintage International (2000)</p>
+</div>
+<span class="bg-surface-cream text-gold-text font-caption text-caption font-bold px-2 py-1 rounded">Salon Core Text</span>
+</div>
+<!-- Keynote Annotation Callout Box -->
+<div class="bg-surface-cream rounded-lg p-space-md my-space-sm shadow-xs relative">
+<span class="material-symbols-outlined text-gold-text/40 text-4xl absolute -top-1 right-2 select-none pointer-events-none">format_quote</span>
+<p class="font-headline-sm text-headline-sm italic text-ink-body leading-relaxed mb-2">
+                  “Examining historical truth through forensic prose. Ondaatje builds a solemn, sacred silence around skeletal remains; Karunatilaka trades Ondaatje's quiet grief for manic, furious gallows humor where the skeleton itself demands a cigarette.”
+                </p>
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-gold-text"></div>
+<span class="font-caption text-caption text-gold-text font-semibold">
+                    Dr. Rohini's Margin Note · Barefoot Cafe Session Dossier #14
+                  </span>
+</div>
+</div>
+</div>
+<!-- Reading Progress Bar -->
+<div class="mt-space-sm">
+<div class="flex justify-between items-center mb-1 text-ink-body font-label-md text-label-md">
+<span>Page 240 of 320</span>
+<span class="font-semibold text-primary">75% complete</span>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 75%;"></div>
+</div>
+<div class="flex items-center justify-between mt-2 font-caption text-caption text-ink-faint">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-status-warning-text">event_note</span>
+                  Next Salon: Sunday, 5 March 2028 · 4:30 PM
+                </span>
+<span class="text-navy-tint font-medium">Preparing Keynote Presentation</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: Earned Badges & Society Honors -->
+<section class="bg-surface-card rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div>
+<h2 class="font-headline-md text-headline-md text-ink-body">Earned Badges &amp; Society Honors</h2>
+<p class="font-body-sm text-body-sm text-ink-faint">Certified milestones recorded within the Ceylon Reading Registry</p>
+</div>
+<a class="font-label-md text-label-md text-primary hover:text-navy-deep flex items-center gap-1 font-semibold group" href="#">
+<span>View All 14 Badges</span>
+<span class="material-symbols-outlined text-base group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+</a>
+</div>
+<!-- 6-Badge Mosaic Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-space-sm">
+<!-- Badge 1: Book Sage -->
+<div class="bg-surface-container-low rounded-xl p-space-sm flex items-start gap-3 hover:bg-surface-cream transition-colors duration-200">
+<div class="w-10 h-10 rounded-lg bg-surface-card text-gold-text flex items-center justify-center shadow-xs flex-shrink-0">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+</div>
+<div class="min-w-0">
+<span class="font-label-md text-label-md text-ink-body font-bold block truncate">Book Sage</span>
+<span class="font-caption text-caption text-on-surface-variant block">Read 40+ Guild volumes</span>
+<span class="font-caption text-caption text-ink-faint">Earned Jan 2028</span>
+</div>
+</div>
+<!-- Badge 2: Master Orator -->
+<div class="bg-surface-container-low rounded-xl p-space-sm flex items-start gap-3 hover:bg-surface-cream transition-colors duration-200">
+<div class="w-10 h-10 rounded-lg bg-surface-card text-primary flex items-center justify-center shadow-xs flex-shrink-0">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">podium</span>
+</div>
+<div class="min-w-0">
+<span class="font-label-md text-label-md text-ink-body font-bold block truncate">Master Orator</span>
+<span class="font-caption text-caption text-on-surface-variant block">10+ Keynote Addresses</span>
+<span class="font-caption text-caption text-ink-faint">Earned Nov 2027</span>
+</div>
+</div>
+<!-- Badge 3: Unbroken Circle -->
+<div class="bg-surface-container-low rounded-xl p-space-sm flex items-start gap-3 hover:bg-surface-cream transition-colors duration-200">
+<div class="w-10 h-10 rounded-lg bg-surface-card text-secondary flex items-center justify-center shadow-xs flex-shrink-0">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">all_inclusive</span>
+</div>
+<div class="min-w-0">
+<span class="font-label-md text-label-md text-ink-body font-bold block truncate">Unbroken Circle</span>
+<span class="font-caption text-caption text-on-surface-variant block">12-Month Salon Streak</span>
+<span class="font-caption text-caption text-ink-faint">Earned Oct 2027</span>
+</div>
+</div>
+<!-- Badge 4: Centurion -->
+<div class="bg-surface-container-low rounded-xl p-space-sm flex items-start gap-3 hover:bg-surface-cream transition-colors duration-200">
+<div class="w-10 h-10 rounded-lg bg-surface-card text-gold-text flex items-center justify-center shadow-xs flex-shrink-0">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+</div>
+<div class="min-w-0">
+<span class="font-label-md text-label-md text-ink-body font-bold block truncate">Centurion</span>
+<span class="font-caption text-caption text-on-surface-variant block">500+ Society Points</span>
+<span class="font-caption text-caption text-ink-faint">Earned Aug 2027</span>
+</div>
+</div>
+<!-- Badge 5: Library Patron -->
+<div class="bg-surface-container-low rounded-xl p-space-sm flex items-start gap-3 hover:bg-surface-cream transition-colors duration-200">
+<div class="w-10 h-10 rounded-lg bg-surface-card text-status-success-text flex items-center justify-center shadow-xs flex-shrink-0">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">volunteer_activism</span>
+</div>
+<div class="min-w-0">
+<span class="font-label-md text-label-md text-ink-body font-bold block truncate">Library Patron</span>
+<span class="font-caption text-caption text-on-surface-variant block">Funded 5 Rural Book Kits</span>
+<span class="font-caption text-caption text-ink-faint">Read &amp; Rise Honor</span>
+</div>
+</div>
+<!-- Badge 6: Salon Fellow -->
+<div class="bg-surface-container-low rounded-xl p-space-sm flex items-start gap-3 hover:bg-surface-cream transition-colors duration-200">
+<div class="w-10 h-10 rounded-lg bg-surface-card text-navy-deep flex items-center justify-center shadow-xs flex-shrink-0">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">award_star</span>
+</div>
+<div class="min-w-0">
+<span class="font-label-md text-label-md text-ink-body font-bold block truncate">Salon Fellow</span>
+<span class="font-caption text-caption text-on-surface-variant block">Chapter Co-Host Appointee</span>
+<span class="font-caption text-caption text-ink-faint">Appointed 2027</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: Recent Books Read & Salon Archive -->
+<section class="bg-surface-card rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div>
+<h2 class="font-headline-md text-headline-md text-ink-body">Recent Concluded Readings</h2>
+<p class="font-body-sm text-body-sm text-ink-faint">Curated discussions led and annotated in recent society sessions</p>
+</div>
+<span class="font-caption text-caption text-ink-faint bg-surface-container px-2 py-1 rounded">Colombo Chapter Archive</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Card 1: The Seven Moons of Maali Almeida -->
+<div class="bg-surface-bg rounded-lg p-space-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-200">
+<div>
+<div class="w-full h-40 rounded bg-surface-container overflow-hidden mb-space-sm relative">
+<img class="w-full h-full object-cover" data-alt="Editorial book cover of The Seven Moons of Maali Almeida by Shehan Karunatilaka showing mystical neon afterlife iconography paired with mid-century Colombo typography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEMCXbPvEcqeppH4ccWyVAMTMmcDQqqfKXbK3ugqB3NXxh60mu2BUy8tMf8UFmEdYMnp8nEb2jNksuzUcsC2fY_1XTR2-NdM6_1YI1bpwoPlT21gZwo57-I-VarfaSwAYgEUz2ar8mFoaj0htyrqeB6k9edzj1SAKqMrseatXYnYF9wJzNUCcnqVVnPd8XFymfhpdraDtcJuHfF8fyuGUUX7gY6lPNtJUd-RlygOxINGPm_lqd7e_bhQ"/>
+<span class="absolute top-2 left-2 bg-navy-deep/90 text-on-primary font-caption text-caption px-2 py-0.5 rounded font-semibold">Concluded Salon</span>
+</div>
+<div class="flex items-center gap-1 text-gold-text mb-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-ink-body font-caption text-caption font-bold ml-1">5.0</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-ink-body font-bold line-clamp-1">The Seven Moons of Maali Almeida</h4>
+<p class="font-caption text-caption text-on-surface-variant mb-2">Shehan Karunatilaka · Feb 2028</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 italic">
+                “Brilliant gallows humor capturing Colombo’s deepest unrest with supernatural flair.”
+              </p>
+</div>
+<div class="pt-3 mt-2 border-t border-border-subtle flex items-center justify-between">
+<span class="font-caption text-caption text-sky-text font-semibold">32 Marginalia Entries</span>
+<button class="text-ink-faint hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-lg">visibility</span>
+</button>
+</div>
+</div>
+<!-- Card 2: Island of a Thousand Mirrors -->
+<div class="bg-surface-bg rounded-lg p-space-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-200">
+<div>
+<div class="w-full h-40 rounded bg-surface-container overflow-hidden mb-space-sm relative">
+<img class="w-full h-full object-cover" data-alt="Poetic book cover of Island of a Thousand Mirrors by Nayomi Munaweera featuring soft watercolor ocean waves and delicate vintage Sri Lankan island maps." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9TJs8KsFfCgHHM0qtzvWiIsjwY9JM-hSAk30l0Wsm0L1Qn68dsVFruKxucnDJBETWSTBEJa6yvPJAShIUPA4FkATzy_-W1EjQJyi2hzrPB-sohVtZbQ87-9PWqqL4fhYxDOMVaZXobrn7OQ2REvO9fDE76k9Ru2P1QOXf1SCjtwuZBA1zvhJTymKyzAQVoVieiaMafofmQJ6orhB3QZe1rH_EdqdCywg8Bqx_vk5ceRLS1MZXbpvZpw"/>
+<span class="absolute top-2 left-2 bg-navy-deep/90 text-on-primary font-caption text-caption px-2 py-0.5 rounded font-semibold">Concluded Salon</span>
+</div>
+<div class="flex items-center gap-1 text-gold-text mb-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 0;">star</span>
+<span class="text-ink-body font-caption text-caption font-bold ml-1">4.5</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-ink-body font-bold line-clamp-1">Island of a Thousand Mirrors</h4>
+<p class="font-caption text-caption text-on-surface-variant mb-2">Nayomi Munaweera · Jan 2028</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 italic">
+                “Exquisite bilateral narrative tracing two young women caught in civil crosscurrents.”
+              </p>
+</div>
+<div class="pt-3 mt-2 border-t border-border-subtle flex items-center justify-between">
+<span class="font-caption text-caption text-sky-text font-semibold">18 Marginalia Entries</span>
+<button class="text-ink-faint hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-lg">visibility</span>
+</button>
+</div>
+</div>
+<!-- Card 3: Monsoon Verse Anthology -->
+<div class="bg-surface-bg rounded-lg p-space-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-200">
+<div>
+<div class="w-full h-40 rounded bg-surface-container overflow-hidden mb-space-sm relative">
+<img class="w-full h-full object-cover" data-alt="Clothbound hardback archival cover of Monsoon Verse Anthology showing elegant gold foil stamping on indigo book cloth with botanical Ceylon tea country leaves." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDliCE5BgBPIefErXOiGfLXqrL-xUaU4ahHVQDtra4WwV-TZITdLjhX1IligZDvZFyutuV_BxYR3-vyQHbMNrCuEE3MoFAY26TJbuQN_j7mJJIl5Nh2j_5bQOSRWmC5OxruK0Hu1r2mVCwKazqaOSTFQj45pLMN-DQy5PUuJh9En4tcofvmQcB255H_iPWZ6qUoBOSFBq9t2cQQLGmrgDlSsN_LDn5amDt0RHJnctw3tej-KGyDvYrTxw"/>
+<span class="absolute top-2 left-2 bg-navy-deep/90 text-on-primary font-caption text-caption px-2 py-0.5 rounded font-semibold">Poetry Archive</span>
+</div>
+<div class="flex items-center gap-1 text-gold-text mb-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-ink-body font-caption text-caption font-bold ml-1">5.0</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-ink-body font-bold line-clamp-1">Monsoon Verse Anthology</h4>
+<p class="font-caption text-caption text-on-surface-variant mb-2">Regional Curators · Dec 2027</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 italic">
+                “A landmark anthology documenting 50 years of Sri Lankan rhythmic stanzas in translation.”
+              </p>
+</div>
+<div class="pt-3 mt-2 border-t border-border-subtle flex items-center justify-between">
+<span class="font-caption text-caption text-sky-text font-semibold">41 Marginalia Entries</span>
+<button class="text-ink-faint hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-lg">visibility</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 4: Published Marginalia & Curated Dispatches -->
+<section class="bg-surface-card rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div>
+<h2 class="font-headline-md text-headline-md text-ink-body">Published Marginalia &amp; Curated Dispatches</h2>
+<p class="font-body-sm text-body-sm text-ink-faint">Critical essays and salon transcripts featured in the PAB Discover Journal</p>
+</div>
+<button class="font-label-md text-label-md text-primary hover:text-navy-deep font-semibold flex items-center gap-1" type="button">
+<span>Discover Journal Archive</span>
+<span class="material-symbols-outlined text-sm">open_in_new</span>
+</button>
+</div>
+<div class="flex flex-col gap-space-md">
+<!-- Dispatch 1 -->
+<article class="bg-surface-bg hover:bg-surface-container-low transition-colors rounded-xl p-space-md flex flex-col md:flex-row gap-space-md items-start justify-between">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1.5">
+<span class="bg-surface-cream text-gold-text font-caption text-caption font-bold px-2 py-0.5 rounded">Featured Editorial</span>
+<span class="text-ink-faint font-caption text-caption">8 min read · Published 12 Feb 2028</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-ink-body font-bold mb-1 hover:text-primary transition-colors cursor-pointer">
+                Translating Trauma into Satire: The Metaphysics of Maali Almeida
+              </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-space-sm">
+                Co-authored essay dissecting the Buddhist bardo framework, post-mortal photography, and how comedic nihilism serves as the sole linguistic antidote for generational grief.
+              </p>
+<div class="flex items-center gap-4 text-ink-faint font-caption text-caption">
+<span class="flex items-center gap-1 text-ink-body font-semibold">
+<span class="material-symbols-outlined text-base text-primary">edit_note</span>
+                  Co-authored with Shehan Karunatilaka
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base text-secondary">favorite</span>
+                  142 Society Endorsements
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base">forum</span>
+                  28 Scholarly Responses
+                </span>
+</div>
+</div>
+<button class="self-end md:self-center h-9 px-4 rounded-lg bg-surface-card text-navy-deep font-label-md text-label-md shadow-xs hover:bg-primary hover:text-on-primary transition-all flex items-center gap-1 flex-shrink-0" type="button">
+<span>Read Essay</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</button>
+</article>
+<!-- Dispatch 2 -->
+<article class="bg-surface-bg hover:bg-surface-container-low transition-colors rounded-xl p-space-md flex flex-col md:flex-row gap-space-md items-start justify-between">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1.5">
+<span class="bg-navy-wash text-navy-deep font-caption text-caption font-bold px-2 py-0.5 rounded">Salon Keynote Transcript</span>
+<span class="text-ink-faint font-caption text-caption">6 min read · Published 18 Nov 2027</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-ink-body font-bold mb-1 hover:text-primary transition-colors cursor-pointer">
+                Ceylon Stanzas: The Archival Poetics of Running in the Family
+              </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-space-sm">
+                A verbatim lecture transcription from the Barefoot Cafe Frangipani Courtyard addressing family mythmaking, Colombo railway romances, and tactile lyricism.
+              </p>
+<div class="flex items-center gap-4 text-ink-faint font-caption text-caption">
+<span class="flex items-center gap-1 text-ink-body font-semibold">
+<span class="material-symbols-outlined text-base text-gold-text">mic</span>
+                  Barefoot Salon Session #11
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base text-secondary">favorite</span>
+                  98 Society Endorsements
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base">speaker_notes</span>
+                  31 Marginal Notes
+                </span>
+</div>
+</div>
+<button class="self-end md:self-center h-9 px-4 rounded-lg bg-surface-card text-navy-deep font-label-md text-label-md shadow-xs hover:bg-primary hover:text-on-primary transition-all flex items-center gap-1 flex-shrink-0" type="button">
+<span>Read Transcript</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</button>
+</article>
+</div>
+</section>
+</div>
+</div>
+</div>
+<script>
+  // Simple micro-interaction for bookmarking / endorsement simulation
+  document.addEventListener('DOMContentLoaded', () => {
+    const actionButtons = document.querySelectorAll('button');
+    actionButtons.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        if (!this.classList.contains('pointer-events-none')) {
+          this.classList.add('scale-95');
+          setTimeout(() => this.classList.remove('scale-95'), 120);
+        }
+      });
+    });
+  });
+</script></main></div></body></html>

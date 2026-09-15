@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100%;margin:0;padding:0;background-color:#F8F9FC;color:#14162E;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent;}body{overscroll-behavior-y:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'on-secondary': '#ffffff', 'status-warning-text': '#A15C07', 'status-success-text': '#147233', 'status-danger-text': '#B91C1C', 'on-tertiary-fixed': '#251a00', 'on-primary-fixed-variant': '#2e3d9b', 'tertiary-fixed-dim': '#ecc14f', 'navy-soft': '#C3CBEC', 'surface-card': '#FFFFFF', 'navy-wash': '#EFF2FB', 'on-secondary-fixed': '#001e2d', 'outline': '#767683', 'on-tertiary-fixed-variant': '#594400', 'on-primary-fixed': '#000e5f', 'on-primary-container': '#9da9ff', 'on-tertiary': '#ffffff', 'primary': '#0b1e80', 'surface': '#faf8ff', 'navy-darkest': '#0F1640', 'outline-variant': '#c6c5d4', 'background': '#faf8ff', 'secondary-fixed': '#c6e7ff', 'inverse-on-surface': '#eef0ff', 'surface-container-low': '#f2f3ff', 'surface-variant': '#dbe2fd', 'status-success-bg': '#DCF3E4', 'surface-container-highest': '#dbe2fd', 'tertiary-container': '#cea635', 'on-surface-variant': '#454652', 'navy-tint': '#4457B5', 'primary-container': '#293896', 'secondary': '#00658d', 'primary-fixed-dim': '#bbc3ff', 'inverse-surface': '#293045', 'gold-text': '#8A6410', 'error-container': '#ffdad6', 'surface-bg': '#F8F9FC', 'status-warning-bg': '#FBEED3', 'inverse-primary': '#bbc3ff', 'ink-body': '#14162E', 'on-secondary-container': '#004866', 'error': '#ba1a1a', 'surface-cream': '#F8F2E9', 'tertiary': '#765b00', 'secondary-fixed-dim': '#82cfff', 'surface-tint': '#4756b4', 'status-danger-bg': '#FBE4E4', 'on-primary': '#ffffff', 'surface-bright': '#faf8ff', 'sky-text': '#0079A8', 'secondary-container': '#2dbcfe', 'ink-faint': '#8B91A3', 'on-tertiary-container': '#503d00', 'on-error-container': '#93000a', 'primary-fixed': '#dfe0ff', 'surface-dim': '#d3d9f4', 'on-background': '#141b2f', 'surface-container-lowest': '#ffffff', 'on-surface': '#141b2f', 'on-secondary-fixed-variant': '#004c6b', 'tertiary-fixed': '#ffdf94', 'navy-deep': '#16205C', 'surface-container-high': '#e2e7ff', 'border-subtle': '#E6E9F0', 'on-error': '#ffffff', 'surface-container': '#eaedff' }, borderRadius: { 'DEFAULT': '0.25rem', 'lg': '0.5rem', 'xl': '0.75rem', 'full': '9999px' }, spacing: { 'margin-desktop': '2.5rem', 'space-lg': '1.5rem', 'space-sm': '0.5rem', 'gutter-desktop': '1.5rem', 'space-xl': '2.25rem', 'margin': '1rem', 'gutter': '1rem', 'space-xs': '0.25rem', 'space-md': '1rem' }, fontFamily: { 'body-sm': ['DM Sans'], 'label-sm': ['DM Sans'], 'headline-lg-mobile': ['Playfair Display'], 'headline-md': ['Playfair Display'], 'headline-xl-mobile': ['Playfair Display'], 'label-md': ['DM Sans'], 'headline-lg': ['Playfair Display'], 'body-md': ['DM Sans'], 'caption': ['DM Sans'], 'headline-sm': ['Playfair Display'], 'body-lg': ['DM Sans'], 'headline-xl': ['Playfair Display'] }, fontSize: { 'body-sm': ['0.875rem', { lineHeight: '1.375rem', fontWeight: '400' }], 'label-sm': ['0.75rem', { lineHeight: '1rem', letterSpacing: '0.04em', fontWeight: '600' }], 'headline-lg-mobile': ['1.625rem', { lineHeight: '2.125rem', fontWeight: '600' }], 'headline-md': ['1.375rem', { lineHeight: '1.875rem', fontWeight: '600' }], 'headline-xl-mobile': ['2rem', { lineHeight: '2.5rem', letterSpacing: '-0.01em', fontWeight: '600' }], 'label-md': ['0.875rem', { lineHeight: '1.25rem', letterSpacing: '0.01em', fontWeight: '600' }], 'headline-lg': ['2rem', { lineHeight: '2.5rem', fontWeight: '600' }], 'body-md': ['1rem', { lineHeight: '1.5rem', fontWeight: '400' }], 'caption': ['0.75rem', { lineHeight: '1.125rem', fontWeight: '400' }], 'headline-sm': ['1.125rem', { lineHeight: '1.625rem', fontWeight: '600' }], 'body-lg': ['1.125rem', { lineHeight: '1.75rem', fontWeight: '400' }], 'headline-xl': ['2.5rem', { lineHeight: '3rem', letterSpacing: '-0.02em', fontWeight: '600' }] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface-bg min-h-screen flex flex-col antialiased selection:bg-navy-wash selection:text-primary"><header class="fixed top-0 inset-x-0 z-50 bg-surface-bg/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(22,32,92,0.04)] pt-safe"><div class="h-16 px-space-xs flex items-center justify-between"><div class="flex items-center gap-space-xs min-w-0"><button aria-label="Navigate back" class="w-11 h-11 flex items-center justify-center rounded-full text-primary-container hover:bg-navy-wash transition-colors" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><img alt="Clean minimalist literary book logo icon for 'Pick a Book', an elegant open book with bookmark flourish, line stroke 1.6px style in primary navy #293896 and warm accent, vector graphic mark for book club, no emoji, premium independent bookshop feel.. Design context: - Primary color: #293896
+- Font: playfairDisplay
+- Mode: light
+- Roundness: rounded-md
+. The logo should be visually consistent with these brand tokens." class="h-7 w-auto object-contain flex-shrink-0 hidden sm:block" src="https://lh3.googleusercontent.com/aida/AEtjO1UjT7AWSE90BT_3we0gsvspMHyuF3dA2XUP_iajSMcjj0vYfboNla7Y4ImcJu6jbOmU7ak8mf6Ktcton86BiQTeK5LC_-tzt2Av8kc3Q2T431foW9Lu_sb-8-0rOBWeatYvlWs6HsntQ9WfXosP9klIRrHITAfg5avJp0hlP9LsGnJaf-djFKozJyIBn-dcf6xrdzHjvLUHP0s8hEkc6k68iQdkcycUA1mNWUCucctwodznA5iRGsFD5GT7"/><h1 class="font-headline-sm text-headline-sm text-ink-body truncate pl-1">Session Detail</h1></div><div class="flex items-center gap-space-xs pr-space-xs"><button aria-label="Bookmark action" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary hover:bg-navy-wash transition-colors"><span class="material-symbols-outlined text-[22px]">bookmark_border</span></button><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-[0_1px_3px_rgba(22,32,92,0.12)]" src="https://lh3.googleusercontent.com/aida/AEtjO1Wouczgaw92PVI93mytS-PLFkX66QkSB_EvVweH_BW6s1BuFQPBh1j8Dpo9iXpGlj8Vou-BtQ3KF0fL0RG0Tpm6gDZh47UEFzs9U0W_oxTeCAWca4PXI6Be6eHP_bNXi-kV2zJMe67TqzTJUHSMCO__RZeda9eNeH9YeRh57K8aAbxsO-jM192d6wl4DT7dW9ErVtj7P_3GqJFRniL0IaGAgpRBb5AJ0L4QOP3qlzRwjhLDf-KmfZ_lH325"/></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-safe bg-surface-bg"><div class="flex flex-col w-full px-margin pb-space-xl space-y-space-md">
+<!-- Navigation Sub-bar & Context Pill -->
+<div class="flex items-center justify-between pt-space-sm">
+<button aria-label="Go back to sessions list" class="inline-flex items-center gap-1.5 h-11 text-primary-container font-label-md text-label-md hover:text-navy-deep active:scale-95 transition-transform" onclick="history.back()">
+<span class="material-symbols-outlined text-[20px]" style="stroke-width: 1.6;">arrow_back_ios_new</span>
+<span>Sessions</span>
+</button>
+<div class="flex items-center gap-space-xs">
+<button aria-label="Share session details" class="w-11 h-11 flex items-center justify-center rounded-full bg-surface-card text-primary-container shadow-sm hover:bg-navy-wash active:scale-90 transition-all" id="shareBtn">
+<span class="material-symbols-outlined text-[20px]" style="stroke-width: 1.6;">ios_share</span>
+</button>
+</div>
+</div>
+<!-- Category & Salon Identifier -->
+<div>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-navy-wash text-primary-container font-label-sm text-label-sm font-semibold tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span>
+      Colombo Central Club · Fiction Salon
+    </span>
+</div>
+<!-- Title & Author Block -->
+<div class="space-y-1.5">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-ink-body leading-tight">
+      Discussion: The Seven Moons of Maali Almeida
+    </h2>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1.5">
+<span class="font-semibold text-primary-container">Booker Prize Laureate</span>
+<span>Shehan Karunatilaka</span>
+</p>
+</div>
+<!-- Book & Atmosphere Vignette -->
+<div class="relative w-full h-44 rounded-xl overflow-hidden shadow-sm bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="An atmospheric literary setup featuring a vintage copy of a modern Sri Lankan novel laid on a rustic teak tabletop at Barefoot Cafe Colombo. A cup of steamy Ceylon tea with a frangipani flower rests beside handwritten book club notes, bathed in soft afternoon tropical sunlight in warm navy and amber tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-CWKKgdf8wXVv7E3Kd-gUdmbnscBvhHsQhcoRlTOeqpjXO_PT7ZoO2LfZsFHilC-3V08I73fz92Ppx1cHon2eoYEWRibO6KUVexSw9hmk5nFRl5d830VgvdkCme3fYXKz9-n8jvVv8vEn0bWpfJGSqshCKi66c3MKoTVT7AfrYkkhXh4kdWPOqNWxdJpGuTgWUafhvPMp9sdy-D1jIx8QoGcKWrQqKwafWkU3-e8jtLvOr9awlFQGnA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-navy-darkest/70 via-navy-darkest/20 to-transparent flex items-end p-4">
+<span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-card/90 backdrop-blur-md text-ink-body font-label-sm text-label-sm shadow-sm">
+<span class="material-symbols-outlined text-secondary text-[16px]">menu_book</span>
+        32 Members Attending
+      </span>
+</div>
+</div>
+<!-- Schedule Badge -->
+<div class="flex items-center gap-3 p-3.5 rounded-xl bg-surface-card shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-navy-wash flex items-center justify-center text-primary-container shrink-0">
+<span class="material-symbols-outlined text-[22px]" style="stroke-width: 1.6;">schedule</span>
+</div>
+<div class="min-w-0">
+<p class="font-label-sm text-label-sm text-ink-faint uppercase">Date &amp; Time</p>
+<p class="font-label-md text-label-md text-ink-body font-semibold truncate">
+        Saturday, 15 Mar 2028 · 5:30 PM – 7:30 PM
+      </p>
+</div>
+</div>
+<!-- Location Card -->
+<div class="p-4 rounded-xl bg-surface-card shadow-sm space-y-3">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-lg bg-status-warning-bg flex items-center justify-center text-status-warning-text shrink-0">
+<span class="material-symbols-outlined text-[22px]" style="stroke-width: 1.6;">pin_drop</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-sm text-label-sm text-ink-faint uppercase">Location</p>
+<p class="font-label-md text-label-md text-ink-body font-semibold">Barefoot Cafe — Frangipani Courtyard</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">704 Galle Rd, Colombo 03</p>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between">
+<a class="inline-flex items-center gap-1.5 h-11 text-secondary font-label-md text-label-md font-semibold hover:underline" href="https://maps.google.com" rel="noopener noreferrer" target="_blank">
+<span class="material-symbols-outlined text-[18px]">near_me</span>
+<span>Open in Maps</span>
+</a>
+<span class="font-caption text-caption text-ink-faint">Seating reserved outdoors</span>
+</div>
+</div>
+<!-- Host Club Card -->
+<div class="p-4 rounded-xl bg-surface-card shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-cream flex items-center justify-center text-gold-text font-headline-sm font-semibold shrink-0">
+        C
+      </div>
+<div class="min-w-0">
+<p class="font-label-sm text-label-sm text-ink-faint">Organized by</p>
+<p class="font-label-md text-label-md text-ink-body font-semibold truncate">Colombo Central Club</p>
+<p class="font-caption text-caption text-on-surface-variant">Secretary: salon@pickabook.lk</p>
+</div>
+</div>
+<a aria-label="Contact Club Secretary" class="w-11 h-11 flex items-center justify-center rounded-full bg-navy-wash text-primary-container hover:bg-surface-container-high transition-colors" href="mailto:salon@pickabook.lk">
+<span class="material-symbols-outlined text-[20px]" style="stroke-width: 1.6;">mail</span>
+</a>
+</div>
+<!-- Primary State: Confirmed Booking Ticket -->
+<div class="p-4 rounded-2xl bg-status-success-bg shadow-sm space-y-3.5 relative overflow-hidden">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded-full bg-status-success-text text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div>
+<span class="font-label-md text-label-md font-bold text-status-success-text block">You're booked for this session</span>
+<span class="font-caption text-caption text-status-success-text opacity-90">Reserved under Pick a Book Member Pass</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-status-success-text text-on-primary font-label-sm text-[10px] font-semibold tracking-wider uppercase">Active</span>
+</div>
+<!-- Booking Pass Details -->
+<div class="p-3.5 rounded-xl bg-surface-card shadow-sm space-y-3">
+<div class="flex justify-between items-center pb-2">
+<div class="min-w-0">
+<p class="font-caption text-caption text-ink-faint">Attendee</p>
+<p class="font-label-md text-label-md text-ink-body font-semibold truncate">Nimali Perera</p>
+<p class="font-caption text-caption text-status-success-text font-medium">Host Club Member · Free Tier</p>
+</div>
+<div class="text-right shrink-0">
+<p class="font-caption text-caption text-ink-faint">Code</p>
+<span class="font-label-md text-label-md font-mono font-bold tracking-wider text-primary-container bg-navy-wash px-2 py-1 rounded">PAB-CLM-8821</span>
+</div>
+</div>
+<!-- Ticket Notch Divider -->
+<div class="relative py-1 flex items-center">
+<div class="flex-1 h-px bg-surface-container"></div>
+<span class="px-2 text-[11px] font-caption text-ink-faint uppercase tracking-wider">Present at gate</span>
+<div class="flex-1 h-px bg-surface-container"></div>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center gap-2 pt-1">
+<button class="flex-1 h-11 rounded-lg bg-navy-wash hover:bg-surface-container text-primary-container font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5 transition-colors" id="addToCalendarBtn">
+<span class="material-symbols-outlined text-[18px]">calendar_add_on</span>
+<span>Add to Calendar</span>
+</button>
+<button aria-label="Cancel booking" class="h-11 px-3 text-status-danger-text hover:bg-status-danger-bg rounded-lg font-label-sm text-label-sm transition-colors" onclick="confirmCancel()">
+          Cancel
+        </button>
+</div>
+</div>
+</div>
+<!-- Literary Description Section -->
+<div class="p-4 rounded-xl bg-surface-card shadow-sm space-y-3">
+<h3 class="font-headline-sm text-headline-sm text-ink-body">About this session</h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+      In this deep-dive salon, we unpack Shehan Karunatilaka’s Booker Prize-winning tour de force, <em>The Seven Moons of Maali Almeida</em>. Set against the turmoil and fractures of 1989 Colombo, the novel transforms a murder mystery into a dazzling metaphysical satire, guiding readers through the bureaucratic purgatory of the afterlife with razor-sharp wit and poignant grief.
+    </p>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+      Our discussion centers on the intersection of war photojournalism and magical realism, asking how humor preserves memory in the face of political erasure. Members are encouraged to bring flagged excerpts on photographic memory, spirit borders, and the moral weight carried by Maali’s contact sheets.
+    </p>
+</div>
+<!-- Agenda Breakdown -->
+<div class="p-4 rounded-xl bg-surface-card shadow-sm space-y-3">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-ink-body">Session Agenda</h3>
+<span class="font-caption text-caption text-ink-faint">Total: 2h</span>
+</div>
+<div class="space-y-3 pt-1">
+<!-- Item 1 -->
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-navy-wash text-primary-container flex items-center justify-center font-label-sm text-label-sm font-bold shrink-0">
+          1
+        </div>
+<div class="min-w-0 pt-0.5">
+<div class="flex items-baseline gap-2">
+<span class="font-label-sm text-label-sm font-semibold text-primary-container">5:30 PM</span>
+<span class="font-label-md text-label-md text-ink-body font-semibold">Arrival &amp; Ceylon Tea</span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant">Courtyard welcome, tea service, and informal mingling under the frangipani trees.</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-navy-wash text-primary-container flex items-center justify-center font-label-sm text-label-sm font-bold shrink-0">
+          2
+        </div>
+<div class="min-w-0 pt-0.5">
+<div class="flex items-baseline gap-2">
+<span class="font-label-sm text-label-sm font-semibold text-primary-container">5:50 PM</span>
+<span class="font-label-md text-label-md text-ink-body font-semibold">Chapter Analysis &amp; Member Panels</span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant">Opening contextual remarks by 2 presenters on 1980s Sri Lankan historical backdrop.</p>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-navy-wash text-primary-container flex items-center justify-center font-label-sm text-label-sm font-bold shrink-0">
+          3
+        </div>
+<div class="min-w-0 pt-0.5">
+<div class="flex items-baseline gap-2">
+<span class="font-label-sm text-label-sm font-semibold text-primary-container">6:45 PM</span>
+<span class="font-label-md text-label-md text-ink-body font-semibold">Open Salon Debate</span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant">Roundtable quotes sharing, critique of the afterlife narrative framework, and thematic debate.</p>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-navy-wash text-primary-container flex items-center justify-center font-label-sm text-label-sm font-bold shrink-0">
+          4
+        </div>
+<div class="min-w-0 pt-0.5">
+<div class="flex items-baseline gap-2">
+<span class="font-label-sm text-label-sm font-semibold text-primary-container">7:20 PM</span>
+<span class="font-label-md text-label-md text-ink-body font-semibold">Next Cycle Book Vote &amp; Wrap-up</span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant">Nomination balloting for the April historical fiction reading list and final group toast.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- State B Preview Panel: Guest & Non-Member Fee Flow -->
+<div class="p-4 rounded-2xl bg-surface-cream shadow-sm space-y-3 relative">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-[11px] font-bold tracking-wider text-gold-text uppercase">
+        Guest Registration (For Non-Members)
+      </span>
+<span class="px-2 py-0.5 rounded bg-surface-card font-label-sm text-label-sm font-bold text-ink-body shadow-sm">
+        LKR 1,200
+      </span>
+</div>
+<div class="space-y-1">
+<p class="font-headline-sm text-headline-sm text-ink-body font-semibold">
+        Invite a Fellow Reader
+      </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+        Free for Colombo Central members. Guests receive full salon entry, printed discussion packet, and evening refreshments.
+      </p>
+</div>
+<div class="pt-1">
+<button class="w-full h-12 rounded-lg bg-primary-container hover:bg-navy-deep text-on-primary font-label-md text-label-md font-semibold flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-transform" onclick="handleGuestCheckout()">
+<span class="material-symbols-outlined text-[20px]" style="stroke-width: 1.6;">credit_card</span>
+<span>Pay LKR 1,200 via PayHere</span>
+</button>
+</div>
+<p class="font-caption text-caption text-center text-ink-faint">Instant e-ticket SMS confirmation with QR code</p>
+</div>
+<!-- Interactive toast alert container -->
+<div class="fixed bottom-6 inset-x-4 max-w-sm mx-auto p-3.5 rounded-xl bg-navy-darkest text-on-primary text-center font-label-md text-label-md shadow-xl transition-all duration-300 transform translate-y-24 opacity-0 pointer-events-none z-50 flex items-center justify-center gap-2" id="toastMessage">
+<span class="material-symbols-outlined text-secondary-fixed text-[20px]" id="toastIcon">check_circle</span>
+<span id="toastText">Action completed</span>
+</div>
+</div>
+<script>
+  function showToast(text, icon = 'check_circle') {
+    const toast = document.getElementById('toastMessage');
+    const toastText = document.getElementById('toastText');
+    const toastIcon = document.getElementById('toastIcon');
+    if (!toast) return;
+    
+    toastText.textContent = text;
+    toastIcon.textContent = icon;
+    toast.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+    toast.classList.add('translate-y-0', 'opacity-100');
+
+    setTimeout(() => {
+      toast.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+      toast.classList.remove('translate-y-0', 'opacity-100');
+    }, 2800);
+  }
+
+  document.getElementById('shareBtn')?.addEventListener('click', () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Discussion: The Seven Moons of Maali Almeida',
+        text: 'Join me at the Pick a Book Fiction Salon at Barefoot Cafe Colombo!',
+        url: window.location.href,
+      }).catch(() => {});
+    } else {
+      showToast('Link copied to clipboard!', 'content_copy');
+    }
+  });
+
+  document.getElementById('addToCalendarBtn')?.addEventListener('click', () => {
+    showToast('Event exported to your Calendar (.ics)', 'event_available');
+  });
+
+  function confirmCancel() {
+    if (window.confirm('Would you like to cancel your seat for Colombo Central Club on 15 March?')) {
+      showToast('Booking cancelled. Seat returned to pool.', 'info');
+    }
+  }
+
+  function handleGuestCheckout() {
+    showToast('Redirecting to PayHere gateway...', 'lock');
+  }
+</script></main></body></html>

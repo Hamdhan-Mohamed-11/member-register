@@ -40,15 +40,30 @@ export type RosterMember = {
 export function AttendanceRecorder({
   sessionId,
   rules,
-  roster,
+  roster: expectedRoster,
+  withdrawn = [],
   presenterCap,
 }: {
   sessionId: string;
   rules: Rule[];
   roster: RosterMember[];
+  /**
+   * People who cancelled their place. Off the main list, as asked -- but kept
+   * reachable, because someone who cancels sometimes turns up anyway, and a
+   * secretary with no way to record them would have to leave the register
+   * wrong.
+   */
+  withdrawn?: RosterMember[];
   /** How many may be marked as presenting. Null = no limit. */
   presenterCap: number | null;
 }) {
+  const [showWithdrawn, setShowWithdrawn] = useState(false);
+  // The withdrawn join the roster only once the secretary opens them, so a
+  // save never sends people nobody meant to touch.
+  const roster = useMemo(
+    () => (showWithdrawn ? [...expectedRoster, ...withdrawn] : expectedRoster),
+    [showWithdrawn, expectedRoster, withdrawn],
+  );
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -292,6 +307,31 @@ export function AttendanceRecorder({
           })}
         </ul>
       )}
+
+      {withdrawn.length ? (
+        <div className="rounded-card border border-dashed border-line-strong p-3">
+          <button
+            type="button"
+            onClick={() => setShowWithdrawn((v) => !v)}
+            aria-expanded={showWithdrawn}
+            className="press flex w-full items-center justify-between gap-3 text-left"
+          >
+            <span className="text-sm text-ink-muted">
+              {withdrawn.length} {withdrawn.length === 1 ? "person" : "people"} cancelled
+              their place
+            </span>
+            <span className="text-sm font-medium text-brand-600">
+              {showWithdrawn ? "Hide" : "Came anyway?"}
+            </span>
+          </button>
+          {showWithdrawn ? (
+            <p className="mt-2 text-xs text-ink-faint">
+              They now appear in the list above, so you can mark them if they
+              turned up after all.
+            </p>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }

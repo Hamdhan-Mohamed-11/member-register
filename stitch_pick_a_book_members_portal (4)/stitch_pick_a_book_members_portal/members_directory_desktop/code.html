@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"surface-container-lowest":"#ffffff","error-container":"#ffdad6","background":"#faf8ff","on-surface":"#141b2f","on-secondary":"#ffffff","inverse-primary":"#bbc3ff","sky-text":"#0079A8","navy-tint":"#4457B5","navy-wash":"#EFF2FB","outline":"#767683","outline-variant":"#c6c5d4","surface-container-highest":"#dbe2fd","tertiary-fixed-dim":"#ecc14f","status-warning-bg":"#FBEED3","surface-cream":"#F8F2E9","secondary":"#00658d","secondary-fixed-dim":"#82cfff","inverse-surface":"#293045","primary":"#0b1e80","tertiary":"#765b00","ink-faint":"#8B91A3","on-surface-variant":"#454652","on-primary-fixed":"#000e5f","surface-variant":"#dbe2fd","on-background":"#141b2f","secondary-fixed":"#c6e7ff","surface-container-high":"#e2e7ff","on-error":"#ffffff","status-success-text":"#147233","surface-container-low":"#f2f3ff","surface-card":"#FFFFFF","tertiary-container":"#cea635","on-secondary-fixed":"#001e2d","primary-fixed":"#dfe0ff","secondary-container":"#2dbcfe","gold-text":"#8A6410","on-primary-container":"#9da9ff","surface":"#faf8ff","status-danger-bg":"#FBE4E4","surface-tint":"#4756b4","surface-bright":"#faf8ff","status-warning-text":"#A15C07","navy-soft":"#C3CBEC","on-tertiary-container":"#503d00","surface-container":"#eaedff","error":"#ba1a1a","inverse-on-surface":"#eef0ff","navy-darkest":"#0F1640","on-primary":"#ffffff","on-tertiary":"#ffffff","border-subtle":"#E6E9F0","on-tertiary-fixed":"#251a00","status-danger-text":"#B91C1C","surface-bg":"#F8F9FC","on-error-container":"#93000a","on-primary-fixed-variant":"#2e3d9b","status-success-bg":"#DCF3E4","tertiary-fixed":"#ffdf94","primary-container":"#293896","on-secondary-container":"#004866","navy-deep":"#16205C","primary-fixed-dim":"#bbc3ff","on-secondary-fixed-variant":"#004c6b","ink-body":"#14162E","on-tertiary-fixed-variant":"#594400","surface-dim":"#d3d9f4"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-sm":"0.5rem","space-xl":"2.25rem","gutter-desktop":"1.5rem","margin-desktop":"2.5rem","margin":"1rem","space-lg":"1.5rem","space-xs":"0.25rem","space-md":"1rem","gutter":"1rem"},"fontFamily":{"headline-lg":["Playfair Display"],"body-md":["DM Sans"],"label-md":["DM Sans"],"headline-xl":["Playfair Display"],"label-sm":["DM Sans"],"headline-lg-mobile":["Playfair Display"],"caption":["DM Sans"],"headline-sm":["Playfair Display"],"body-sm":["DM Sans"],"headline-md":["Playfair Display"],"body-lg":["DM Sans"],"headline-xl-mobile":["Playfair Display"]},"fontSize":{"headline-lg":["2rem",{"lineHeight":"2.5rem","fontWeight":"600"}],"body-md":["1rem",{"lineHeight":"1.5rem","fontWeight":"400"}],"label-md":["0.875rem",{"lineHeight":"1.25rem","letterSpacing":"0.01em","fontWeight":"600"}],"headline-xl":["2.5rem",{"lineHeight":"3rem","letterSpacing":"-0.02em","fontWeight":"600"}],"label-sm":["0.75rem",{"lineHeight":"1rem","letterSpacing":"0.04em","fontWeight":"600"}],"headline-lg-mobile":["1.625rem",{"lineHeight":"2.125rem","fontWeight":"600"}],"caption":["0.75rem",{"lineHeight":"1.125rem","fontWeight":"400"}],"headline-sm":["1.125rem",{"lineHeight":"1.625rem","fontWeight":"600"}],"body-sm":["0.875rem",{"lineHeight":"1.375rem","fontWeight":"400"}],"headline-md":["1.375rem",{"lineHeight":"1.875rem","fontWeight":"600"}],"body-lg":["1.125rem",{"lineHeight":"1.75rem","fontWeight":"400"}],"headline-xl-mobile":["2rem",{"lineHeight":"2.5rem","letterSpacing":"-0.01em","fontWeight":"600"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-screen w-[260px] bg-surface-container-low shadow-[0_1px_8px_rgba(22,32,92,0.04)] z-50 flex flex-col justify-between overflow-y-auto"><div class="p-space-md flex flex-col"><div class="flex items-center gap-space-sm px-space-xs mb-space-lg"><img alt="Pick a Book Members Guild" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UjT7AWSE90BT_3we0gsvspMHyuF3dA2XUP_iajSMcjj0vYfboNla7Y4ImcJu6jbOmU7ak8mf6Ktcton86BiQTeK5LC_-tzt2Av8kc3Q2T431foW9Lu_sb-8-0rOBWeatYvlWs6HsntQ9WfXosP9klIRrHITAfg5avJp0hlP9LsGnJaf-djFKozJyIBn-dcf6xrdzHjvLUHP0s8hEkc6k68iQdkcycUA1mNWUCucctwodznA5iRGsFD5GT7"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-ink-body font-bold leading-tight">Pick a Book</span><span class="font-caption text-caption text-gold-text uppercase tracking-wider font-semibold">Members Guild</span></div></div><div class="mb-space-lg bg-surface-cream rounded-lg p-space-sm shadow-[0_1px_2px_rgba(22,32,92,0.02)]"><div class="flex items-center justify-between mb-1"><div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-status-success-text inline-block"></span><span class="font-caption text-caption text-ink-faint font-semibold uppercase tracking-wider">Active Chapter</span></div><span class="bg-status-success-bg text-status-success-text font-caption text-caption px-1.5 py-0.5 rounded-full font-semibold">Lead</span></div><div class="flex items-center justify-between"><span class="font-label-md text-label-md text-navy-deep font-semibold truncate pr-1">Colombo Central Club</span><span class="material-symbols-outlined text-on-surface-variant text-base">unfold_more</span></div></div><div class="mb-space-lg"><div class="px-space-xs mb-space-xs"><span class="font-caption text-caption text-ink-faint uppercase font-bold tracking-wider">Navigation</span></div><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary font-semibold shadow-sm"><a class="px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="home" href="#">Home</a><a class="px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="sessions" href="#">Sessions</a><a class="px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="book-catalogue-library" href="#">Book Catalogue / Library</a><a class="px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="members-directory" href="#">Members &amp; Directory</a><a class="px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="discover-journal" href="#">Discover Journal</a><a class="px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="leaderboard-badges" href="#">Leaderboard &amp; Badges</a></nav></div></div><div class="p-space-md bg-surface-container rounded-xl mx-2 mb-3 shadow-[0_1px_2px_rgba(22,32,92,0.02)]"><div class="flex items-center gap-space-sm"><img alt="Nimali Perera" class="w-9 h-9 rounded-full object-cover ring-2 ring-primary-fixed" src="https://lh3.googleusercontent.com/aida/AEtjO1Wouczgaw92PVI93mytS-PLFkX66QkSB_EvVweH_BW6s1BuFQPBh1j8Dpo9iXpGlj8Vou-BtQ3KF0fL0RG0Tpm6gDZh47UEFzs9U0W_oxTeCAWca4PXI6Be6eHP_bNXi-kV2zJMe67TqzTJUHSMCO__RZeda9eNeH9YeRh57K8aAbxsO-jM192d6wl4DT7dW9ErVtj7P_3GqJFRniL0IaGAgpRBb5AJ0L4QOP3qlzRwjhLDf-KmfZ_lH325"/><div class="flex-1 min-w-0"><span class="font-label-md text-label-md text-ink-body font-semibold truncate block">Nimali Perera</span><div class="flex items-center gap-1"><span class="font-caption text-caption text-status-warning-text font-semibold">Chapter Lead</span></div><span class="font-caption text-caption text-ink-faint truncate block">480 pts · Curator IV</span></div></div></div></aside><div class="pl-[260px]"><header class="fixed top-0 left-[260px] right-0 h-16 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(22,32,92,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center flex-1 max-w-xl"><div class="w-full flex items-center bg-surface-container-low rounded-lg px-space-md py-2 shadow-sm text-on-surface-variant focus-within:bg-surface-card focus-within:text-ink-body transition-all"><span class="material-symbols-outlined text-xl text-ink-faint mr-space-sm">search</span><input class="bg-transparent w-full text-body-sm font-body-sm focus:outline-none placeholder:text-ink-faint text-ink-body" placeholder="Universal search titles, authors, marginalia... (⌘K)" type="text"/><span class="font-caption text-caption text-ink-faint bg-surface-container px-1.5 py-0.5 rounded font-semibold ml-2">⌘K</span></div></div><div class="flex items-center gap-space-sm"><button aria-label="Cart" class="relative p-2 rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-xl">shopping_cart</span></button><button aria-label="Notifications" class="relative p-2 rounded-lg text-on-surface-variant hover:bg-navy-wash hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-xl">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-status-danger-text"></span></button><div class="flex items-center gap-2 pl-space-xs"><img alt="Member Avatar" class="w-8 h-8 rounded-full object-cover ring-1 ring-border-subtle" src="https://lh3.googleusercontent.com/aida/AEtjO1Wouczgaw92PVI93mytS-PLFkX66QkSB_EvVweH_BW6s1BuFQPBh1j8Dpo9iXpGlj8Vou-BtQ3KF0fL0RG0Tpm6gDZh47UEFzs9U0W_oxTeCAWca4PXI6Be6eHP_bNXi-kV2zJMe67TqzTJUHSMCO__RZeda9eNeH9YeRh57K8aAbxsO-jM192d6wl4DT7dW9ErVtj7P_3GqJFRniL0IaGAgpRBb5AJ0L4QOP3qlzRwjhLDf-KmfZ_lH325"/></div></div></header><main class="relative pt-16 w-full px-space-lg bg-surface min-h-screen"><div class="flex flex-col w-full pb-space-xl">
+<!-- Sub-header banner / Breadcrumb / Title Area -->
+<div class="flex flex-col gap-space-md mb-space-lg">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md pb-space-md">
+<div class="max-w-3xl">
+<div class="flex items-center gap-2 mb-2">
+<span class="inline-block w-2 h-2 rounded-full bg-gold-text"></span>
+<span class="font-caption text-caption text-gold-text uppercase tracking-widest font-bold">Sri Lanka Chapter Directory · Fellowship Registry</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-navy-darkest tracking-tight">Reading Society Members &amp; Fellows</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 max-w-2xl leading-relaxed">
+          Connect with fellow bibliophiles, exchange critical marginalia, discover salon companions, and explore member reading archives across 4 island chapters.
+        </p>
+</div>
+<div class="flex items-center gap-3 self-start md:self-end shrink-0">
+<a class="inline-flex items-center gap-2 px-space-md py-2.5 rounded-lg bg-surface-container-low text-primary font-label-md text-label-md shadow-sm hover:bg-navy-wash transition-colors" href="#">
+<span class="material-symbols-outlined text-base">person_add</span>
+<span>Invite a Fellow</span>
+</a>
+<a class="inline-flex items-center gap-2 px-space-md py-2.5 rounded-lg bg-surface-cream text-navy-deep font-label-md text-label-md shadow-sm hover:bg-status-warning-bg transition-colors" href="#">
+<span class="material-symbols-outlined text-gold-text text-base">military_tech</span>
+<span>Season IV Rankings · Top Readers &amp; Dispatches →</span>
+</a>
+</div>
+</div>
+<!-- Filter, Search & Tab Bar -->
+<div class="bg-surface-card rounded-xl p-space-md shadow-sm flex flex-col gap-space-md">
+<!-- Search and Secondary Toggles -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="relative flex-1 max-w-2xl">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-faint text-xl pointer-events-none">search</span>
+<input class="w-full pl-11 pr-4 py-2.5 rounded-lg bg-surface-container-low text-on-surface placeholder:text-ink-faint font-body-sm text-body-sm focus:outline-none focus:bg-surface-card shadow-inner transition-all" id="memberSearch" placeholder="Search members by name, reading interests, author, or chapter..." type="text"/>
+</div>
+<div class="flex items-center flex-wrap gap-space-sm shrink-0">
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-2 rounded-lg">
+<span class="material-symbols-outlined text-ink-faint text-sm">swap_vert</span>
+<span class="font-caption text-caption text-ink-faint uppercase font-bold">Sort:</span>
+<select class="bg-transparent font-label-sm text-label-sm text-ink-body focus:outline-none cursor-pointer">
+<option>Active Fellows (Points &amp; Badges)</option>
+<option>Most Marginalia Authored</option>
+<option>Reading Velocity (Finished)</option>
+<option>Seniority (Earliest Induction)</option>
+</select>
+</div>
+<button class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-navy-wash text-primary font-label-sm text-label-sm hover:bg-surface-container-highest transition-colors" type="button">
+<span class="material-symbols-outlined text-sm">menu_book</span>
+<span>Currently Reading</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm hover:bg-navy-wash transition-colors" type="button">
+<span class="material-symbols-outlined text-sm">record_voice_over</span>
+<span>Keynote Presenters</span>
+</button>
+</div>
+</div>
+<!-- Chapter Tabs -->
+<div class="flex items-center gap-2 overflow-x-auto pb-1">
+<button class="px-4 py-1.5 rounded-full bg-primary-container text-on-primary font-label-sm text-label-sm whitespace-nowrap shadow-sm">
+          All Chapters (482)
+        </button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:text-navy-deep hover:bg-navy-wash font-label-sm text-label-sm whitespace-nowrap transition-colors">
+          Colombo Central (128)
+        </button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:text-navy-deep hover:bg-navy-wash font-label-sm text-label-sm whitespace-nowrap transition-colors">
+          Havelock Poetry Circle (42)
+        </button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:text-navy-deep hover:bg-navy-wash font-label-sm text-label-sm whitespace-nowrap transition-colors">
+          Kandy Literature Guild (64)
+        </button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:text-navy-deep hover:bg-navy-wash font-label-sm text-label-sm whitespace-nowrap transition-colors">
+          Virtusa Colombo (35)
+        </button>
+</div>
+</div>
+</div>
+<!-- Main Split Layout: Left Roster (2-Col Grid) + Sticky Right Rail -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- Member Cards Column (8 cols) -->
+<div class="lg:col-span-8 flex flex-col gap-space-lg">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- Card 1: Dr. Rohini de Silva -->
+<article class="bg-surface-card rounded-xl p-space-md shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+<div>
+<div class="flex items-start justify-between gap-3 mb-3">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover shadow-sm" data-alt="Warm studio portrait of an elderly Sri Lankan female literature professor with spectacles, soft ambient library bookshelves in background, refined and scholarly tone" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi2g_CTn3sCTBu4PpISE9IhAk4W48G-rQKFE2EfRWP1GFkucq7Pa2vv7rqEeru4btgsorLCwVsn_ZMSTcmAlgOw2wkChPp9lk-I87O1XnE4-sT4qC-FM0cUB6qFRSx2Hc-a_i8Wr1MpVJF9Mromi4Lxsh8QbZOjhA4P0-e0jUqLKPgUwR1ZDz2PfBvuK3wtbnlYU2H96gRLxYHLuHDl6A8FtXBTakhX1TybtNRy1Ow9TxEe0tqFk2jhA"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-status-success-text rounded-full shadow-sm"></span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h2 class="font-headline-sm text-headline-sm text-navy-darkest leading-snug">Dr. Rohini de Silva</h2>
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;" title="Verified Literary Fellow">verified</span>
+</div>
+<p class="font-caption text-caption text-ink-faint">Senior Literary Fellow · Colombo Poetry Circle</p>
+<p class="font-caption text-caption text-ink-faint">Inducted 2026</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-status-warning-bg text-status-warning-text font-label-sm text-label-sm whitespace-nowrap font-semibold">
+                14 Badges · 680 pts
+              </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md line-clamp-2 leading-relaxed">
+              Literature educator &amp; archival poetry researcher. Passionate about post-colonial Sri Lankan verse, translations, and salon debate.
+            </p>
+<!-- Currently Reading Box -->
+<div class="bg-surface-cream rounded-lg p-space-sm mb-space-md flex items-center gap-3">
+<div class="w-11 h-16 shrink-0 rounded bg-navy-deep shadow-sm overflow-hidden flex items-center justify-center p-1 text-center">
+<span class="font-headline-sm text-caption text-surface leading-tight italic">Anil's Ghost</span>
+</div>
+<div class="flex-1 min-w-0">
+<span class="font-caption text-caption text-gold-text font-bold uppercase tracking-wider block">Cycle 14 Salon Choice</span>
+<h3 class="font-label-md text-label-md text-ink-body truncate">Anil's Ghost</h3>
+<p class="font-caption text-caption text-ink-faint truncate">Michael Ondaatje</p>
+</div>
+</div>
+</div>
+<div>
+<!-- Stats Bar -->
+<div class="flex items-center justify-between text-ink-faint font-caption text-caption py-2 bg-surface-container-low px-3 rounded-lg mb-3">
+<span>28 marginalia notes</span>
+<span>•</span>
+<span>34 finished</span>
+<span>•</span>
+<span>12 talks</span>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center gap-2">
+<button class="flex-1 py-2 px-3 rounded-lg bg-primary-container text-on-primary font-label-sm text-label-sm hover:bg-navy-deep transition-colors text-center font-semibold" type="button">
+                View Full Profile →
+              </button>
+<button aria-label="Bookmark fellow" class="p-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-navy-deep hover:bg-navy-wash transition-colors" type="button">
+<span class="material-symbols-outlined text-base">bookmark</span>
+</button>
+<button aria-label="Send dispatch" class="p-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-navy-deep hover:bg-navy-wash transition-colors" type="button">
+<span class="material-symbols-outlined text-base">chat_bubble_outline</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 2: Kusal Mendis -->
+<article class="bg-surface-card rounded-xl p-space-md shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+<div>
+<div class="flex items-start justify-between gap-3 mb-3">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover shadow-sm" data-alt="Portrait of a young Sri Lankan male writer in linen shirt, natural daylight, warm literary aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCf30tLRDrhDjcr_lcdal5TiupfIc1Z-W_CDgPM79CY8Uwg0ncuQ0rOA6TYiyLikpxvc_aH2xBnt83F2jCbwtAw-thAumCGWHmi7hwAaehp0EnR7m06Zg-OkIWmUWIKj2iZKYuVIylZ10lCrx2GKC8-yEt7_xxpakXekpMyQ9Z0IPxEG3h1pnHn0OmlVXo8OG4L_U7_wlc7gXqdV5Te_44N9BhnKqeXVG6BpdDe8m-s_A9Yvcw7PO20g"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-status-success-text rounded-full shadow-sm"></span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h2 class="font-headline-sm text-headline-sm text-navy-darkest leading-snug">Kusal Mendis</h2>
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;" title="Verified Fellow">verified</span>
+</div>
+<p class="font-caption text-caption text-ink-faint">Reader &amp; Archival Fellow</p>
+<p class="font-caption text-caption text-ink-faint">Colombo Central Club · Member since 2027</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-navy-wash text-navy-tint font-label-sm text-label-sm whitespace-nowrap font-semibold">
+                9 Badges · 410 pts
+              </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md line-clamp-2 leading-relaxed">
+              Curator of urban Colombo literary walks. Focus on contemporary satire, sporting fiction memoirs, and investigative chronicles.
+            </p>
+<!-- Currently Reading Box with DATA IMAGE 57 -->
+<div class="bg-surface-cream rounded-lg p-space-sm mb-space-md flex items-center gap-3">
+<img alt="Book cover of Chinaman" class="w-11 h-16 shrink-0 rounded object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida/AEtjO1X7bUNaZVEN1Wty8YgpU1rNlHDuMmejpv0c2dNND-A7Yb7EDBbv92XYeCmyaAOfAl_ZbR6JW2HGvTJqPFetWPtnnoxG1VKxv7IpgNgsIUrgSaeqspUcYT0UGF3y93pssxMMsNa-m3PyscqkBZKoxaKaYl6aPvmsYduYpkIzXuX59Jcgn8LlcZLYzgTDFAJvN3xX-HT5VqoOkbyISPMwXc_Ticxgnv9RhXny1ElxIJmV5RsJURIbXyr_3-Q"/>
+<div class="flex-1 min-w-0">
+<span class="font-caption text-caption text-gold-text font-bold uppercase tracking-wider block">Current Reading Log</span>
+<h3 class="font-label-md text-label-md text-ink-body truncate">Chinaman</h3>
+<p class="font-caption text-caption text-ink-faint truncate">Shehan Karunatilaka</p>
+</div>
+</div>
+</div>
+<div>
+<!-- Stats Bar -->
+<div class="flex items-center justify-between text-ink-faint font-caption text-caption py-2 bg-surface-container-low px-3 rounded-lg mb-3">
+<span>16 notes</span>
+<span>•</span>
+<span>19 finished</span>
+<span>•</span>
+<span>4 presentations</span>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center gap-2">
+<button class="flex-1 py-2 px-3 rounded-lg bg-primary-container text-on-primary font-label-sm text-label-sm hover:bg-navy-deep transition-colors text-center font-semibold" type="button">
+                View Full Profile →
+              </button>
+<button aria-label="Bookmark fellow" class="p-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-navy-deep hover:bg-navy-wash transition-colors" type="button">
+<span class="material-symbols-outlined text-base">bookmark</span>
+</button>
+<button aria-label="Send dispatch" class="p-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-navy-deep hover:bg-navy-wash transition-colors" type="button">
+<span class="material-symbols-outlined text-base">chat_bubble_outline</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 3: Tharushi Kaluwitharana -->
+<article class="bg-surface-card rounded-xl p-space-md shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+<div>
+<div class="flex items-start justify-between gap-3 mb-3">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover shadow-sm" data-alt="Portrait of an intellectual South Asian woman holding an antique notebook in a sunlit veranda cafe, warm golden hour light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkA6qicLReIWWbsXO3CCabaODbzaQipc4AEZaXhsQkzpXpfb8wlLw3s_Dmt2ohaLlxpoL0HdXUXGs05BHh7tzo3XGQLAAJ_mruRCsXmPDsuLnW5BDFv4HM-drH9GGMXbSMQKoYaB5cizBteRkMe8NYIZmGpu3u937MdY6zrSQmAFKkinl5XijZTIASCgSPRmXTPItKgWHf83oe32TLkWxNAXbFokGAHVpIcNvwxS9movYRVx7JDywjXw"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-status-warning-text rounded-full shadow-sm"></span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h2 class="font-headline-sm text-headline-sm text-navy-darkest leading-snug">Tharushi Kaluwitharana</h2>
+</div>
+<p class="font-caption text-caption text-ink-faint">Literary Fellow · Colombo Fiction Salon</p>
+<p class="font-caption text-caption text-ink-faint">Inducted 2027</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-navy-wash text-navy-tint font-label-sm text-label-sm whitespace-nowrap font-semibold">
+                6 Badges · 290 pts
+              </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md line-clamp-2 leading-relaxed">
+              Exploring speculative realism, metaphysical satire, and South Asian Gothic folklore. Regular contributor to salon marginalia.
+            </p>
+<!-- Currently Reading Box with DATA IMAGE 56 -->
+<div class="bg-surface-cream rounded-lg p-space-sm mb-space-md flex items-center gap-3">
+<img alt="The Seven Moons of Maali Almeida cover" class="w-11 h-16 shrink-0 rounded object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida/AEtjO1XEH2Ps_fWICL66wOstI49vbzddrhg4cmAidoTYuGbQ8ni8dcU0PhIIFUcIDdHIV7DHvSpMtenyCBd-N6VTPVpuuFYUXLDfzBXYWgng3D9hVBnnbsjfpmAbTHw3qEnrc1UumfdcxyHQBkrK_iFZbXVXoPQ9b0jPSdIR9_xDPwZTqAp7fVeOVo7qqf-6MC-7R--JRyvqF8AVOh6M1nqZPPANhH7AOU9E_OFmxKJ6XET1no_MwPM4NkYImGY"/>
+<div class="flex-1 min-w-0">
+<span class="font-caption text-caption text-gold-text font-bold uppercase tracking-wider block">Booker Prize Circle</span>
+<h3 class="font-label-md text-label-md text-ink-body truncate">The Seven Moons of Maali Almeida</h3>
+<p class="font-caption text-caption text-ink-faint truncate">Shehan Karunatilaka</p>
+</div>
+</div>
+</div>
+<div>
+<!-- Stats Bar -->
+<div class="flex items-center justify-between text-ink-faint font-caption text-caption py-2 bg-surface-container-low px-3 rounded-lg mb-3">
+<span>11 notes</span>
+<span>•</span>
+<span>12 finished</span>
+<span>•</span>
+<span>2 presentations</span>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center gap-2">
+<button class="flex-1 py-2 px-3 rounded-lg bg-primary-container text-on-primary font-label-sm text-label-sm hover:bg-navy-deep transition-colors text-center font-semibold" type="button">
+                View Full Profile →
+              </button>
+<button aria-label="Bookmark fellow" class="p-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-navy-deep hover:bg-navy-wash transition-colors" type="button">
+<span class="material-symbols-outlined text-base">bookmark</span>
+</button>
+<button aria-label="Send dispatch" class="p-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-navy-deep hover:bg-navy-wash transition-colors" type="button">
+<span class="material-symbols-outlined text-base">chat_bubble_outline</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 4: Suren Wickramasinghe -->
+<article class="bg-surface-card rounded-xl p-space-md shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+<div>
+<div class="flex items-start justify-between gap-3 mb-3">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover shadow-sm" data-alt="Portrait of a scholarly man in his late forties with neatly styled grey hair, wearing spectacles and a corduroy jacket, intellectual ambience" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDpbKZKbvzNIr7yMaudd9Z0mWPIhRFhyreqSFvJdzkhjrTVA6YbWXDAIo2ZUBiO84CT3mHjNxX95Ul59qeud723rwfm0LdvAtUL8jYPW361QlywtNjE8RSYrO6rVCPcBqknSrrjIiImtF9svvZMUM82VWZAZzr-gFU3-4ThiydimqWGOqMb3GK_va9eNfJgF78VM4PIva_UKpU-q2dJDxImFGPXLClDf2pDtfBqDz31itlWICVWtzMIw"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-status-success-text rounded-full shadow-sm"></span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h2 class="font-headline-sm text-headline-sm text-navy-darkest leading-snug">Suren Wickramasinghe</h2>
+<span class="material-symbols-outlined text-gold-text text-lg" style="font-variation-settings: 'FILL' 1;" title="Top Curator Fellow">stars</span>
+</div>
+<p class="font-caption text-caption text-ink-faint">Galle Fort Archivist · Kandy Guild Lead</p>
+<p class="font-caption text-caption text-ink-faint">Founding Fellow · 2024</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-status-warning-bg text-status-warning-text font-label-sm text-label-sm whitespace-nowrap font-bold">
+                18 Badges · 920 pts
+              </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md line-clamp-2 leading-relaxed">
+              Historical fiction essayist &amp; colonial press collector. Leads the central hill-country monthly roundtables on South Asian diaspora literature.
+            </p>
+<!-- Currently Reading Box -->
+<div class="bg-surface-cream rounded-lg p-space-sm mb-space-md flex items-center gap-3">
+<div class="w-11 h-16 shrink-0 rounded bg-navy-tint shadow-sm overflow-hidden flex items-center justify-center p-1 text-center">
+<span class="font-headline-sm text-caption text-surface leading-tight italic">Running in Family</span>
+</div>
+<div class="flex-1 min-w-0">
+<span class="font-caption text-caption text-gold-text font-bold uppercase tracking-wider block">Memoir &amp; Archive</span>
+<h3 class="font-label-md text-label-md text-ink-body truncate">Running in the Family</h3>
+<p class="font-caption text-caption text-ink-faint truncate">Michael Ondaatje</p>
+</div>
+</div>
+</div>
+<div>
+<!-- Stats Bar -->
+<div class="flex items-center justify-between text-ink-faint font-caption text-caption py-2 bg-surface-container-low px-3 rounded-lg mb-3">
+<span>42 notes</span>
+<span>•</span>
+<span>56 finished</span>
+<span>•</span>
+<span>18 talks</span>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center gap-2">
+<button class="flex-1 py-2 px-3 rounded-lg bg-primary-container text-on-primary font-label-sm text-label-sm hover:bg-navy-deep transition-colors text-center font-semibold" type="button">
+                View Full Profile →
+              </button>
+<button aria-label="Bookmark fellow" class="p-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-navy-deep hover:bg-navy-wash transition-colors" type="button">
+<span class="material-symbols-outlined text-base">bookmark</span>
+</button>
+<button aria-label="Send dispatch" class="p-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-navy-deep hover:bg-navy-wash transition-colors" type="button">
+<span class="material-symbols-outlined text-base">chat_bubble_outline</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 5: Anuk Arudpragasam -->
+<article class="bg-surface-card rounded-xl p-space-md shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+<div>
+<div class="flex items-start justify-between gap-3 mb-3">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover shadow-sm" data-alt="Expressive portrait of a thoughtful young South Asian male researcher in a quiet tea estate study surrounded by open notebooks" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCW1RVXKn39Qp2dkH3DKFMJKL5n6-bKScEkFPBdDNYzSE2qVqngeoOMw4j8NOj_riEbAVwaMPg9vpskrepYZgV6dMAMe-9miAeNBkfPKVmJRrrmnVBKEO4otsX1lltFetOcLogkTfmRaUx_mcCe5jgj2Ji9xXePrpl7rvdgb1I8eNJ5pbkhSKkEoPgtf9FicgG7N_9pGWDqXQxVKuxMnTnhmGStdQirDyN4KIL4foZIVdxwfTBQyzsrfw"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-status-success-text rounded-full shadow-sm"></span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h2 class="font-headline-sm text-headline-sm text-navy-darkest leading-snug">Anuk Arudpragasam</h2>
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;" title="Verified Fellow">verified</span>
+</div>
+<p class="font-caption text-caption text-ink-faint">Novice Fellow · Kandy Reading Circle</p>
+<p class="font-caption text-caption text-ink-faint">Inducted 2027</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-navy-wash text-navy-tint font-label-sm text-label-sm whitespace-nowrap font-semibold">
+                8 Badges · 380 pts
+              </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md line-clamp-2 leading-relaxed">
+              Philosophical fiction enthusiast. Investigating memory, trauma reconstruction, and internal monologue in modern island texts.
+            </p>
+<!-- Currently Reading Box -->
+<div class="bg-surface-cream rounded-lg p-space-sm mb-space-md flex items-center gap-3">
+<div class="w-11 h-16 shrink-0 rounded bg-navy-deep shadow-sm overflow-hidden flex items-center justify-center p-1 text-center">
+<span class="font-headline-sm text-caption text-surface leading-tight italic">Passage to North</span>
+</div>
+<div class="flex-1 min-w-0">
+<span class="font-caption text-caption text-gold-text font-bold uppercase tracking-wider block">Philosophical Fiction</span>
+<h3 class="font-label-md text-label-md text-ink-body truncate">A Passage North</h3>
+<p class="font-caption text-caption text-ink-faint truncate">Anuk Arudpragasam</p>
+</div>
+</div>
+</div>
+<div>
+<!-- Stats Bar -->
+<div class="flex items-center justify-between text-ink-faint font-caption text-caption py-2 bg-surface-container-low px-3 rounded-lg mb-3">
+<span>19 notes</span>
+<span>•</span>
+<span>15 finished</span>
+<span>•</span>
+<span>3 talks</span>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center gap-2">
+<button class="flex-1 py-2 px-3 rounded-lg bg-primary-container text-on-primary font-label-sm text-label-sm hover:bg-navy-deep transition-colors text-center font-semibold" type="button">
+                View Full Profile →
+              </button>
+<button aria-label="Bookmark fellow" class="p-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-navy-deep hover:bg-navy-wash transition-colors" type="button">
+<span class="material-symbols-outlined text-base">bookmark</span>
+</button>
+<button aria-label="Send dispatch" class="p-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-navy-deep hover:bg-navy-wash transition-colors" type="button">
+<span class="material-symbols-outlined text-base">chat_bubble_outline</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 6: Dineli Jayawardena -->
+<article class="bg-surface-card rounded-xl p-space-md shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+<div>
+<div class="flex items-start justify-between gap-3 mb-3">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover shadow-sm" data-alt="Sophisticated Sri Lankan woman smiling warmly with dark curled hair and silver ear studs, seated beside a high mahogany library bookcase" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHi7vnOyGrPbSsqkVrNojL7_awrkj2sFcC_v3HuxmV3PVqqWl3Sl59Uy8o6pbU4Bd-NN08m5g7xv260JRhp9sKsm3xGpe192y4GvD1aRUxtLKt8KkjJfaUL0JeWyKkjEl3uSKaUSwoV5yjIIEFsERX0xNPYI37r5ZM2X-2ryXewPxFZInf8JF4AA8GmINYgHefS2pNB9Sw5vUx7pcm03h5bXozp2tBk2vkBzIZ4QVXToJN9NgUVub76Q"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-status-success-text rounded-full shadow-sm"></span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h2 class="font-headline-sm text-headline-sm text-navy-darkest leading-snug">Dineli Jayawardena</h2>
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;" title="Verified Fellow">verified</span>
+</div>
+<p class="font-caption text-caption text-ink-faint">Salon Fellow · Colombo Central Club</p>
+<p class="font-caption text-caption text-ink-faint">Inducted 2025</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-status-warning-bg text-status-warning-text font-label-sm text-label-sm whitespace-nowrap font-semibold">
+                11 Badges · 510 pts
+              </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md line-clamp-2 leading-relaxed">
+              Memoir specialist, literary journalist, and moderator of the annual Indian Ocean Maritime Prose circle.
+            </p>
+<!-- Currently Reading Box -->
+<div class="bg-surface-cream rounded-lg p-space-sm mb-space-md flex items-center gap-3">
+<div class="w-11 h-16 shrink-0 rounded bg-navy-wash shadow-sm overflow-hidden flex items-center justify-center p-1 text-center">
+<span class="font-headline-sm text-caption text-navy-deep leading-tight italic">Wave: Memoir</span>
+</div>
+<div class="flex-1 min-w-0">
+<span class="font-caption text-caption text-gold-text font-bold uppercase tracking-wider block">Memoir of Resilience</span>
+<h3 class="font-label-md text-label-md text-ink-body truncate">Wave: A Memoir of Life</h3>
+<p class="font-caption text-caption text-ink-faint truncate">Sonali Deraniyagala</p>
+</div>
+</div>
+</div>
+<div>
+<!-- Stats Bar -->
+<div class="flex items-center justify-between text-ink-faint font-caption text-caption py-2 bg-surface-container-low px-3 rounded-lg mb-3">
+<span>23 notes</span>
+<span>•</span>
+<span>27 finished</span>
+<span>•</span>
+<span>7 talks</span>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center gap-2">
+<button class="flex-1 py-2 px-3 rounded-lg bg-primary-container text-on-primary font-label-sm text-label-sm hover:bg-navy-deep transition-colors text-center font-semibold" type="button">
+                View Full Profile →
+              </button>
+<button aria-label="Bookmark fellow" class="p-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-navy-deep hover:bg-navy-wash transition-colors" type="button">
+<span class="material-symbols-outlined text-base">bookmark</span>
+</button>
+<button aria-label="Send dispatch" class="p-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-navy-deep hover:bg-navy-wash transition-colors" type="button">
+<span class="material-symbols-outlined text-base">chat_bubble_outline</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+<!-- Pagination / Load Row -->
+<div class="bg-surface-card rounded-xl p-space-md shadow-sm flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<span class="font-caption text-caption text-ink-faint">
+          Showing <span class="text-ink-body font-semibold">6</span> of <span class="text-ink-body font-semibold">482</span> active salon members across Sri Lanka
+        </span>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 rounded-lg bg-primary-container text-on-primary font-label-sm text-label-sm flex items-center justify-center font-semibold" type="button">1</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-navy-wash font-label-sm text-label-sm flex items-center justify-center" type="button">2</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-navy-wash font-label-sm text-label-sm flex items-center justify-center" type="button">3</button>
+<span class="text-ink-faint px-1">…</span>
+<button class="w-8 h-8 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-navy-wash font-label-sm text-label-sm flex items-center justify-center" type="button">41</button>
+<button class="ml-2 px-3 py-1.5 rounded-lg bg-navy-wash text-primary font-label-sm text-label-sm hover:bg-surface-container-highest transition-colors font-semibold" type="button">
+            Load More Fellows
+          </button>
+</div>
+</div>
+</div>
+<!-- Right Rail: Sticky Society Sidebar (4 cols / ~320px) -->
+<aside class="lg:col-span-4 flex flex-col gap-space-md sticky top-20">
+<!-- Widget 1: Chapter Fellowship Standing -->
+<div class="bg-surface-card rounded-xl p-space-md shadow-sm">
+<div class="flex items-center justify-between mb-space-sm pb-space-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-navy-tint text-xl">shield</span>
+<h3 class="font-headline-sm text-headline-sm text-navy-darkest">Chapter Standing</h3>
+</div>
+<span class="font-caption text-caption text-gold-text bg-surface-cream px-2 py-0.5 rounded font-bold uppercase">Quarter 1</span>
+</div>
+<div class="bg-surface-cream rounded-lg p-space-sm mb-space-md flex items-center justify-between">
+<div>
+<span class="font-caption text-caption text-ink-faint block uppercase">Active Chapter</span>
+<h4 class="font-label-md text-label-md text-navy-deep font-bold">Colombo Central Public Club</h4>
+</div>
+<div class="text-right">
+<span class="font-label-md text-label-md text-status-success-text font-bold">94%</span>
+<span class="font-caption text-caption text-ink-faint block">Attendance</span>
+</div>
+</div>
+<div class="mb-space-sm">
+<div class="flex items-center justify-between text-caption font-caption text-ink-faint mb-1">
+<span>Reading Cycle Progress</span>
+<span class="font-semibold text-navy-deep">128 / 130 Dispatches</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 88%;"></div>
+</div>
+</div>
+<span class="font-caption text-caption text-ink-faint uppercase font-bold tracking-wider block mb-2">Top Chapter Fellows</span>
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-2 min-w-0">
+<span class="w-5 h-5 rounded-full bg-status-warning-bg text-gold-text font-label-sm text-label-sm font-bold flex items-center justify-center">1</span>
+<span class="font-label-sm text-label-sm text-ink-body truncate">Suren Wickramasinghe</span>
+</div>
+<span class="font-caption text-caption text-navy-tint font-bold shrink-0">920 pts</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-2 min-w-0">
+<span class="w-5 h-5 rounded-full bg-surface-container text-ink-faint font-label-sm text-label-sm font-bold flex items-center justify-center">2</span>
+<span class="font-label-sm text-label-sm text-ink-body truncate">Dr. Rohini de Silva</span>
+</div>
+<span class="font-caption text-caption text-navy-tint font-bold shrink-0">680 pts</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-2 min-w-0">
+<span class="w-5 h-5 rounded-full bg-surface-container text-ink-faint font-label-sm text-label-sm font-bold flex items-center justify-center">3</span>
+<span class="font-label-sm text-label-sm text-ink-body truncate">Dineli Jayawardena</span>
+</div>
+<span class="font-caption text-caption text-navy-tint font-bold shrink-0">510 pts</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-2 min-w-0">
+<span class="w-5 h-5 rounded-full bg-surface-container text-ink-faint font-label-sm text-label-sm font-bold flex items-center justify-center">4</span>
+<span class="font-label-sm text-label-sm text-ink-body truncate">Nimali Perera</span>
+</div>
+<span class="font-caption text-caption text-navy-tint font-bold shrink-0">480 pts</span>
+</div>
+</div>
+</div>
+<!-- Widget 2: Fellowship Spotlight · Keynote Speaker -->
+<div class="bg-surface-cream rounded-xl p-space-md shadow-sm relative overflow-hidden">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-gold-text text-base">mic</span>
+<span class="font-caption text-caption text-gold-text uppercase font-bold tracking-wider">Fellowship Spotlight</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-navy-darkest mb-1">Keynote Speaker</h3>
+<p class="font-caption text-caption text-ink-faint mb-space-sm">Upcoming March Salon at Barefoot Cafe Garden Terrace</p>
+<div class="flex items-center gap-3 mb-space-sm bg-surface-card p-2.5 rounded-lg shadow-sm">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of senior female speaker Dr. Rohini de Silva smiling with books in hand" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlYWJtnqvlOQ2m0uEMWhHfStRcSCy6JEX9kTRp5GegNOGmNrv-CrJ9Q3y3-WDX4Erdhmto8_PFLv4HFliVOIqz6rGLkI5woOyHd00WBeY0cdYEIq8AGlVAAF07hGh2pfoxLpCNUYGvGN3fn6rz2tb_9MLSTLU3MsabQxsuMkc_uBQeZVRmeBKG1xbKVmDMXXBQ7f-_DazoKOAL50AefBYNKlGo-0IAZmXHoFlDFfTgF0bGTtvlQ2OGeg"/>
+<div>
+<h4 class="font-label-md text-label-md text-ink-body font-bold leading-tight">Dr. Rohini de Silva</h4>
+<span class="font-caption text-caption text-ink-faint">14 Mar 2028 · 6:00 PM</span>
+</div>
+</div>
+<blockquote class="font-headline-sm text-body-sm italic text-on-surface-variant leading-relaxed mb-space-sm">
+          “Examining historical truth through forensic prose and fragmented memories in Anil's Ghost.”
+        </blockquote>
+<a class="inline-flex items-center gap-1.5 font-label-sm text-label-sm text-primary font-bold hover:text-navy-deep" href="#">
+<span>Reserve Salon Guest Seat</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<!-- Widget 3: Society Mentor Exchange -->
+<div class="bg-surface-card rounded-xl p-space-md shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sky-text text-xl">school</span>
+<h3 class="font-headline-sm text-headline-sm text-navy-darkest">Mentor Exchange</h3>
+</div>
+<span class="bg-status-success-bg text-status-success-text px-2 py-0.5 rounded-full font-caption text-caption font-bold">+20 pts</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed mb-space-sm">
+          Pair with senior fellows for 6-week annotated salon reading circles. Gain accreditation and exchange critical essays.
+        </p>
+<div class="bg-surface-container-low p-space-sm rounded-lg mb-space-md">
+<div class="flex items-center justify-between text-caption font-caption mb-1">
+<span class="text-ink-faint">Spring Cycle Openings</span>
+<span class="font-bold text-navy-deep">7 seats remaining</span>
+</div>
+<!-- SVG sparkline visual -->
+<svg class="w-full h-8 text-primary-container" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 100 25">
+<path d="M 0 20 Q 25 5, 50 15 T 100 8" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<button class="w-full py-2 px-3 rounded-lg bg-surface-container-low text-primary hover:bg-navy-wash transition-colors font-label-sm text-label-sm font-semibold text-center" type="button">
+          Apply as Mentee / Mentor →
+        </button>
+</div>
+</aside>
+</div>
+</div>
+<script>
+  // Simple client-side search simulation for the directory roster
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('memberSearch');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const memberCards = document.querySelectorAll('.grid > article');
+        memberCards.forEach(card => {
+          const text = card.textContent.toLowerCase();
+          if (!query || text.includes(query)) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    }
+  });
+</script></main></div></body></html>

@@ -70,6 +70,18 @@ export default async function AttendancePage({
         .eq("session_id", id),
     ]);
 
+  // Who explicitly cancelled their place. A host-club member is on the roster
+  // by default whether or not they booked -- they attend free -- so without
+  // this, cancelling changed nothing here and their name stayed on the list.
+  const { data: cancelledRows } = await supabase
+    .from("session_bookings")
+    .select("member_id")
+    .eq("session_id", id)
+    .eq("status", "cancelled");
+  const cancelled = new Set(
+    ((cancelledRows ?? []) as { member_id: string }[]).map((r) => r.member_id),
+  );
+
   type RawProfile = {
     id: string;
     first_name: string;
@@ -117,6 +129,11 @@ export default async function AttendancePage({
     `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`),
   );
 
+  // Split out anyone who cancelled -- UNLESS they already have attendance
+  // recorded, which means they turned up after all and belong on the list.
+  const expected = roster.filter((m) => !cancelled.has(m.id) || m.codes.length > 0);
+  const withdrawn = roster.filter((m) => cancelled.has(m.id) && m.codes.length === 0);
+
   const rules = (rulesData ?? []) as Rule[];
 
   return (
@@ -132,7 +149,8 @@ export default async function AttendancePage({
       <AttendanceRecorder
         sessionId={id}
         rules={rules}
-        roster={roster}
+        roster={expected}
+        withdrawn={withdrawn}
         presenterCap={session.presenterCount}
       />
     </AdminShell>

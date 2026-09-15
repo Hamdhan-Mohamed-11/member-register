@@ -62,14 +62,15 @@ export function BookingPanel({
 
         {!isPast ? (
           <Button
-            variant="ghost"
+            variant="secondary"
             size="sm"
             disabled={pending}
+            className="border-danger-600/40 text-danger-600 hover:border-danger-600 hover:bg-danger-100"
             onClick={() =>
               run(cancelBooking, { bookingId: booking.id, sessionId })
             }
           >
-            {pending ? "Working…" : "Cancel my place"}
+            {pending ? "Cancelling…" : "Cancel my place"}
           </Button>
         ) : null}
       </div>
