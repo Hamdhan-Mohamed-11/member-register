@@ -98,10 +98,15 @@ relaxTimeouts(browser);
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();
   await login(page, BASE, "admin@rlstest.local", PW);
-  check("admin lands on /feed after login", page.url().includes("/feed"), page.url());
+  // Admins land on their dashboard, not the member feed (/home routes by role).
+  check("admin lands on /admin after login", page.url().includes("/admin"), page.url());
+  const dashBody = await visibleText(page);
+  check("admin sees the dashboard queue", /Needs your attention/.test(dashBody ?? ""), "");
 
+  await page.goto(`${BASE}/feed`, { waitUntil: "domcontentloaded" });
+  await settle(page, "/feed");
   const feedBody = await visibleText(page);
-  check("admin DOES see the admin card", /Club admin/.test(feedBody ?? ""), "");
+  check("admin DOES see the admin card on the feed", /Club admin/.test(feedBody ?? ""), "");
 
   await page.goto(`${BASE}/admin`, { waitUntil: "domcontentloaded" });
   await settle(page, "/admin");
