@@ -6,8 +6,10 @@ import { MEMBER_NAV, isActive } from "./navItems";
 import { NavIcon } from "./NavIcon";
 
 /**
- * Mobile-only bottom bar. Hidden at md+, where the top bar carries the same
- * links. `pb-[env(safe-area-inset-bottom)]` keeps it clear of the iOS home
+ * Bottom bar for phones and tablets. Hidden at lg+, where the sidebar takes
+ * over -- the breakpoint must match the sidebar's exactly, or there is a band
+ * of widths with no navigation at all (there was: 768-1024px, when this hid at
+ * md and the sidebar only appeared at lg). `pb-[env(safe-area-inset-bottom)]` keeps it clear of the iOS home
  * indicator, which otherwise sits on top of the last row of tap targets.
  */
 export function BottomNav() {
@@ -16,7 +18,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Primary"
-      className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-surface/95 backdrop-blur-md border-t border-line pb-[env(safe-area-inset-bottom)]"
+      className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-surface/95 backdrop-blur-md border-t border-line pb-[env(safe-area-inset-bottom)]"
     >
       <ul className="grid grid-cols-5">
         {MEMBER_NAV.map((item) => {

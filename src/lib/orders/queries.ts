@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 
 export type CartLine = {
@@ -145,6 +146,20 @@ export async function getCart(): Promise<CartLine[]> {
     quantity: r.quantity,
   }));
 }
+
+/**
+ * How many titles are in the cart, for the badge on every page.
+ *
+ * `cache` because the top bar asks on every request; head-only, so it is a
+ * count and never a list.
+ */
+export const getCartCount = cache(async (): Promise<number> => {
+  const supabase = await getServerComponentSupabase();
+  const { count } = await supabase
+    .from("cart_items")
+    .select("book_id", { count: "exact", head: true });
+  return count ?? 0;
+});
 
 /** Book ids already in the cart, so the catalogue can say "In cart". */
 export async function getCartBookIds(): Promise<Set<number>> {

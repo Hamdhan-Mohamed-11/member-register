@@ -30,7 +30,10 @@ export type IconName =
   | "trophy"
   | "bookmark"
   | "book"
-  | "id";
+  | "id"
+  | "cart"
+  | "home"
+  | "film";
 
 export function Icon({
   name,
@@ -151,6 +154,28 @@ export function Icon({
         <svg {...common}>
           <path d="M12 3.5c.7 4 1.8 5.1 5.8 5.8-4 .7-5.1 1.8-5.8 5.8-.7-4-1.8-5.1-5.8-5.8 4-.7 5.1-1.8 5.8-5.8Z" />
           <path d="M18 15.5c.3 1.8.8 2.3 2.6 2.6-1.8.3-2.3.8-2.6 2.6-.3-1.8-.8-2.3-2.6-2.6 1.8-.3 2.3-.8 2.6-2.6Z" />
+        </svg>
+      );
+    case "cart":
+      return (
+        <svg {...common}>
+          <path d="M3.5 4.5h2l2.2 10.2a1.5 1.5 0 0 0 1.5 1.2h7.9a1.5 1.5 0 0 0 1.5-1.1L20.5 8H6.4" />
+          <circle cx="10" cy="19.5" r="1.2" />
+          <circle cx="17" cy="19.5" r="1.2" />
+        </svg>
+      );
+    case "home":
+      return (
+        <svg {...common}>
+          <path d="M3.5 10.5 12 3.5l8.5 7" />
+          <path d="M5.5 9.2V20h13V9.2" />
+        </svg>
+      );
+    case "film":
+      return (
+        <svg {...common}>
+          <rect x="3.5" y="5" width="17" height="14" rx="2" />
+          <path d="M3.5 9h17M3.5 15h17M8 5v14M16 5v14" />
         </svg>
       );
     case "id":

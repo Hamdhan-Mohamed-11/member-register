@@ -4,7 +4,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
+import { Logo } from "@/components/shell/Logo";
 import { adminNavFor, isAdminActive } from "./adminNavItems";
+
+type Props = {
+  isSuper: boolean;
+  roleLabel: string;
+  clubName: string | null;
+};
 
 function NavList({
   isSuper,
@@ -58,35 +65,65 @@ function NavList({
   );
 }
 
+function Identity({ isSuper, roleLabel, clubName }: Props) {
+  return (
+    <div className="rounded-card border border-white/12 bg-white/6 px-3 py-2.5">
+      <p className="text-[11px] uppercase tracking-[0.14em] text-sky-300">{roleLabel}</p>
+      <p className="mt-0.5 truncate text-sm font-medium text-white">
+        {clubName ?? (isSuper ? "All clubs" : "No club assigned")}
+      </p>
+    </div>
+  );
+}
+
 /**
- * Admin navigation: a sidebar at lg and up, a drawer below.
+ * The admin sidebar, desktop only.
  *
- * Not the member bottom bar. Admins and secretaries asked for the admin area
- * to be its own thing, and the member bar's Books / Sessions / Members / Me
- * are the wrong five destinations for someone running a club. The member side
- * is one link away at the foot of the sidebar, not the frame around every
- * admin page.
+ * Full height from the very top, with the top bar starting after it (review
+ * item 21). The logo lives here now, white because the coloured mark vanishes
+ * on navy.
+ *
+ * No link back to the member site, as asked: the admin area is its own place.
+ * The account menu still reaches /feed for anyone who wants it.
+ *
+ * Split from the mobile menu on purpose. They used to be one component
+ * returning both, and placed in the shell's horizontal row that put the
+ * phone's menu strip in a narrow column beside the page instead of above it.
  */
-export function AdminNav({
-  isSuper,
-  roleLabel,
-  clubName,
-}: {
-  isSuper: boolean;
-  roleLabel: string;
-  clubName: string | null;
-}) {
+export function AdminNav(props: Props) {
+  return (
+    <aside className="on-navy sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-brand-800 bg-brand-900 lg:flex">
+      <Link
+        href="/admin"
+        className="flex h-16 shrink-0 items-center border-b border-white/10 px-5"
+        aria-label="Admin dashboard"
+      >
+        <Logo className="h-10 w-auto brightness-0 invert" preload />
+      </Link>
+      <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-3 py-5">
+        <Identity {...props} />
+        <NavList isSuper={props.isSuper} />
+      </div>
+    </aside>
+  );
+}
+
+/**
+ * The admin menu on phones and tablets: a strip with a menu button that opens
+ * a drawer. Sits above the page, inside the content column.
+ */
+export function AdminMobileNav(props: Props) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  // Close the drawer on navigation, in case a link was followed some way other
-  // than tapping it (back button, a link inside the page).
+  // Close on navigation, in case a link was followed some other way than
+  // tapping it (back button, a link inside the page).
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setOpen(false);
   }, [pathname]);
 
-  // Stop the page scrolling behind an open drawer.
+  // Stop the page scrolling behind an open drawer; Escape closes it.
   useEffect(() => {
     if (!open) return;
     const previous = document.body.style.overflow;
@@ -101,38 +138,9 @@ export function AdminNav({
     };
   }, [open]);
 
-  const identity = (
-    <div className="rounded-card border border-white/12 bg-white/6 px-3 py-2.5">
-      <p className="text-[11px] uppercase tracking-[0.14em] text-sky-300">{roleLabel}</p>
-      <p className="mt-0.5 truncate text-sm font-medium text-white">
-        {clubName ?? (isSuper ? "All clubs" : "No club assigned")}
-      </p>
-    </div>
-  );
-
-  const footer = (
-    <Link
-      href="/feed"
-      className="press flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm text-on-navy-muted transition-colors hover:bg-white/8 hover:text-white"
-    >
-      <Icon name="chevron-right" className="size-[18px] shrink-0 rotate-180" />
-      Back to the member site
-    </Link>
-  );
-
   return (
     <>
-      {/* ---- Desktop sidebar ----------------------------------------- */}
-      <aside className="on-navy sticky top-16 hidden h-[calc(100vh-4rem)] w-64 shrink-0 flex-col gap-5 overflow-y-auto border-r border-brand-800 bg-brand-900 px-3 py-5 lg:flex">
-        {identity}
-        <div className="flex-1">
-          <NavList isSuper={isSuper} />
-        </div>
-        {footer}
-      </aside>
-
-      {/* ---- Mobile: a menu button, then a drawer -------------------- */}
-      <div className="sticky top-16 z-30 flex items-center gap-3 border-b border-line bg-surface/95 px-4 py-2 backdrop-blur-md lg:hidden">
+      <div className="flex items-center gap-3 border-b border-line bg-surface px-4 py-2 lg:hidden">
         <button
           type="button"
           onClick={() => setOpen(true)}
@@ -154,7 +162,8 @@ export function AdminNav({
           Admin menu
         </button>
         <p className="min-w-0 truncate text-xs text-ink-muted">
-          {roleLabel} · {clubName ?? (isSuper ? "all clubs" : "no club")}
+          {props.roleLabel} ·{" "}
+          {props.clubName ?? (props.isSuper ? "all clubs" : "no club")}
         </p>
       </div>
 
@@ -191,11 +200,8 @@ export function AdminNav({
                 </svg>
               </button>
             </div>
-            {identity}
-            <div className="flex-1">
-              <NavList isSuper={isSuper} onNavigate={() => setOpen(false)} />
-            </div>
-            {footer}
+            <Identity {...props} />
+            <NavList isSuper={props.isSuper} onNavigate={() => setOpen(false)} />
           </aside>
         </div>
       ) : null}

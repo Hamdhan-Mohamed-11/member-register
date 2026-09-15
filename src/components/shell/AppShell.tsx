@@ -1,24 +1,27 @@
 import type { ReactNode } from "react";
 import { BottomNav } from "./BottomNav";
+import { MemberSidebar } from "./MemberSidebar";
 import { TopBar } from "./TopBar";
-import { getSessionMember, isAdmin } from "@/lib/auth/session";
+import { getSessionMember, isAdmin, activeMemberships } from "@/lib/auth/session";
 import { avatarUrl } from "@/lib/members/queries";
 import { getUnreadNotificationCount } from "@/lib/notifications/queries";
+import { getCartCount } from "@/lib/orders/queries";
 
 /**
- * The signed-in chrome.
+ * The member chrome.
  *
- * It now reads the session ITSELF rather than taking a member prop. Both
- * `getSessionMember` and `getUnreadNotificationCount` are request-`cache`d, so
- * this still costs one lookup per request no matter how many components ask --
- * and thirty-odd pages no longer each hand-assemble the same three fields.
+ * Desktop: a full-height sidebar on the left, and the top bar plus the page in
+ * a column beside it. That replaced a centred column with empty margins either
+ * side (review items 2 and "fill the blank space"), and gives every section a
+ * place in the navigation.
  *
- * That hand-assembly was already drifting: /feed passed `avatarUrl: null`
- * outright, so the top bar showed initials on the home page and a photo
- * everywhere else.
+ * Phone: no sidebar -- the top bar carries the logo, and the bottom bar carries
+ * the five main sections. pb-24 on <main> reserves room for that bar, without
+ * which the last card on every page sits underneath it.
  *
- * pb-24 on <main> reserves room for the fixed mobile bottom bar; without it the
- * last card on every page sits underneath the nav.
+ * Reads the session itself; `getSessionMember`, the unread count and the cart
+ * count are all request-`cache`d, so this is one lookup each per request no
+ * matter how many components ask.
  */
 export async function AppShell({
   children,
@@ -30,17 +33,14 @@ export async function AppShell({
   wide?: boolean;
   /**
    * Force the logged-out chrome. For pages that are *about* signing in --
-   * /login, /join, the auth callbacks, the holding page. Someone who is
-   * already signed in can still reach those, and offering them the full member
-   * nav there is a distraction at best.
+   * /login, /join, the auth callbacks, the holding page.
    */
   signedOut?: boolean;
 }) {
   const session = signedOut ? null : await getSessionMember();
 
   // Only an ACTIVE member gets member chrome. A pending or suspended account
-  // has a session but nothing the nav points at, and every link would bounce
-  // them straight back to /pending.
+  // has a session but nothing the nav points at.
   const member =
     session && session.status === "active"
       ? {
@@ -53,19 +53,46 @@ export async function AppShell({
         }
       : null;
 
-  const unread = member ? await getUnreadNotificationCount() : 0;
+  if (!member) {
+    return (
+      <>
+        <TopBar member={null} />
+        <main
+          className={`mx-auto w-full flex-1 px-4 py-5 sm:px-6 md:pb-10 ${
+            wide ? "max-w-6xl" : "max-w-5xl"
+          }`}
+        >
+          {children}
+        </main>
+      </>
+    );
+  }
+
+  const [unread, cartCount] = await Promise.all([
+    getUnreadNotificationCount(),
+    getCartCount(),
+  ]);
+
+  const primary = session ? activeMemberships(session).find((c) => c.isPrimary) : null;
+  const clubName =
+    primary?.clubName ?? (session ? activeMemberships(session)[0]?.clubName : null) ?? null;
 
   return (
-    <>
-      <TopBar member={member} unreadNotifications={unread} />
-      <main
-        className={`flex-1 mx-auto w-full px-4 py-5 pb-24 sm:px-6 md:pb-10 ${
-          wide ? "max-w-6xl" : "max-w-5xl"
-        }`}
-      >
-        {children}
-      </main>
-      {member ? <BottomNav /> : null}
-    </>
+    <div className="flex min-h-screen">
+      <MemberSidebar member={member} clubName={clubName} />
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <TopBar member={member} unreadNotifications={unread} cartCount={cartCount} />
+        <main
+          className={`mx-auto w-full min-w-0 flex-1 px-4 py-5 pb-24 sm:px-6 lg:px-8 lg:py-7 lg:pb-10 ${
+            wide ? "max-w-6xl" : "max-w-5xl"
+          }`}
+        >
+          {children}
+        </main>
+      </div>
+
+      <BottomNav />
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { TopBar } from "@/components/shell/TopBar";
-import { AdminNav } from "./AdminNav";
+import { AdminMobileNav, AdminNav } from "./AdminNav";
 import { getSessionMember, isAdmin } from "@/lib/auth/session";
 import { avatarUrl } from "@/lib/members/queries";
 import { getUnreadNotificationCount } from "@/lib/notifications/queries";
@@ -34,31 +34,40 @@ export async function AdminShell({ children }: { children: ReactNode }) {
   const unread = await getUnreadNotificationCount();
 
   return (
-    <>
-      <TopBar
-        variant="admin"
-        member={{
-          firstName: session.firstName,
-          lastName: session.lastName,
-          email: session.email,
-          avatarUrl: avatarUrl(session.userId, session.avatarPath),
-          pointsBalance: session.pointsBalance,
-          isAdmin: true,
-        }}
-        unreadNotifications={unread}
+    // Sidebar first and full height, with the top bar starting AFTER it
+    // (review item 21) -- the bar used to span the whole width over the top of
+    // the sidebar, which made the sidebar look like a panel dropped into a
+    // page rather than the frame of the admin area.
+    <div className="flex min-h-screen">
+      <AdminNav
+        isSuper={isSuper}
+        roleLabel={isSuper ? "Super admin" : "Secretary"}
+        clubName={isSuper ? null : session.secretaryClubName}
       />
 
-      <div className="flex flex-1 flex-col lg:flex-row">
-        <AdminNav
+      <div className="flex min-w-0 flex-1 flex-col">
+        <TopBar
+          variant="admin"
+          member={{
+            firstName: session.firstName,
+            lastName: session.lastName,
+            email: session.email,
+            avatarUrl: avatarUrl(session.userId, session.avatarPath),
+            pointsBalance: session.pointsBalance,
+            isAdmin: true,
+          }}
+          unreadNotifications={unread}
+        />
+        <AdminMobileNav
           isSuper={isSuper}
           roleLabel={isSuper ? "Super admin" : "Secretary"}
           clubName={isSuper ? null : session.secretaryClubName}
         />
 
-        <main className="mx-auto w-full min-w-0 max-w-5xl flex-1 px-4 py-5 pb-12 sm:px-6 lg:px-8 lg:py-7">
+        <main className="mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 py-5 pb-12 sm:px-6 lg:px-8 lg:py-7">
           {children}
         </main>
       </div>
-    </>
+    </div>
   );
 }

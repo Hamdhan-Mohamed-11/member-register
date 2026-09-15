@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { buttonClassName } from "@/components/ui/Button";
 import { AccountMenu } from "./AccountMenu";
+import { CartButton } from "./CartButton";
 import { Logo } from "./Logo";
 import { NotificationBell } from "./NotificationBell";
-import { MEMBER_NAV, isActive } from "./navItems";
 
 export type TopBarMember = {
   firstName: string;
@@ -17,31 +17,64 @@ export type TopBarMember = {
   isAdmin: boolean;
 };
 
+/**
+ * The bar across the top.
+ *
+ * Signed in, it sits BESIDE a full-height sidebar on desktop rather than
+ * spanning over it (review item 21), so at lg and up it carries only the
+ * actions -- bell, cart, account -- and leaves the logo and the section links
+ * to the sidebar. Showing both would give every page two competing
+ * navigations. On a phone the sidebar does not exist, so the logo comes back
+ * and the bottom bar carries the sections.
+ *
+ * Signed out, it is the old centred bar: logo and a way to log in.
+ */
 export function TopBar({
   member,
   unreadNotifications = 0,
+  cartCount = 0,
   variant = "member",
 }: {
   member: TopBarMember | null;
   unreadNotifications?: number;
+  cartCount?: number;
   /**
-   * `admin` drops the member links. Inside the admin area they are the wrong
-   * five destinations, and the admin sidebar already carries the right ones --
-   * showing both would give every admin page two competing navigations.
+   * `admin` drops the cart -- admins asked not to carry the member's buying
+   * and borrowing -- and marks the bar so it is obvious which side you are on.
    */
   variant?: "member" | "admin";
 }) {
   const pathname = usePathname();
 
+  if (!member) {
+    return (
+      <header className="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4">
+          <Link href="/" className="shrink-0 rounded-lg py-1" aria-label="Pick a Book — home">
+            <Logo className="h-9 w-auto sm:h-11" preload />
+          </Link>
+          {pathname === "/login" ? null : (
+            // No "Log in" on the log-in page: it would be a primary button
+            // that navigates to the page you are already on.
+            <Link href="/login" className={`${buttonClassName("primary", "sm")} ml-auto`}>
+              Log in
+            </Link>
+          )}
+        </div>
+      </header>
+    );
+  }
+
   return (
-    <header className="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-line">
-      <div className="mx-auto max-w-6xl px-4 h-16 flex items-center gap-3">
+    <header className="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur-md">
+      <div className="flex h-16 items-center gap-3 px-4 sm:px-6 lg:px-8">
+        {/* The logo only where there is no sidebar to carry it. */}
         <Link
-          href={variant === "admin" ? "/admin" : member ? "/feed" : "/"}
-          className="shrink-0 rounded-lg py-1"
+          href={variant === "admin" ? "/admin" : "/feed"}
+          className="shrink-0 rounded-lg py-1 lg:hidden"
           aria-label={variant === "admin" ? "Admin dashboard" : "Pick a Book — home"}
         >
-          <Logo className="h-9 w-auto sm:h-11" preload />
+          <Logo className="h-9 w-auto" preload />
         </Link>
 
         {variant === "admin" ? (
@@ -50,52 +83,11 @@ export function TopBar({
           </span>
         ) : null}
 
-        {member ? (
-          <>
-            {/* Desktop links. On mobile these live in the bottom bar instead.
-                Not in the admin area, which has its own sidebar. */}
-            <nav
-              aria-label="Primary"
-              className={variant === "admin" ? "hidden" : "hidden md:block ml-3"}
-            >
-              <ul className="flex items-center gap-1">
-                {MEMBER_NAV.map((item) => {
-                  const active = isActive(item, pathname);
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        aria-current={active ? "page" : undefined}
-                        className={`relative inline-flex items-center min-h-9 px-3 rounded-lg text-sm transition-colors ${
-                          active
-                            ? "bg-brand-50 text-brand-700 font-medium"
-                            : "text-ink-muted hover:bg-canvas-deep hover:text-ink"
-                        }`}
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </nav>
-
-            <div className="ml-auto flex items-center gap-1">
-              <NotificationBell unread={unreadNotifications} />
-              <AccountMenu member={member} />
-            </div>
-          </>
-        ) : pathname === "/login" ? null : (
-          // No "Log in" button on the log-in page. It was rendering a primary
-          // button that navigates to the page you are already on, one line
-          // above a form headed "Welcome back".
-          <Link
-            href="/login"
-            className={`${buttonClassName("primary", "sm")} ml-auto`}
-          >
-            Log in
-          </Link>
-        )}
+        <div className="ml-auto flex items-center gap-1">
+          <NotificationBell unread={unreadNotifications} />
+          {variant === "member" ? <CartButton count={cartCount} /> : null}
+          <AccountMenu member={member} />
+        </div>
       </div>
     </header>
   );
