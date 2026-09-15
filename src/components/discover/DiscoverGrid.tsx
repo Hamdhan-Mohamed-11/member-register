@@ -104,7 +104,7 @@ export function DiscoverGrid({ posts }: { posts: DiscoverPost[] }) {
       <Modal
         open={open != null}
         onClose={close}
-        title={open?.clubName ?? "Discover"}
+        title={open?.caption ?? (open?.kind === "video" ? "Video" : "Photo")}
         size="lg"
       >
         {open ? <DiscoverCard key={open.id} post={open} inViewer /> : null}

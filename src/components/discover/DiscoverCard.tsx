@@ -203,7 +203,7 @@ export function DiscoverCard({
             playsInline
             autoPlay={inViewer}
             preload={inViewer ? "auto" : "none"}
-            className={inViewer ? "max-h-[62vh] w-full object-contain" : "w-full h-full object-cover"}
+            className={inViewer ? "max-h-[52vh] w-full object-contain" : "w-full h-full object-cover"}
           />
         ) : (
           /*
@@ -217,7 +217,7 @@ export function DiscoverCard({
             alt={post.caption ?? "Club photo"}
             loading="lazy"
             decoding="async"
-            className={inViewer ? "max-h-[62vh] w-full object-contain" : "w-full h-full object-cover"}
+            className={inViewer ? "max-h-[52vh] w-full object-contain" : "w-full h-full object-cover"}
           />
         )}
       </div>

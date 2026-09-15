@@ -15,7 +15,7 @@ export function PopularBooks({
   href: (book: PopularBook) => string;
 }) {
   return (
-    <ul className="stagger grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+    <ul className="stagger grid gap-3 sm:grid-cols-2">
       {books.map((book, i) => (
         <li key={book.bookId} className="min-w-0">
           <Link
@@ -35,7 +35,7 @@ export function PopularBooks({
               {book.author ? (
                 <span className="mt-0.5 block truncate text-xs text-ink-muted">{book.author}</span>
               ) : null}
-              <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-sky-100 px-2 py-0.5 text-[11px] font-medium text-sky-800">
+              <span className="mt-2 inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-sky-100 px-2 py-0.5 text-[11px] font-medium text-sky-800">
                 {book.members} member{book.members === 1 ? "" : "s"}
               </span>
             </span>

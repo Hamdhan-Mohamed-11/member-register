@@ -34,9 +34,12 @@ export function ReadRiseCard({ totals }: { totals: ReadRiseTotals }) {
   const targetYear = new Date(`${totals.targetOn}T00:00:00`).getFullYear();
 
   return (
-    <Card tone="brand">
-      {/* Title left, the call to action top right (review item 11). */}
-      <div className="flex items-start justify-between gap-3">
+    <Card tone="brand" className="@container">
+      {/* Title left, the call to action top right (review item 11) -- or
+          stacked, when the card sits in a narrow side rail. A container query
+          rather than a breakpoint: the same card is wide on one page and 320px
+          on another at the same screen size. */}
+      <div className="flex flex-col gap-3 @md:flex-row @md:items-start @md:justify-between">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wider text-gold-700">
             Read and Rise
@@ -49,7 +52,7 @@ export function ReadRiseCard({ totals }: { totals: ReadRiseTotals }) {
         </div>
         <Link
           href="/books"
-          className="press inline-flex min-h-9 shrink-0 items-center rounded-lg bg-brand-600 px-3.5 text-sm font-medium text-white hover:bg-brand-700"
+          className="press inline-flex min-h-9 shrink-0 items-center self-start rounded-lg bg-brand-600 px-3.5 text-sm font-medium text-white hover:bg-brand-700"
         >
           Donate another book
         </Link>
