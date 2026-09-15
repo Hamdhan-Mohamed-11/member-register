@@ -3,8 +3,8 @@ import { BadgeIcon } from "./BadgeIcon";
 /**
  * Colour per badge family, so a row of medals reads as sets at a glance:
  * blue for reading, violet for presenting, amber for turning up, gold for
- * points, green for giving, navy for the one-offs. Grey is reserved for a
- * badge not yet earned.
+ * points, green for giving; one-offs by glyph. Grey is reserved for a badge
+ * not yet earned.
  */
 const TONES = {
   sky: { from: "#38c6f4", to: "#0284c7", rim: "#0369a1" },
@@ -13,6 +13,9 @@ const TONES = {
   gold: { from: "#fde68a", to: "#eab308", rim: "#ca8a04" },
   green: { from: "#6ee7b7", to: "#10b981", rim: "#047857" },
   navy: { from: "#6674d6", to: "#293896", rim: "#1f2a75" },
+  rose: { from: "#fda4af", to: "#e11d48", rim: "#be123c" },
+  teal: { from: "#5eead4", to: "#0d9488", rim: "#0f766e" },
+  orange: { from: "#fdba74", to: "#f97316", rim: "#c2410c" },
   locked: { from: "#d1d5db", to: "#9ca3af", rim: "#6b7280" },
 } as const;
 
@@ -26,8 +29,21 @@ const FAMILY_TONE: Record<string, MedalTone> = {
   readrise: "green",
 };
 
-export function medalTone(family: string | null | undefined): MedalTone {
-  return (family && FAMILY_TONE[family]) || "navy";
+/**
+ * One-off badges have no family to colour them by, and all in navy they read
+ * as one badge five times. So each takes a colour from its glyph instead.
+ */
+const ICON_TONE: Record<string, MedalTone> = {
+  video: "rose",
+  ticket: "teal",
+  id: "orange",
+  flag: "navy",
+  users: "violet",
+};
+
+export function medalTone(family: string | null | undefined, icon?: string): MedalTone {
+  if (family) return FAMILY_TONE[family] ?? "navy";
+  return (icon && ICON_TONE[icon]) || "navy";
 }
 
 const SIZES = {

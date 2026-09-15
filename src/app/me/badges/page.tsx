@@ -93,7 +93,7 @@ function BadgeTile({
 
       <BadgeMedal
         icon={badge.icon}
-        tone={earned ? medalTone(badge.family) : "locked"}
+        tone={earned ? medalTone(badge.family, badge.icon) : "locked"}
         className={earned ? "" : "opacity-80"}
       />
 
