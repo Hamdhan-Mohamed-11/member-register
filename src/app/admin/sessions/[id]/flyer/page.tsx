@@ -6,10 +6,32 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { canAdminClub, requireSecretary } from "@/lib/auth/session";
 import { getSession } from "@/lib/sessions/queries";
 import { flyerUrl } from "@/lib/flyers/url";
-import { formatWhen } from "@/components/sessions/SessionCard";
 import { FlyerDesigner } from "./FlyerDesigner";
 
 export const metadata: Metadata = { title: "Flyer" };
+
+/**
+ * The session's date broken into the parts the templates set separately --
+ * the day as a big numeral, the month in small caps. In Colombo time,
+ * explicitly: this runs on the server, whose own clock is not the club's.
+ */
+function dateParts(iso: string) {
+  const parts = (options: Intl.DateTimeFormatOptions) =>
+    new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Colombo", ...options }).format(
+      new Date(iso),
+    );
+  return {
+    day: parts({ day: "numeric" }),
+    month: parts({ month: "short" }).replace(".", ""),
+    monthLong: parts({ month: "long" }),
+    weekday: parts({ weekday: "long" }),
+    weekdayShort: parts({ weekday: "short" }),
+    year: parts({ year: "numeric" }),
+    time: parts({ hour: "numeric", minute: "2-digit", hour12: true })
+      .replace(/\s?([ap])\.?m\.?/i, " $1m")
+      .toLowerCase(),
+  };
+}
 export const dynamic = "force-dynamic";
 
 export default async function FlyerPage({
@@ -33,7 +55,7 @@ export default async function FlyerPage({
       <PageHeader
         className="mt-1"
         title="Make a flyer"
-        description="Pick a template, drop in a photo, then download it, share it, or put it in front of members."
+        description="Pick a template, add a photo and drag it into place, then download it, share it, or put it in front of members."
       />
 
       <FlyerDesigner
@@ -43,7 +65,7 @@ export default async function FlyerPage({
           title: session.title,
           bookTitle: session.bookTitle,
           bookAuthor: session.bookAuthor,
-          when: formatWhen(session.heldAt),
+          date: dateParts(session.heldAt),
           location: session.location ?? "",
           presenter: session.presenter
             ? `${session.presenter.firstName} ${session.presenter.lastName}`.trim()
