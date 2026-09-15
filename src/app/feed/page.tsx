@@ -242,7 +242,7 @@ export default async function FeedPage() {
           </Card>
         ) : null}
 
-        <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
+        <div className="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
           <div className="min-w-0 space-y-8">
             {events.length ? (
               <section>

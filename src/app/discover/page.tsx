@@ -102,7 +102,7 @@ export default async function DiscoverPage({
           />
         </Card>
       ) : (
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px] xl:items-start">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_280px] xl:items-start">
           <div className="min-w-0">
             {clubs.length > 1 ? (
               <nav aria-label="Filter by club" className="-mx-4 mb-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
