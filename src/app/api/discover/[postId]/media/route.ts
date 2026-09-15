@@ -5,6 +5,13 @@ import { getServiceSupabaseClient } from "@/lib/supabase/serverClient";
 
 const SIGNED_URL_TTL_SECONDS = 60 * 60;
 
+const POSTER_PLACEHOLDER =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 9" preserveAspectRatio="xMidYMid slice">' +
+  '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+  '<stop offset="0" stop-color="#16205c"/><stop offset="1" stop-color="#293896"/>' +
+  "</linearGradient></defs>" +
+  '<rect width="16" height="9" fill="url(#g)"/></svg>';
+
 /**
  * Serves a Discover photo or video, gated by the same rule as the post itself.
  *
@@ -43,6 +50,17 @@ export async function GET(
 
   const wantsPoster = request.nextUrl.searchParams.get("poster") === "1";
   const path = wantsPoster ? post.poster_path : post.storage_path;
+
+  // A video posted without a still gets a plain brand-coloured frame rather
+  // than a 404, which every browser draws as a broken-image icon. The page's
+  // own play badge sits on top of it.
+  if (wantsPoster && !path) {
+    return new NextResponse(POSTER_PLACEHOLDER, {
+      status: 200,
+      headers: { "Content-Type": "image/svg+xml", "Cache-Control": "private, max-age=300" },
+    });
+  }
+
   if (!path) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }

@@ -135,21 +135,13 @@ export default async function PaymentsPage() {
                           <p className="text-xs text-ink-muted mt-1 italic">{p.note}</p>
                         ) : null}
                       </div>
-                      <Badge
-                        tone={STATUS_TONE[p.status] ?? "neutral"}
-                        className="shrink-0"
-                      >
-                        {p.status}
-                      </Badge>
-                    </div>
-
-                    {/* Under the status, at the right edge, rather than
-                        hanging off the left under the reference. */}
-                    {!settled ? (
-                      <div className="mt-2 flex justify-end">
-                        <MarkPaid paymentId={p.id} />
+                      {/* Status and the action together, in the right-hand
+                          column, rather than the button on a row of its own. */}
+                      <div className="flex shrink-0 flex-col items-end gap-2">
+                        <Badge tone={STATUS_TONE[p.status] ?? "neutral"}>{p.status}</Badge>
+                        {!settled ? <MarkPaid paymentId={p.id} /> : null}
                       </div>
-                    ) : null}
+                    </div>
                   </li>
                 );
               })}

@@ -31,31 +31,37 @@ export function MarkPaid({ paymentId }: { paymentId: string }) {
     });
   }
 
-  if (!open) {
-    return (
-      <Button size="sm" variant="secondary" onClick={() => setOpen(true)}>
+  // The button sits in the row's right column under the status; the reason
+  // box opens as a small panel beneath it rather than pushing the row apart.
+  return (
+    <div className="relative">
+      <Button size="sm" variant="secondary" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
         Record as paid
       </Button>
-    );
-  }
 
-  return (
-    <div className="w-full max-w-md space-y-2">
-      {error ? <Notice>{error}</Notice> : null}
-      <input
-        value={reason}
-        onChange={(e) => setReason(e.target.value)}
-        placeholder="Why is this being settled by hand?"
-        className={controlClassName}
-      />
-      <div className="flex justify-end gap-2">
-        <Button size="sm" disabled={pending || reason.trim().length < 3} onClick={submit}>
-          {pending ? "Saving…" : "Confirm"}
-        </Button>
-        <Button size="sm" variant="ghost" onClick={() => setOpen(false)}>
-          Cancel
-        </Button>
-      </div>
+      {open ? (
+        <div className="absolute right-0 top-full z-20 mt-2 w-72 max-w-[80vw] space-y-2 rounded-card border border-line bg-surface p-3 shadow-band">
+          {error ? <Notice>{error}</Notice> : null}
+          <input
+            autoFocus
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setOpen(false);
+            }}
+            placeholder="Why is this being settled by hand?"
+            className={controlClassName}
+          />
+          <div className="flex justify-end gap-2">
+            <Button size="sm" variant="ghost" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button size="sm" disabled={pending || reason.trim().length < 3} onClick={submit}>
+              {pending ? "Saving…" : "Confirm"}
+            </Button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
