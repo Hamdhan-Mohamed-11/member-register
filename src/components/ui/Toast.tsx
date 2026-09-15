@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 /**
  * A one-off confirmation along the bottom of the screen, shown after a
@@ -10,18 +10,19 @@ import { usePathname, useRouter } from "next/navigation";
  * Driven by a query parameter rather than client state, because the thing that
  * wants to say it (the Buy button) is on a page that has already gone. On
  * mount it strips the parameter back out, so a reload or a shared link does not
- * announce it a second time.
+ * announce it a second time -- with the native history API, NOT router.replace:
+ * a router navigation re-renders the server page without the parameter, and
+ * that page no longer renders this toast, so it vanished the instant it arrived.
  *
  * Sits above the phone's bottom bar, and is a polite live region so a screen
  * reader hears it without losing its place.
  */
 export function Toast({ message, durationMs = 3200 }: { message: string; durationMs?: number }) {
-  const router = useRouter();
   const pathname = usePathname();
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    router.replace(pathname, { scroll: false });
+    window.history.replaceState(null, "", pathname);
     const timer = window.setTimeout(() => setVisible(false), durationMs);
     return () => window.clearTimeout(timer);
     // Once, on arrival. Re-running on pathname would strip a later visit too.

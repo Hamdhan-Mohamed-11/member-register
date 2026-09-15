@@ -17,6 +17,11 @@ function formatDate(iso: string): string {
   });
 }
 
+/** "1 books" reads wrong; the family units are all plural nouns first. */
+function countOf(n: number, unit: string): string {
+  return `${n} ${n === 1 ? unit.replace(/^(\w+?)s\b/, "$1") : unit}`;
+}
+
 function LockGlyph() {
   return (
     <svg
@@ -149,7 +154,7 @@ function FamilySection({ family }: { family: BadgeFamily }) {
             key={badge.id}
             badge={badge}
             earnedAt={badge.earnedAt}
-            caption={badge.threshold != null ? `${badge.threshold} ${unit}` : null}
+            caption={badge.threshold != null ? countOf(badge.threshold, unit) : null}
           />
         ))}
       </ul>
