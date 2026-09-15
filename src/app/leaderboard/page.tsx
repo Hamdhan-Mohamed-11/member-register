@@ -66,7 +66,7 @@ function Podium({ rows }: { rows: LeaderboardRow[] }) {
       <p className="text-xs font-semibold uppercase tracking-wider text-gold-700">
         Top of the board
       </p>
-      <ol className="mt-4 grid grid-cols-3 items-end gap-2">
+      <ol className="mx-auto mt-4 grid max-w-lg grid-cols-3 items-end gap-2">
         {slots.map(({ row, col }) => {
           const first = row === rows[0];
           const tier = Math.min(row.place, 3);
