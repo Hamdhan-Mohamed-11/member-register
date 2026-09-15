@@ -44,14 +44,22 @@ export default async function AdminMemberPage({
         .from("club_memberships")
         .select("id, status, is_primary, renewal_date, joined_on, clubs(id, name)")
         .eq("member_id", id),
-      supabase.from("clubs").select("id, name").eq("is_active", true).order("name"),
+      supabase.from("clubs").select("id, name, secretary_id").eq("is_active", true).order("name"),
     ]);
 
   if (!profile) notFound();
 
   const memberships = (membershipRows ?? []) as unknown as MembershipRowData[];
   const joinedClubIds = new Set(memberships.map((m) => m.clubs?.id).filter(Boolean));
-  const availableClubs = (allClubs ?? []).filter((c) => !joinedClubIds.has(c.id));
+  const availableClubs = (allClubs ?? [])
+    .filter((c) => !joinedClubIds.has(c.id))
+    .map((c) => ({ id: c.id, name: c.name }));
+  const secretaryOf = (allClubs ?? []).find((c) => c.secretary_id === id) ?? null;
+  const secretaryClubs = (allClubs ?? []).map((c) => ({
+    id: c.id,
+    name: c.name,
+    hasSecretary: c.secretary_id != null,
+  }));
 
   const name = `${profile.first_name} ${profile.last_name}`.trim() || profile.email;
 
@@ -101,6 +109,8 @@ export default async function AdminMemberPage({
             role={profile.role}
             status={profile.status}
             isSelf={profile.id === admin.userId}
+            clubs={secretaryClubs}
+            secretaryOf={secretaryOf ? { id: secretaryOf.id, name: secretaryOf.name } : null}
           />
         </Card>
 

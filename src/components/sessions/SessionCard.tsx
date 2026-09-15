@@ -91,7 +91,9 @@ export function SessionCard({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
-            <p className="min-w-0 font-medium leading-snug text-ink">
+            {/* overflow-wrap:anywhere so a long unbroken word wraps instead
+                of running under the badge; two lines at most. */}
+            <p className="line-clamp-2 min-w-0 font-medium leading-snug text-ink [overflow-wrap:anywhere]">
               {session.title}
             </p>
 

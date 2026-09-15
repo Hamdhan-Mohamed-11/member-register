@@ -10,6 +10,9 @@ import {
   setMemberStatus,
   setMembership,
 } from "../actions";
+import { appointSecretary } from "@/app/admin/clubs/actions";
+
+export type SecretaryClubOption = { id: string; name: string; hasSecretary: boolean };
 
 
 
@@ -49,13 +52,46 @@ export function RoleAndStatus({
   role,
   status,
   isSelf,
+  clubs,
+  secretaryOf,
 }: {
   memberId: string;
   role: string;
   status: string;
   isSelf: boolean;
+  /** Active clubs, for choosing which one a secretary runs. */
+  clubs: SecretaryClubOption[];
+  /** The club this member runs, if any. */
+  secretaryOf: { id: string; name: string } | null;
 }) {
   const { pending, error, saved, run } = useAction();
+  // A secretary is a person AND a club: the role alone grants nothing, because
+  // every admin action asks "may they act on THIS club?". Picking "Secretary"
+  // therefore opens a club picker instead of saving straight away -- saving
+  // the bare role is exactly how an account ended up secretary of nothing.
+  const [choosingClub, setChoosingClub] = useState(false);
+  const [clubId, setClubId] = useState(secretaryOf?.id ?? "");
+  const [roleValue, setRoleValue] = useState(role);
+
+  const orphaned = role === "secretary" && !secretaryOf;
+  const showPicker = choosingClub || orphaned;
+  const chosen = clubs.find((c) => c.id === clubId);
+
+  function onRole(next: string) {
+    setRoleValue(next);
+    if (next === "secretary") {
+      setChoosingClub(true);
+      return;
+    }
+    setChoosingClub(false);
+    if (secretaryOf && next === "member") {
+      // Stepping down: clearing the club's secretary also returns the role
+      // to member, in one step on the database side.
+      run(appointSecretary, { clubId: secretaryOf.id, memberId: "" });
+      return;
+    }
+    run(setMemberRole, { memberId, role: next });
+  }
 
   return (
     <div className="space-y-3">
@@ -69,6 +105,13 @@ export function RoleAndStatus({
         </Notice>
       ) : null}
 
+      {orphaned ? (
+        <Notice>
+          This account is a secretary but is not running any club, so it can open the
+          admin area but cannot do anything there. Choose the club they run below.
+        </Notice>
+      ) : null}
+
       <div className="grid sm:grid-cols-2 gap-3">
         <div>
           <label htmlFor="role" className="block text-sm font-medium text-ink mb-1.5">
@@ -76,15 +119,27 @@ export function RoleAndStatus({
           </label>
           <select
             id="role"
-            defaultValue={role}
+            value={roleValue}
             disabled={pending}
             className={`${selectClassName} w-full`}
-            onChange={(e) => run(setMemberRole, { memberId, role: e.target.value })}
+            onChange={(e) => onRole(e.target.value)}
           >
             <option value="member">Member</option>
             <option value="secretary">Secretary</option>
             <option value="super_admin">Super admin</option>
           </select>
+          {secretaryOf && !choosingClub ? (
+            <p className="mt-1.5 text-xs text-ink-muted">
+              Runs <span className="font-medium text-ink">{secretaryOf.name}</span> ·{" "}
+              <button
+                type="button"
+                onClick={() => setChoosingClub(true)}
+                className="text-brand-600 hover:underline"
+              >
+                change club
+              </button>
+            </p>
+          ) : null}
         </div>
 
         <div>
@@ -105,6 +160,60 @@ export function RoleAndStatus({
           </select>
         </div>
       </div>
+
+      {showPicker ? (
+        <div className="rounded-lg border border-brand-200 bg-brand-50 p-3">
+          <label htmlFor="secretary-club" className="block text-sm font-medium text-ink mb-1.5">
+            Which club will they run?
+          </label>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <select
+              id="secretary-club"
+              value={clubId}
+              onChange={(e) => setClubId(e.target.value)}
+              className={`${selectClassName} w-full sm:flex-1`}
+            >
+              <option value="">Choose a club…</option>
+              {clubs.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                  {c.hasSecretary && c.id !== secretaryOf?.id ? " (has a secretary)" : ""}
+                </option>
+              ))}
+            </select>
+            <Button
+              size="sm"
+              disabled={pending || !clubId || clubId === secretaryOf?.id}
+              onClick={() => {
+                run(appointSecretary, { clubId, memberId });
+                setChoosingClub(false);
+              }}
+              className="sm:self-center"
+            >
+              {pending ? "Saving…" : "Make secretary"}
+            </Button>
+            {!orphaned ? (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  setChoosingClub(false);
+                  setRoleValue(role);
+                }}
+                className="sm:self-center"
+              >
+                Cancel
+              </Button>
+            ) : null}
+          </div>
+          <p className="mt-2 text-xs text-ink-muted">
+            A secretary runs one club: its sessions, attendance, join requests and videos.
+            {chosen?.hasSecretary && chosen.id !== secretaryOf?.id
+              ? " The current secretary of that club goes back to being a member."
+              : ""}
+          </p>
+        </div>
+      ) : null}
     </div>
   );
 }

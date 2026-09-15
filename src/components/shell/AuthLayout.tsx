@@ -1,19 +1,18 @@
 import type { ReactNode } from "react";
-import { Logo } from "./Logo";
+import { AuthShowcase } from "./AuthShowcase";
 
 /**
  * The frame for every page that is *about* signing in — log in, join, forgot
  * password, set password, the holding page.
  *
- * These were a centred card on an empty canvas: correct, and the plainest
- * screens in the product, which is unfortunate for the two pages most people
- * see most often. On desktop there is now a brand panel beside the form
- * carrying the words the brand guideline leads with; on a phone that panel is
- * dropped entirely rather than stacked, because nobody scrolls past a quote to
- * reach a password field.
+ * One large rounded card on a soft brand-tinted ground: the form on the left,
+ * sitting straight on the card, and an illustrated panel inset on the right
+ * with the club's lines rotating over it. On a phone the picture becomes a
+ * short banner across the top of the card, so it still says "Pick a Book"
+ * without pushing the password field below the fold.
  *
- * The form column keeps its original max-width, so no existing form has to
- * change to sit in here.
+ * The form column keeps a readable measure, so no existing form has to change
+ * to sit in here.
  */
 export function AuthLayout({
   title,
@@ -24,61 +23,42 @@ export function AuthLayout({
   title: string;
   subtitle?: string;
   children: ReactNode;
-  /** Small print under the card — "already have an account?" and friends. */
+  /** Small print under the form — "already have an account?" and friends. */
   footer?: ReactNode;
 }) {
   return (
-    <div className="mx-auto grid w-full max-w-4xl gap-8 py-4 sm:py-8 lg:grid-cols-[1fr_minmax(0,24rem)] lg:items-center lg:gap-12">
-      {/* ---- Brand panel: desktop only ---------------------------------- */}
-      <aside className="reveal relative hidden overflow-hidden rounded-panel bg-brand-900 p-9 shadow-band lg:block">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(720px 420px at 80% -10%, rgba(0,174,239,0.5), transparent 62%), radial-gradient(520px 320px at 0% 110%, rgba(0,174,239,0.18), transparent 60%)",
-          }}
-        />
-        <div className="relative">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-sky-300">
-            Pick a Book
-          </p>
+    <div className="relative -mx-4 -my-5 px-3 py-6 sm:mx-0 sm:my-0 sm:px-0 sm:py-8">
+      {/* Soft brand glow behind the card. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background:
+            "radial-gradient(900px 500px at 15% 0%, rgba(0,174,239,0.14), transparent 60%), radial-gradient(800px 500px at 100% 100%, rgba(41,56,150,0.14), transparent 60%)",
+        }}
+      />
 
-          <blockquote className="mt-5 font-display text-2xl leading-[1.25] text-white">
-            A life without books is{" "}
-            <em className="italic text-sky-300">an unfulfilled life.</em>
-          </blockquote>
-
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-on-navy-muted">
-            From within the pages of a book is a wealth of knowledge, life
-            lessons and inspiration — where we live the lives of others as we
-            find our own feet in the world.
-          </p>
-
-          <p className="mt-8 text-[11px] uppercase tracking-[0.18em] text-sky-300">
-            #IamaReader · #WeInspireChange
-          </p>
-        </div>
-      </aside>
-
-      {/* ---- The form --------------------------------------------------- */}
-      <div className="reveal w-full max-w-sm mx-auto lg:mx-0">
-        {/* The mark only shows where the brand panel does not, so the two
-            never appear twice on one screen. */}
-        <Logo className="mx-auto mb-6 h-9 w-auto lg:hidden" />
-
-        <div className="mb-6 text-center lg:text-left">
-          <h1 className="font-display text-2xl text-ink sm:text-3xl">{title}</h1>
-          {subtitle ? (
-            <p className="mt-1.5 text-sm text-ink-muted">{subtitle}</p>
-          ) : null}
+      <div className="reveal mx-auto grid w-full max-w-5xl overflow-hidden rounded-[28px] border border-line bg-surface p-2.5 shadow-band sm:p-3 lg:min-h-[640px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        {/* Picture: a banner on a phone, the right half on a desktop. */}
+        <div className="h-44 sm:h-52 lg:order-2 lg:h-auto">
+          <AuthShowcase />
         </div>
 
-        <div className="rounded-card border border-line bg-surface p-5 shadow-card sm:p-6">
-          {children}
-        </div>
+        {/* Form */}
+        <div className="flex items-center justify-center px-3 py-7 sm:px-8 sm:py-10 lg:order-1 lg:px-12">
+          <div className="w-full max-w-sm">
+            <div className="mb-7 text-center lg:text-left">
+              <h1 className="font-display text-3xl text-ink sm:text-4xl">{title}</h1>
+              {subtitle ? (
+                <p className="mt-2 text-sm text-ink-muted">{subtitle}</p>
+              ) : null}
+            </div>
 
-        {footer ? <div className="mt-5 text-center lg:text-left">{footer}</div> : null}
+            {children}
+
+            {footer ? <div className="mt-6 text-center lg:text-left">{footer}</div> : null}
+          </div>
+        </div>
       </div>
     </div>
   );
