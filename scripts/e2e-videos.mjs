@@ -119,6 +119,8 @@ console.log("\n--- URL parsing ---");
   await page.click('button[type="submit"]');
   await page.waitForTimeout(3000);
 
+  check("the member is taken to their own videos",
+    new URL(page.url()).pathname === "/me/videos", page.url());
   let body = await visibleText(page);
   check("the member is told it is under review",
     /Sent for review/i.test(body ?? ""), body?.slice(0, 200));
