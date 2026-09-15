@@ -41,6 +41,8 @@ export type BadgeFamily = {
   value: number;
   /** The unit, for "3 of 5 books". */
   unit: string;
+  /** Every badge on the ladder, lowest first, each marked earned or not. */
+  rungs: (BadgeRow & { earnedAt: string | null })[];
 };
 
 const FAMILY_LABELS: Record<string, { label: string; unit: string }> = {
@@ -138,6 +140,7 @@ export async function getMyBadges(memberId: string): Promise<{
       best: earned.length ? earned[earned.length - 1] : null,
       next: rungs.find((b) => !earnedAtByBadge.has(b.id)) ?? null,
       value: values.get(key) ?? 0,
+      rungs: rungs.map((b) => ({ ...b, earnedAt: earnedAtByBadge.get(b.id) ?? null })),
     });
   }
 

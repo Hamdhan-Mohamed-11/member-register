@@ -13,6 +13,7 @@ import {
   PERIOD_LABELS,
   parsePeriod,
   type LeaderboardPeriod,
+  type LeaderboardRow,
 } from "@/lib/leaderboard/queries";
 
 export const metadata: Metadata = { title: "Leaderboard" };
@@ -30,6 +31,83 @@ function placeStyle(place: number): string {
   return "bg-transparent text-ink-faint border-transparent";
 }
 
+function fullName(row: LeaderboardRow): string {
+  return `${row.firstName} ${row.lastName}`.trim() || "Member";
+}
+
+/**
+ * The top three, on a podium: second on the left, first raised in the middle,
+ * third on the right (review item 18). Built from the first three ROWS, not
+ * places 1-3, so a tie still fills the podium -- the place badge on each
+ * says who shares what.
+ */
+function Podium({ rows }: { rows: LeaderboardRow[] }) {
+  // Visual order 2, 1, 3; with fewer than three, the gaps just close up.
+  const slots = [rows[1], rows[0], rows[2]].filter(Boolean) as LeaderboardRow[];
+
+  const ring: Record<number, string> = {
+    1: "ring-gold-500",
+    2: "ring-line-strong",
+    3: "ring-warning-600/50",
+  };
+  const chip: Record<number, string> = {
+    1: "bg-gold-500 text-brand-950",
+    2: "bg-canvas-deep text-ink border border-line-strong",
+    3: "bg-warning-100 text-warning-600 border border-warning-600/25",
+  };
+
+  return (
+    <Card className="reveal mb-4 overflow-hidden bg-linear-to-b from-gold-100/70 to-surface">
+      <p className="text-xs font-semibold uppercase tracking-wider text-gold-700">
+        Top of the board
+      </p>
+      <ol className="mt-4 grid grid-cols-3 items-end gap-2">
+        {slots.map((row) => {
+          const first = row === rows[0];
+          const tier = Math.min(row.place, 3);
+          return (
+            <li key={row.memberId} className={`min-w-0 text-center ${first ? "" : "pt-6"}`}>
+              <Link
+                href={row.isMe ? "/me" : `/members/${row.memberId}`}
+                className="group inline-flex w-full flex-col items-center"
+              >
+                <span className="relative">
+                  <Avatar
+                    src={avatarUrl(row.memberId, row.avatarPath)}
+                    firstName={row.firstName}
+                    lastName={row.lastName}
+                    size={first ? "lg" : "md"}
+                    className={`ring-4 ${ring[tier]}`}
+                  />
+                  <span
+                    className={`absolute -bottom-1 -right-1 grid size-6 place-items-center rounded-full font-display text-xs tabular-nums ${chip[tier]}`}
+                  >
+                    {row.place}
+                  </span>
+                </span>
+                <span
+                  className={`mt-2.5 block w-full truncate font-display text-ink group-hover:text-brand-600 ${
+                    first ? "text-base" : "text-sm"
+                  }`}
+                >
+                  {row.isMe ? "You" : fullName(row)}
+                </span>
+                <span
+                  className={`text-xs font-medium tabular-nums ${
+                    first ? "text-gold-700" : "text-brand-600"
+                  }`}
+                >
+                  {row.points} pts
+                </span>
+              </Link>
+            </li>
+          );
+        })}
+      </ol>
+    </Card>
+  );
+}
+
 export default async function LeaderboardPage({
   searchParams,
 }: {
@@ -38,8 +116,12 @@ export default async function LeaderboardPage({
   const member = await requireActiveMember();
   const sp = await searchParams;
   const period: LeaderboardPeriod = parsePeriod(sp.period);
-  const rows = await getLeaderboard(period);
+  // Nobody on nought points is ranked (review item 18): a board that runs on
+  // into forty members tied last on zero says "nobody here does anything".
+  const rows = (await getLeaderboard(period)).filter((r) => r.points > 0);
   const clubs = activeMemberships(member);
+  const podium = rows.slice(0, 3);
+  const rest = rows.slice(3);
 
   const me = rows.find((r) => r.isMe);
   // Everyone below the fold still deserves to know where they stand, so the
@@ -95,7 +177,7 @@ export default async function LeaderboardPage({
             title="Nothing to rank yet"
             description={
               clubs.length
-                ? "Once your club records a session, points start appearing here."
+                ? "Nobody has points for this period yet. They appear once your club records a session."
                 : "Your club memberships have lapsed, so there is no board to show. Renew to rejoin one."
             }
           />
@@ -109,69 +191,79 @@ export default async function LeaderboardPage({
                 <span className="font-medium text-ink">
                   {ordinal(me.place)} of {rows.length}
                 </span>{" "}
-                {period === "all" ? "overall" : `for ${PERIOD_LABELS[period].toLowerCase()}`}
-                , on <span className="font-medium text-ink">{me.points}</span> point
+                {period === "all" ? "overall" : `for ${PERIOD_LABELS[period].toLowerCase()}`}, on{" "}
+                <span className="font-medium text-ink">{me.points}</span> point
                 {me.points === 1 ? "" : "s"}.
               </p>
             </Card>
           ) : null}
 
-          <Card flush className="reveal">
-            <ol className="divide-y divide-line">
-              {rows.map((row) => {
-                const name = `${row.firstName} ${row.lastName}`.trim() || "Member";
-                return (
-                  <li key={row.memberId}>
-                    <Link
-                      href={row.isMe ? "/me" : `/members/${row.memberId}`}
-                      className={`flex items-center gap-3 px-4 py-3 transition-colors hover:bg-canvas-deep ${
-                        row.isMe ? "bg-brand-50" : ""
-                      }`}
-                    >
-                      <span
-                        className={`shrink-0 grid place-items-center size-8 rounded-full border font-display text-sm tabular-nums ${placeStyle(
-                          row.place,
-                        )}`}
+          <Podium rows={podium} />
+
+          {!me && clubs.length ? (
+            <p className="mb-3 text-sm text-ink-muted">
+              You&apos;re not on the board yet
+              {period === "all" ? "" : ` for ${PERIOD_LABELS[period].toLowerCase()}`}. Come to a
+              session or present a book to get your first points.
+            </p>
+          ) : null}
+
+          {rest.length ? (
+            <Card flush className="reveal">
+              <ol className="divide-y divide-line">
+                {rest.map((row) => {
+                  const name = fullName(row);
+                  return (
+                    <li key={row.memberId}>
+                      <Link
+                        href={row.isMe ? "/me" : `/members/${row.memberId}`}
+                        className={`flex items-center gap-3 px-4 py-3 transition-colors hover:bg-canvas-deep ${
+                          row.isMe ? "bg-brand-50" : ""
+                        }`}
                       >
-                        {row.place}
-                      </span>
+                        <span
+                          className={`shrink-0 grid place-items-center size-8 rounded-full border font-display text-sm tabular-nums ${placeStyle(
+                            row.place,
+                          )}`}
+                        >
+                          {row.place}
+                        </span>
 
-                      <Avatar
-                        src={avatarUrl(row.memberId, row.avatarPath)}
-                        firstName={row.firstName}
-                        lastName={row.lastName}
-                        size="sm"
-                      />
+                        <Avatar
+                          src={avatarUrl(row.memberId, row.avatarPath)}
+                          firstName={row.firstName}
+                          lastName={row.lastName}
+                          size="sm"
+                        />
 
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-sm font-medium text-ink truncate">
-                          {name}
-                          {row.isMe ? (
-                            <span className="ml-1.5 text-xs font-normal text-brand-600">
-                              you
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-sm font-medium text-ink truncate">
+                            {name}
+                            {row.isMe ? (
+                              <span className="ml-1.5 text-xs font-normal text-brand-600">you</span>
+                            ) : null}
+                          </span>
+                          {row.clubName ? (
+                            <span className="block text-xs text-ink-muted truncate">
+                              {row.clubName}
                             </span>
                           ) : null}
                         </span>
-                        {row.clubName ? (
-                          <span className="block text-xs text-ink-muted truncate">
-                            {row.clubName}
-                          </span>
-                        ) : null}
-                      </span>
 
-                      <span className="shrink-0 text-sm font-medium text-brand-600 tabular-nums">
-                        {row.points}
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ol>
-          </Card>
+                        <span className="shrink-0 text-sm font-medium text-brand-600 tabular-nums">
+                          {row.points}
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ol>
+            </Card>
+          ) : null}
 
           <p className="mt-3 text-xs text-ink-faint">
-            You are ranked against the members you can see in the directory —
-            everyone across the public clubs, or your own company only.
+            You are ranked against the members you can see in the directory — everyone across the
+            public clubs, or your own company only.
           </p>
         </>
       )}

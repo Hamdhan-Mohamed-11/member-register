@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { BottomNav } from "./BottomNav";
 import { MemberSidebar } from "./MemberSidebar";
+import { SectionTabs } from "./SectionTabs";
 import { TopBar } from "./TopBar";
 import { getSessionMember, isAdmin, activeMemberships } from "@/lib/auth/session";
 import { avatarUrl } from "@/lib/members/queries";
@@ -88,6 +89,7 @@ export async function AppShell({
             wide ? "max-w-6xl" : "max-w-5xl"
           }`}
         >
+          <SectionTabs />
           {children}
         </main>
       </div>

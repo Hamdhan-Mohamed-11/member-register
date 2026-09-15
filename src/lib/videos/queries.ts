@@ -93,6 +93,24 @@ export async function listMyVideos(memberId: string): Promise<VideoItem[]> {
   return ((data ?? []) as unknown as Raw[]).map(toItem);
 }
 
+/**
+ * What a member has had published, for their profile. Approved only, whoever
+ * is looking -- a submission still in review is between the member and the
+ * admins, and the policy would hide it from other members anyway.
+ */
+export async function listMemberVideos(memberId: string, limit = 4): Promise<VideoItem[]> {
+  const supabase = await getServerComponentSupabase();
+  const { data } = await supabase
+    .from("videos")
+    .select(SELECT)
+    .eq("submitted_by", memberId)
+    .eq("status", "approved")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  return ((data ?? []) as unknown as Raw[]).map(toItem);
+}
+
 /** The moderation queue: pending first, then recent decisions for context. */
 /**
  * The moderation queue.

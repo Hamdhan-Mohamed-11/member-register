@@ -17,9 +17,9 @@ export type SidebarItem = NavItem & { icon: IconName };
 export const MEMBER_NAV: NavItem[] = [
   { href: "/feed", label: "Home" },
   { href: "/sessions", label: "Sessions", match: ["/sessions", "/videos", "/discover"] },
-  { href: "/books", label: "Books", match: ["/books", "/library", "/cart"] },
+  { href: "/books", label: "Books", match: ["/books", "/library", "/cart", "/orders"] },
   { href: "/directory", label: "Members", match: ["/directory", "/members", "/leaderboard"] },
-  { href: "/me", label: "Me", match: ["/me", "/orders", "/renew"] },
+  { href: "/me", label: "Me", match: ["/me", "/renew"] },
 ];
 
 /**
@@ -48,3 +48,31 @@ export function isActive(item: NavItem, pathname: string): boolean {
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
 }
+
+/**
+ * Sibling pages that share one bottom-bar tab, shown as a row of pills at the
+ * top of each on a phone. The bottom bar has room for five destinations, so
+ * Discover, Recordings, the library and the leaderboard sit under a parent tab
+ * -- and without this row, a member on a phone had no way to find them short
+ * of a button buried on another page (review item 14).
+ *
+ * Only on the top-level page of each: a session or a single book has its own
+ * back link, and pills above it would be noise.
+ */
+export const SECTION_GROUPS: SidebarItem[][] = [
+  [
+    { href: "/sessions", label: "Sessions", icon: "calendar" },
+    { href: "/discover", label: "Discover", icon: "sparkle" },
+    { href: "/videos", label: "Recordings", icon: "film" },
+  ],
+  [
+    { href: "/books", label: "Buy", icon: "book" },
+    { href: "/library", label: "Borrow", icon: "bookmark" },
+    { href: "/cart", label: "Cart", icon: "cart" },
+    { href: "/orders", label: "Orders", icon: "inbox" },
+  ],
+  [
+    { href: "/directory", label: "Members", icon: "users" },
+    { href: "/leaderboard", label: "Leaderboard", icon: "trophy" },
+  ],
+];

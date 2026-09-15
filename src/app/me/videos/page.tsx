@@ -5,6 +5,7 @@ import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { buttonClassName } from "@/components/ui/Button";
+import { Toast } from "@/components/ui/Toast";
 import { VideoCard } from "@/components/videos/VideoCard";
 import { WithdrawVideo } from "@/app/videos/VideoActions";
 import { requireActiveMember } from "@/lib/auth/session";
@@ -12,8 +13,13 @@ import { listMyVideos } from "@/lib/videos/queries";
 
 export const metadata: Metadata = { title: "My videos" };
 
-export default async function MyVideosPage() {
+export default async function MyVideosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ sent?: string; published?: string }>;
+}) {
   const member = await requireActiveMember();
+  const sp = await searchParams;
   const videos = await listMyVideos(member.userId);
 
   return (
@@ -52,6 +58,9 @@ export default async function MyVideosPage() {
           ))}
         </div>
       )}
+
+      {sp.sent ? <Toast message="Sent for review" /> : null}
+      {sp.published ? <Toast message="Video published" /> : null}
     </AppShell>
   );
 }

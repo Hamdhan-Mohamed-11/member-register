@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/Card";
 import { buttonClassName } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SessionCard } from "@/components/sessions/SessionCard";
-import { activeMemberships, requireActiveMember } from "@/lib/auth/session";
+import { activeMemberships, isAdmin, requireActiveMember } from "@/lib/auth/session";
 import { listSessions } from "@/lib/sessions/queries";
 
 export const metadata: Metadata = { title: "Sessions" };
@@ -18,7 +18,14 @@ export default async function SessionsPage() {
   // isPast is resolved by the query layer -- see the note on SessionSummary.
   // The list arrives newest-first, so upcoming is reversed to read soonest-first.
   const upcoming = sessions.filter((s) => !s.isPast).reverse();
-  const past = sessions.filter((s) => s.isPast);
+  // Members see the last month of past sessions; older ones are history and
+  // only crowd the page (review item 15). Admins keep the lot -- they record
+  // attendance and chase recordings for sessions well after the fact.
+  const monthAgo = new Date();
+  monthAgo.setMonth(monthAgo.getMonth() - 1);
+  const past = sessions.filter(
+    (s) => s.isPast && (isAdmin(member) || new Date(s.heldAt) >= monthAgo),
+  );
 
   // Resolved locally rather than with a round-trip per session: the rule is
   // "free if you are in the host club", and we already know both sides.
@@ -44,7 +51,9 @@ export default async function SessionsPage() {
             paid sessions as a guest.
           </p>
         </div>
-        <div className="flex shrink-0 gap-2">
+        {/* Desktop has these in the sidebar and phones in the section row;
+            the buttons stay for tablets and for anyone who looks here. */}
+        <div className="hidden shrink-0 gap-2 sm:flex">
           <Link href="/discover" className={buttonClassName("secondary", "sm")}>
             Discover
           </Link>
@@ -84,7 +93,7 @@ export default async function SessionsPage() {
           {past.length ? (
             <section>
               <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-faint mb-2">
-                Past
+                {isAdmin(member) ? "Past" : "In the last month"}
               </h2>
               <div className="grid gap-3 sm:grid-cols-2">
                 {past.map((s) => (

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { AppShell } from "@/components/shell/AppShell";
 import { BackLink } from "@/components/ui/BackLink";
-import { Card, CardHeader } from "@/components/ui/Card";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { isAdmin, requireActiveMember } from "@/lib/auth/session";
 import { SubmitVideoForm } from "../SubmitVideoForm";
 
@@ -13,22 +13,20 @@ export default async function SubmitVideoPage() {
 
   return (
     <AppShell>
-      <div className="mb-4">
-        <BackLink href="/videos">Videos</BackLink>
-        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Add a video</h1>
-      </div>
+      <BackLink href="/videos">Recordings</BackLink>
+      <PageHeader
+        className="mt-1"
+        title="Add a video"
+        description={
+          admin
+            ? "Share a recording with the club. Anything you add is published straight away."
+            : "Share a session recording or a talk with the club. A club admin reviews it before it appears for everyone."
+        }
+      />
 
-      <Card className="max-w-lg">
-        <CardHeader
-          title="Share a link"
-          description={
-            admin
-              ? "Anything you add is published straight away."
-              : "A club admin reviews it before it appears for everyone. You'll be able to watch it yourself in the meantime."
-          }
-        />
-        <SubmitVideoForm isAdmin={admin} />
-      </Card>
+      {/* Form and preview side by side on a wide screen, instead of one
+          narrow card in a wide empty page (review item 2). */}
+      <SubmitVideoForm isAdmin={admin} />
     </AppShell>
   );
 }

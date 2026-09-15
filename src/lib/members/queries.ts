@@ -124,8 +124,11 @@ export type DirectoryEntry = {
   lastName: string;
   avatarPath: string | null;
   pointsBalance: number;
+  bio: string | null;
   clubs: string[];
   currentlyReading: string[];
+  /** The first book they are reading, with enough to draw its cover. */
+  nowReading: { title: string; author: string; coverId: number | null } | null;
 };
 
 /**
@@ -141,9 +144,9 @@ export async function getDirectory(): Promise<DirectoryEntry[]> {
   const { data } = await supabase
     .from("profiles")
     .select(
-      `id, first_name, last_name, avatar_path, points_balance,
+      `id, first_name, last_name, avatar_path, points_balance, bio,
        club_memberships ( status, clubs ( name ) ),
-       reading_items ( title, status )`,
+       reading_items ( title, author, status, cover_id, created_at )`,
     )
     .eq("status", "active")
     .order("first_name");
@@ -154,21 +157,39 @@ export async function getDirectory(): Promise<DirectoryEntry[]> {
     last_name: string;
     avatar_path: string | null;
     points_balance: number;
+    bio: string | null;
     club_memberships: { status: string; clubs: { name: string } | null }[] | null;
-    reading_items: { title: string; status: string }[] | null;
+    reading_items:
+      | {
+          title: string;
+          author: string;
+          status: string;
+          cover_id: number | null;
+          created_at: string;
+        }[]
+      | null;
   };
 
-  return ((data ?? []) as unknown as Raw[]).map((p) => ({
-    id: p.id,
-    firstName: p.first_name,
-    lastName: p.last_name,
-    avatarPath: p.avatar_path,
-    pointsBalance: p.points_balance,
-    clubs: (p.club_memberships ?? [])
-      .filter((m) => m.status === "active" && m.clubs)
-      .map((m) => m.clubs!.name),
-    currentlyReading: (p.reading_items ?? [])
+  return ((data ?? []) as unknown as Raw[]).map((p) => {
+    // Newest first, so the card shows what they picked up most recently.
+    const reading = (p.reading_items ?? [])
       .filter((r) => r.status === "reading")
-      .map((r) => r.title),
-  }));
+      .sort((a, b) => b.created_at.localeCompare(a.created_at));
+    const first = reading[0];
+    return {
+      id: p.id,
+      firstName: p.first_name,
+      lastName: p.last_name,
+      avatarPath: p.avatar_path,
+      pointsBalance: p.points_balance,
+      bio: p.bio,
+      clubs: (p.club_memberships ?? [])
+        .filter((m) => m.status === "active" && m.clubs)
+        .map((m) => m.clubs!.name),
+      currentlyReading: reading.map((r) => r.title),
+      nowReading: first
+        ? { title: first.title, author: first.author, coverId: first.cover_id }
+        : null,
+    };
+  });
 }
