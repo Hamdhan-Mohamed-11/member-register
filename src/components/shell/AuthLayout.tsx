@@ -34,7 +34,11 @@ export function AuthLayout({
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            "radial-gradient(900px 500px at 15% 0%, rgba(0,174,239,0.14), transparent 60%), radial-gradient(800px 500px at 100% 100%, rgba(41,56,150,0.14), transparent 60%)",
+            "radial-gradient(640px 380px at 20% 15%, rgba(0,174,239,0.16), transparent 70%), radial-gradient(640px 400px at 85% 90%, rgba(41,56,150,0.16), transparent 70%)",
+          // Fade the whole glow out towards its edges, so it never shows as
+          // a lit rectangle behind the card.
+          maskImage: "radial-gradient(ellipse at center, black 45%, transparent 75%)",
+          WebkitMaskImage: "radial-gradient(ellipse at center, black 45%, transparent 75%)",
         }}
       />
 

@@ -76,20 +76,20 @@ function Scene() {
       ))}
 
       {/* Moon with a glow */}
-      <circle cx="290" cy="185" r="110" fill="url(#auth-glow)" />
-      <circle cx="290" cy="185" r="44" fill="#f9cd59" />
-      <circle cx="306" cy="175" r="40" fill="#f2cf7a" opacity="0.35" />
+      <circle cx="290" cy="130" r="110" fill="url(#auth-glow)" />
+      <circle cx="290" cy="130" r="44" fill="#f9cd59" />
+      <circle cx="306" cy="120" r="40" fill="#f2cf7a" opacity="0.35" />
 
       {/* Birds */}
       <path
-        d="M92 300q8-7 14 0q6-7 14 0"
+        d="M92 210q8-7 14 0q6-7 14 0"
         stroke="#dbe8ff"
         strokeWidth="2"
         fill="none"
         strokeLinecap="round"
       />
       <path
-        d="M130 275q6-5 10 0q4-5 10 0"
+        d="M130 185q6-5 10 0q4-5 10 0"
         stroke="#dbe8ff"
         strokeWidth="1.6"
         fill="none"
@@ -98,7 +98,7 @@ function Scene() {
 
       {/* Everything on the ground sits a little high, so the lowest third is
           plain dark ground for the caption to sit on. */}
-      <g transform="translate(0 -95)">
+      <g transform="translate(0 -165)">
         {/* Hills */}
         <path
           d="M0 400 C 70 350 140 360 200 385 S 330 350 400 370 V600 H0Z"
@@ -132,7 +132,7 @@ function Scene() {
           <circle cx="14" cy="34" r="14" />
         </g>
       </g>
-      <rect y="500" width="400" height="100" fill="#0c1240" />
+      <rect y="430" width="400" height="170" fill="#0c1240" />
     </svg>
   );
 }
