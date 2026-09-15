@@ -163,6 +163,27 @@ export async function deletePost(postId: string): Promise<ActionResult> {
   return { ok: true };
 }
 
+/**
+ * Sets or replaces a video's thumbnail, after the image has been uploaded
+ * under the post's club folder. set_discover_poster re-checks both.
+ */
+export async function setPostPoster(postId: string, posterPath: string): Promise<ActionResult> {
+  await requireSecretary();
+  if (!idSchema.safeParse(postId).success || posterPath.length < 3 || posterPath.length > 400) {
+    return { ok: false, error: "Unknown post." };
+  }
+
+  const supabase = await getActionSupabase();
+  const { error } = await supabase.rpc("set_discover_poster", {
+    p_id: postId,
+    p_poster_path: posterPath,
+  });
+  if (error) return { ok: false, error: error.message };
+
+  revalidate();
+  return { ok: true };
+}
+
 function revalidate() {
   revalidatePath("/discover");
   revalidatePath("/discover/saved");

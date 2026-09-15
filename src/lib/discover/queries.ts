@@ -66,3 +66,25 @@ export async function getDiscoverFeed(options?: {
 export async function getManageablePosts(): Promise<DiscoverPost[]> {
   return getDiscoverFeed({ limit: 60 });
 }
+
+export type PostStats = { likes: number; saves: number };
+
+/**
+ * Like and save counts for the posts the caller administers. Counts only --
+ * who saved a post stays private to them. Empty for anyone who administers
+ * nothing.
+ */
+export async function getPostStats(): Promise<Map<string, PostStats>> {
+  const supabase = await getServerComponentSupabase();
+  const { data } = await supabase.rpc("discover_post_stats");
+
+  const map = new Map<string, PostStats>();
+  for (const row of (data ?? []) as unknown as {
+    post_id: string;
+    like_count: number | string;
+    save_count: number | string;
+  }[]) {
+    map.set(row.post_id, { likes: Number(row.like_count), saves: Number(row.save_count) });
+  }
+  return map;
+}

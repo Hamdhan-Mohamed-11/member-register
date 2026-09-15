@@ -62,6 +62,13 @@ export function buildCsp(isDev: boolean): string {
 
     "font-src": ["'self'", "data:"],
 
+    // Video. Without this, media falls back to default-src 'self' and every
+    // Discover video -- served by redirect to a signed Storage URL -- was
+    // silently blocked: the player showed but would not play. blob: is the
+    // uploader reading a picked file locally to pull a still from it, which
+    // the same fallback also blocked, so video posts went up without one.
+    "media-src": ["'self'", "blob:", SUPABASE_ORIGIN].filter(Boolean),
+
     // XHR/websocket targets. The Supabase origin covers PostgREST, Auth and
     // Realtime; ws: is the dev server's hot-reload socket.
     "connect-src": ["'self'", SUPABASE_ORIGIN, ...(isDev ? ["ws:", "wss:"] : [])].filter(Boolean),

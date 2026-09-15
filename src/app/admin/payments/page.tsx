@@ -26,6 +26,7 @@ const PURPOSE_LABEL: Record<string, string> = {
   club_membership: "Club membership",
   session_booking: "Session booking",
   book_order: "Book order",
+  library_addon: "Library add-on",
 };
 
 type PaymentRow = {
@@ -142,7 +143,13 @@ export default async function PaymentsPage() {
                       </Badge>
                     </div>
 
-                    {!settled ? <MarkPaid paymentId={p.id} /> : null}
+                    {/* Under the status, at the right edge, rather than
+                        hanging off the left under the reference. */}
+                    {!settled ? (
+                      <div className="mt-2 flex justify-end">
+                        <MarkPaid paymentId={p.id} />
+                      </div>
+                    ) : null}
                   </li>
                 );
               })}

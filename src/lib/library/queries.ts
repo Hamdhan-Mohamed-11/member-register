@@ -196,13 +196,20 @@ export type AdminBorrowRequest = BorrowRequest & {
 export async function getAllBorrowRequests(): Promise<AdminBorrowRequest[]> {
   const supabase = await getServerComponentSupabase();
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("borrow_requests")
     .select(
       `id, book_id, title, author, status, note, due_on, requested_at, returned_at,
-       profiles ( id, first_name, last_name, email )`,
+       profiles!borrow_requests_member_id_fkey ( id, first_name, last_name, email )`,
     )
     .order("requested_at", { ascending: false });
+
+  // borrow_requests has TWO foreign keys to profiles -- the member, and the
+  // admin who decided (decided_by). An unqualified `profiles ( ... )` embed is
+  // ambiguous, PostgREST refuses it with an error, and the page used to read
+  // that as "no requests" while the dashboard's plain count said two were
+  // waiting. The embed now names its key, and an error is logged, not hidden.
+  if (error) console.error("[library] borrow requests:", error.message);
 
   type Row = RawBorrow & {
     profiles: { id: string; first_name: string; last_name: string; email: string } | null;

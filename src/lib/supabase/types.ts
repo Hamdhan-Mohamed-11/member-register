@@ -1918,6 +1918,14 @@ export type Database = {
           width: number
         }[]
       }
+      discover_post_stats: {
+        Args: never
+        Returns: {
+          like_count: number
+          post_id: string
+          save_count: number
+        }[]
+      }
       has_library_access: { Args: { p_member_id: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       is_public_club: { Args: { p_club_id: string }; Returns: boolean }
@@ -2038,6 +2046,10 @@ export type Database = {
           p_note?: string
           p_status: string
         }
+        Returns: undefined
+      }
+      set_discover_poster: {
+        Args: { p_id: string; p_poster_path: string }
         Returns: undefined
       }
       set_member_role: {

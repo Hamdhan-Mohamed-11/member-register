@@ -40,7 +40,7 @@ export function MarkPaid({ paymentId }: { paymentId: string }) {
   }
 
   return (
-    <div className="mt-2 space-y-2">
+    <div className="w-full max-w-md space-y-2">
       {error ? <Notice>{error}</Notice> : null}
       <input
         value={reason}
@@ -48,7 +48,7 @@ export function MarkPaid({ paymentId }: { paymentId: string }) {
         placeholder="Why is this being settled by hand?"
         className={controlClassName}
       />
-      <div className="flex gap-2">
+      <div className="flex justify-end gap-2">
         <Button size="sm" disabled={pending || reason.trim().length < 3} onClick={submit}>
           {pending ? "Saving…" : "Confirm"}
         </Button>

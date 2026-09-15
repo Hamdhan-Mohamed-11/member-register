@@ -52,10 +52,25 @@ export function WithdrawVideo({ videoId }: { videoId: string }) {
   );
 }
 
-export function ModerateVideo({ videoId }: { videoId: string }) {
+/**
+ * Publish / reject, offering only the move that changes something: a pending
+ * video gets both, a published one only Reject (to pull it), a rejected one
+ * only Publish. Offering "Publish" on a video already published read as if
+ * it had not gone through.
+ */
+export function ModerateVideo({
+  videoId,
+  status = "pending",
+}: {
+  videoId: string;
+  status?: "pending" | "approved" | "rejected";
+}) {
   const { pending, error, run } = useVideoAction();
   const [rejecting, setRejecting] = useState(false);
   const [note, setNote] = useState("");
+
+  const rejectClass =
+    "press inline-flex min-h-9 items-center rounded-lg border border-danger-600/40 bg-surface px-3 text-sm font-medium text-danger-600 hover:bg-danger-100 disabled:opacity-50";
 
   return (
     <div className="space-y-2">
@@ -69,32 +84,36 @@ export function ModerateVideo({ videoId }: { videoId: string }) {
             placeholder="Why? The member sees this."
             className={controlClassName}
           />
-          <div className="flex gap-2">
+          <div className="flex justify-end gap-2">
+            <Button size="sm" variant="ghost" onClick={() => setRejecting(false)}>
+              Cancel
+            </Button>
             <Button
               size="sm"
               variant="danger"
               disabled={pending}
               onClick={() => run(moderateVideo, { videoId, status: "rejected", note })}
             >
-              {pending ? "Saving…" : "Confirm rejection"}
-            </Button>
-            <Button size="sm" variant="ghost" onClick={() => setRejecting(false)}>
-              Cancel
+              {pending ? "Saving…" : status === "approved" ? "Unpublish" : "Confirm rejection"}
             </Button>
           </div>
         </>
       ) : (
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            disabled={pending}
-            onClick={() => run(moderateVideo, { videoId, status: "approved" })}
-          >
-            {pending ? "Working…" : "Publish"}
-          </Button>
-          <Button size="sm" variant="ghost" onClick={() => setRejecting(true)}>
-            Reject
-          </Button>
+        <div className="flex justify-end gap-2">
+          {status !== "approved" ? (
+            <Button
+              size="sm"
+              disabled={pending}
+              onClick={() => run(moderateVideo, { videoId, status: "approved" })}
+            >
+              {pending ? "Working…" : status === "rejected" ? "Publish after all" : "Publish"}
+            </Button>
+          ) : null}
+          {status !== "rejected" ? (
+            <button type="button" onClick={() => setRejecting(true)} className={rejectClass}>
+              {status === "approved" ? "Unpublish" : "Reject"}
+            </button>
+          ) : null}
         </div>
       )}
     </div>

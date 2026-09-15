@@ -1,23 +1,91 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { buttonClassName } from "@/components/ui/Button";
 import { adminClubScope, requireSecretary } from "@/lib/auth/session";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
-import { getManageablePosts, discoverMediaUrl } from "@/lib/discover/queries";
+import {
+  getManageablePosts,
+  getPostStats,
+  discoverMediaUrl,
+  type DiscoverPost,
+} from "@/lib/discover/queries";
 import {
   DeletePostButton,
   DiscoverUploader,
+  SetThumbnailButton,
   type ClubOption,
   type SessionOption,
 } from "./DiscoverUploader";
 
 export const metadata: Metadata = { title: "Discover · Admin" };
 export const dynamic = "force-dynamic";
+
+function postLabel(post: DiscoverPost): string {
+  return post.caption || (post.kind === "video" ? "Video" : "Photo");
+}
+
+function Thumb({ post, size = "size-12" }: { post: DiscoverPost; size?: string }) {
+  return (
+    <span className={`relative block shrink-0 overflow-hidden rounded-lg bg-brand-900 ${size}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={discoverMediaUrl(post.id, post.kind === "video")}
+        alt=""
+        loading="lazy"
+        className="h-full w-full object-cover"
+      />
+      {post.kind === "video" ? (
+        <span className="absolute inset-0 grid place-items-center">
+          <span className="grid size-6 place-items-center rounded-full bg-black/55 text-white">
+            <svg viewBox="0 0 24 24" fill="currentColor" className="ml-0.5 size-3" aria-hidden>
+              <path d="M8 5.5v13l10.5-6.5z" />
+            </svg>
+          </span>
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
+/** A short ranked list for the analytics panel; each row jumps to the post. */
+function TopList({
+  title,
+  rows,
+  unit,
+}: {
+  title: string;
+  rows: { post: DiscoverPost; count: number }[];
+  unit: string;
+}) {
+  return (
+    <div>
+      <p className="text-xs font-semibold uppercase tracking-wider text-ink-faint">{title}</p>
+      {rows.length === 0 ? (
+        <p className="mt-2 text-sm text-ink-faint">Nothing yet.</p>
+      ) : (
+        <ol className="mt-2 space-y-1">
+          {rows.map(({ post, count }) => (
+            <li key={post.id}>
+              <a
+                href={`#post-${post.id}`}
+                className="flex items-center gap-3 rounded-lg p-1.5 hover:bg-canvas"
+              >
+                <Thumb post={post} size="size-10" />
+                <span className="min-w-0 flex-1 truncate text-sm text-ink">{postLabel(post)}</span>
+                <span className="shrink-0 text-sm font-medium text-brand-600 tabular-nums">
+                  {count} {count === 1 ? unit : `${unit}s`}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  );
+}
 
 export default async function AdminDiscoverPage() {
   const member = await requireSecretary();
@@ -40,10 +108,11 @@ export default async function AdminDiscoverPage() {
     .limit(100);
   if (scope != null) sessionQuery = sessionQuery.in("host_club_id", scope);
 
-  const [{ data: clubRows }, { data: sessionRows }, posts] = await Promise.all([
+  const [{ data: clubRows }, { data: sessionRows }, posts, stats] = await Promise.all([
     clubQuery,
     sessionQuery,
     getManageablePosts(),
+    getPostStats(),
   ]);
 
   const clubs = (clubRows ?? []) as ClubOption[];
@@ -51,10 +120,20 @@ export default async function AdminDiscoverPage() {
     (sessionRows ?? []) as unknown as { id: string; title: string; host_club_id: string }[]
   ).map((s) => ({ id: s.id, title: s.title, clubId: s.host_club_id }));
 
-  // Posts the caller may actually remove. The feed shows everything they can
-  // SEE, which for a secretary includes other public clubs under the same
-  // type -- offering Remove on those would only produce a refusal.
+  // Posts the caller may actually remove. Every member sees every post now,
+  // so for a secretary the feed includes other clubs' -- offering Remove on
+  // those would only produce a refusal.
   const mine = scope == null ? posts : posts.filter((p) => p.clubId && scope.includes(p.clubId));
+
+  const statOf = (p: DiscoverPost) => stats.get(p.id) ?? { likes: p.likeCount, saves: 0 };
+  const totalLikes = mine.reduce((n, p) => n + statOf(p).likes, 0);
+  const totalSaves = mine.reduce((n, p) => n + statOf(p).saves, 0);
+  const top = (key: "likes" | "saves") =>
+    mine
+      .map((post) => ({ post, count: statOf(post)[key] }))
+      .filter((r) => r.count > 0)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 3);
 
   return (
     <AdminShell>
@@ -62,63 +141,99 @@ export default async function AdminDiscoverPage() {
       <PageHeader
         className="mt-1"
         title="Discover"
-        description="Photos and video from your club's events, for members to see."
-        action={
-          <Link href="/discover" className={buttonClassName("secondary", "sm")}>
-            View the feed
-          </Link>
-        }
+        description="Photos and video from your club's events. Every member can see them."
       />
 
-      <div className="space-y-4 max-w-xl">
-        <DiscoverUploader clubs={clubs} sessions={sessions} />
+      {/* Uploader on the left, how the posts are doing on the right -- the
+          right half of the page used to be empty. */}
+      <div className="grid gap-5 lg:grid-cols-5 lg:items-start">
+        <div className="lg:col-span-3">
+          <DiscoverUploader clubs={clubs} sessions={sessions} />
+        </div>
 
-        <h2 className="font-display text-lg text-ink pt-2">
-          Posted{mine.length ? ` (${mine.length})` : ""}
-        </h2>
+        <Card className="lg:col-span-2 lg:sticky lg:top-6">
+          <p className="text-xs font-semibold uppercase tracking-wider text-gold-700">
+            How your posts are doing
+          </p>
+          <dl className="mt-3 grid grid-cols-3 gap-2 text-center">
+            {[
+              { label: "Posts", value: mine.length },
+              { label: "Likes", value: totalLikes },
+              { label: "Saves", value: totalSaves },
+            ].map((s) => (
+              <div key={s.label} className="rounded-card bg-canvas px-2 py-3">
+                <dd className="font-display text-2xl text-ink tabular-nums">{s.value}</dd>
+                <dt className="text-xs text-ink-muted">{s.label}</dt>
+              </div>
+            ))}
+          </dl>
 
-        {mine.length === 0 ? (
-          <Card flush>
-            <EmptyState
-              icon="sparkle"
-              title="Nothing posted yet"
-              description="Whatever you post above shows up here so you can take it down again."
-            />
-          </Card>
-        ) : (
-          <Card flush>
-            <ul className="divide-y divide-line">
-              {mine.map((post) => (
-                <li key={post.id} className="p-3 flex items-center gap-3">
-                  <div className="size-16 shrink-0 rounded-lg overflow-hidden bg-canvas-deep">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={discoverMediaUrl(post.id, post.kind === "video")}
-                      alt=""
-                      loading="lazy"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+          <div className="mt-5 space-y-5">
+            <TopList title="Most liked" rows={top("likes")} unit="like" />
+            <TopList title="Most saved" rows={top("saves")} unit="save" />
+          </div>
+
+          <p className="mt-4 text-xs text-ink-faint">
+            Saves are counted, never named: who saved a post stays private to them.
+          </p>
+        </Card>
+      </div>
+
+      <h2 className="mt-8 mb-3 font-display text-lg text-ink">
+        Posted{mine.length ? ` (${mine.length})` : ""}
+      </h2>
+
+      {mine.length === 0 ? (
+        <Card flush>
+          <EmptyState
+            icon="sparkle"
+            title="Nothing posted yet"
+            description="Whatever you post above shows up here so you can take it down again."
+          />
+        </Card>
+      ) : (
+        <Card flush>
+          <ul className="divide-y divide-line">
+            {mine.map((post) => {
+              const s = statOf(post);
+              return (
+                <li
+                  key={post.id}
+                  id={`post-${post.id}`}
+                  className="scroll-mt-24 flex flex-wrap items-center gap-3 p-3 target:bg-gold-100/50"
+                >
+                  <a
+                    href={discoverMediaUrl(post.id)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Open ${postLabel(post)}`}
+                  >
+                    <Thumb post={post} size="size-16" />
+                  </a>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-ink truncate">
-                      {post.caption || (post.kind === "video" ? "Video" : "Photo")}
-                    </p>
-                    <p className="text-xs text-ink-faint truncate">
+                    <p className="truncate text-sm text-ink">{postLabel(post)}</p>
+                    <p className="truncate text-xs text-ink-faint">
                       {post.clubName ?? "Pick a Book"} ·{" "}
                       {new Date(post.createdAt).toLocaleDateString("en-GB", {
                         day: "numeric",
                         month: "short",
                       })}
-                      {post.likeCount > 0 ? ` · ${post.likeCount} like${post.likeCount === 1 ? "" : "s"}` : ""}
+                    </p>
+                    <p className="mt-0.5 text-xs text-ink-muted tabular-nums">
+                      {s.likes} like{s.likes === 1 ? "" : "s"} · {s.saves} save
+                      {s.saves === 1 ? "" : "s"}
                     </p>
                   </div>
-                  <DeletePostButton post={post} />
+                  <div className="flex items-start gap-2">
+                    {post.kind === "video" ? <SetThumbnailButton post={post} /> : null}
+                    <DeletePostButton post={post} />
+                  </div>
                 </li>
-              ))}
-            </ul>
-          </Card>
-        )}
-      </div>
+              );
+            })}
+          </ul>
+        </Card>
+      )}
     </AdminShell>
   );
 }

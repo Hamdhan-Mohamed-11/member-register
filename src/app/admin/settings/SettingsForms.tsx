@@ -219,7 +219,7 @@ export function PointsRulesForm({ rules }: { rules: PointsRule[] }) {
 
       <ul className="divide-y divide-line">
         {rules.map((rule) => (
-          <li key={rule.code} className="py-3 flex items-end gap-3">
+          <li key={rule.code} className="py-3 flex items-center gap-3">
             <div className="min-w-0 flex-1">
               <label
                 htmlFor={`points-${rule.code}`}
@@ -229,19 +229,25 @@ export function PointsRulesForm({ rules }: { rules: PointsRule[] }) {
               </label>
               <p className="text-xs text-ink-faint">{rule.code}</p>
             </div>
-            <input
-              id={`points-${rule.code}`}
-              type="number"
-              min={0}
-              defaultValue={rule.points}
-              className={`${controlClassName} w-24`}
-              onBlur={(e) => {
-                if (Number(e.target.value) !== rule.points) {
-                  save(rule.code, e.target.value);
-                }
-              }}
-            />
-            <span className="text-xs text-ink-faint w-12 shrink-0">
+            {/* The width lives on a wrapper: controlClassName carries w-full,
+                which wins over a w-24 beside it and stretched the box across
+                the row, squeezing the label into a one-word column. */}
+            <div className="w-24 shrink-0">
+              <input
+                id={`points-${rule.code}`}
+                type="number"
+                min={0}
+                defaultValue={rule.points}
+                className={`${controlClassName} text-right tabular-nums`}
+                onBlur={(e) => {
+                  if (Number(e.target.value) !== rule.points) {
+                    save(rule.code, e.target.value);
+                  }
+                }}
+              />
+            </div>
+            <span className="text-xs text-ink-faint">pts</span>
+            <span className="text-xs text-success-600 w-12 shrink-0">
               {savedCode === rule.code && !pending ? "saved" : ""}
             </span>
           </li>
