@@ -47,3 +47,7 @@ next-env.d.ts
 
 # playwright screenshots from scripts/e2e-auth.mjs
 test-screenshots/
+
+# Design reference material (Stitch exports). Kept on disk, never committed:
+# it is ~60 screenshots and mock HTML, not part of the app.
+stitch_pick_a_book_members_portal*/
