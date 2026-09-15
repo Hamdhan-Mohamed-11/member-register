@@ -173,7 +173,7 @@ export function ProfileView({
                 className="flex min-w-0 flex-col items-center rounded-2xl border border-line bg-surface px-2 pb-4 pt-5 text-center shadow-card transition-transform hover:-translate-y-0.5"
               >
                 <BadgeMedal icon={badge.icon} tone={medalTone(badge.family, badge.icon)} size="lg" />
-                <p className="mt-2.5 w-full truncate text-sm font-semibold text-ink">
+                <p className="mt-2.5 line-clamp-2 w-full text-sm font-semibold leading-tight text-ink">
                   {badge.name}
                 </p>
                 <p className="text-xs text-ink-muted">
