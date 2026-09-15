@@ -5,7 +5,7 @@ import { Card, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { buttonClassName } from "@/components/ui/Button";
 import { avatarUrl, type MemberProfile } from "@/lib/members/queries";
-import { BadgeIcon } from "@/components/badges/BadgeIcon";
+import { BadgeMedal, medalTone } from "@/components/badges/BadgeMedal";
 import type { EarnedBadge } from "@/lib/badges/queries";
 import { BookCover } from "@/components/books/BookCover";
 import { openLibraryCoverSrc } from "@/lib/books/covers";
@@ -163,17 +163,27 @@ export function ProfileView({
               ) : undefined
             }
           />
-          <ul className="flex flex-wrap gap-2">
+          {/* Medal tiles rather than a row of pills, so earning one looks
+              like it was worth earning. */}
+          <ul className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-5">
             {badges.map((badge) => (
               <li
                 key={badge.id}
-                className="flex items-center gap-2 rounded-full border border-gold-700/25 bg-gold-100 pl-2 pr-3 py-1"
                 title={badge.description ?? undefined}
+                className="flex min-w-0 flex-col items-center rounded-2xl border border-line bg-surface px-2 pb-3 pt-4 text-center shadow-card transition-transform hover:-translate-y-0.5"
               >
-                <BadgeIcon name={badge.icon} className="size-4 text-gold-700" />
-                <span className="text-xs font-medium text-gold-700">
+                <BadgeMedal icon={badge.icon} tone={medalTone(badge.family)} />
+                <p className="mt-2.5 w-full truncate text-sm font-semibold text-ink">
                   {badge.name}
-                </span>
+                </p>
+                <p className="text-xs text-ink-muted">
+                  {badge.family
+                    ? `Level ${badge.tier}`
+                    : new Date(badge.earnedAt).toLocaleDateString("en-GB", {
+                        month: "short",
+                        year: "numeric",
+                      })}
+                </p>
               </li>
             ))}
           </ul>

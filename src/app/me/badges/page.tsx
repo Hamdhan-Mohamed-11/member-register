@@ -4,6 +4,7 @@ import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { BadgeIcon } from "@/components/badges/BadgeIcon";
+import { BadgeMedal, medalTone } from "@/components/badges/BadgeMedal";
 import { requireActiveMember } from "@/lib/auth/session";
 import { getMyBadges, type BadgeFamily, type BadgeRow } from "@/lib/badges/queries";
 
@@ -90,15 +91,11 @@ function BadgeTile({
         <span className="sr-only">{earned ? "Earned" : "Locked"}</span>
       </span>
 
-      <span
-        className={`grid size-14 place-items-center rounded-full border ${
-          earned
-            ? "border-gold-700/25 bg-gold-100 text-gold-700"
-            : "border-line bg-surface text-ink-faint"
-        }`}
-      >
-        <BadgeIcon name={badge.icon} className="size-7" />
-      </span>
+      <BadgeMedal
+        icon={badge.icon}
+        tone={earned ? medalTone(badge.family) : "locked"}
+        className={earned ? "" : "opacity-80"}
+      />
 
       <p
         className={`mt-3 font-display text-base leading-tight ${
