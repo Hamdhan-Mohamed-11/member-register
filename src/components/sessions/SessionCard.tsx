@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
+import { sessionImageUrl } from "@/lib/flyers/url";
 import type { SessionSummary } from "@/lib/sessions/queries";
 
 export function formatWhen(iso: string): string {
@@ -46,6 +47,7 @@ export function SessionCard({
   href?: string;
 }) {
   const when = new Date(session.heldAt);
+  const cover = sessionImageUrl(session.imagePath);
   const past = when < new Date();
   const cancelled = session.status === "cancelled";
 
@@ -60,10 +62,49 @@ export function SessionCard({
       children, which is why the chain below repeats it.
     */
     <Card
-      className={`h-full min-w-0 ${past || cancelled ? "opacity-70" : ""}`}
+      className={`h-full min-w-0 overflow-hidden ${past || cancelled ? "opacity-70" : ""}`}
       interactive={Boolean(href)}
       flush
     >
+      {/* The cover the club uploaded, or a brand-coloured plate with the book
+          on it -- a card with no picture at all in a grid of cards that have
+          one looks broken, rather than plain. */}
+      <div className="relative aspect-[16/7] w-full overflow-hidden bg-brand-900">
+        {cover ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={cover}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : (
+          <>
+            <span
+              aria-hidden
+              className="absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(420px 180px at 85% -20%, rgba(0,174,239,0.55), transparent 60%), linear-gradient(140deg, #16205c, #293896)",
+              }}
+            />
+            <span className="absolute inset-0 flex flex-col justify-end p-3">
+              <span className="line-clamp-2 font-display text-base leading-snug text-white [overflow-wrap:anywhere]">
+                {session.bookTitle || session.title}
+              </span>
+              {session.bookAuthor ? (
+                <span className="truncate text-xs text-sky-200">{session.bookAuthor}</span>
+              ) : null}
+            </span>
+          </>
+        )}
+
+        {past || cancelled ? (
+          <span className="absolute inset-0 bg-brand-950/45" aria-hidden />
+        ) : null}
+      </div>
+
       <div className="flex gap-4 p-4">
         {/*
           A date block rather than a line of text.

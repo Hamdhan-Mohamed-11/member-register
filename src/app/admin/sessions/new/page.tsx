@@ -46,6 +46,7 @@ export default async function NewSessionPage() {
               presenterCount: "",
               status: "scheduled",
               videoUrl: "",
+              imagePath: null,
             }}
           />
         )}

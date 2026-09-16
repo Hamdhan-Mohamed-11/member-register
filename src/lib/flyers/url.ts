@@ -15,3 +15,11 @@ export function flyerUrl(path: string | null | undefined): string | null {
   if (!path) return null;
   return `${getSupabaseUrl()}/storage/v1/object/public/flyers/${path}`;
 }
+
+/**
+ * The public URL of a session's cover picture. Same bucket as the flyer --
+ * see migration 0037 for why it shares one.
+ */
+export function sessionImageUrl(path: string | null | undefined): string | null {
+  return flyerUrl(path);
+}

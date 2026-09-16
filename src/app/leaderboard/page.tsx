@@ -35,20 +35,24 @@ function fullName(row: LeaderboardRow): string {
   return `${row.firstName} ${row.lastName}`.trim() || "Member";
 }
 
+type PodiumGroup = { place: number; rows: LeaderboardRow[] };
+
 /**
- * The top three, on a podium: second on the left, first raised in the middle,
- * third on the right (review item 18). Built from the first three ROWS, not
- * places 1-3, so a tie still fills the podium -- the place badge on each
- * says who shares what.
+ * The top three PLACES, on a podium: second on the left, first raised in the
+ * middle, third on the right (review item 18).
+ *
+ * Places, not people. Ties genuinely share a place -- the RPC uses rank() --
+ * so when two members are level on third, both stand on the third step
+ * rather than one of them being dropped to the list below.
  */
-function Podium({ rows }: { rows: LeaderboardRow[] }) {
+function Podium({ groups }: { groups: PodiumGroup[] }) {
   // Visual order 2, 1, 3, each pinned to its own column so first stays in the
-  // middle even when only one or two people have points.
+  // middle even when only one or two places are filled.
   const slots = [
-    { row: rows[1], col: "col-start-1" },
-    { row: rows[0], col: "col-start-2" },
-    { row: rows[2], col: "col-start-3" },
-  ].filter((s): s is { row: LeaderboardRow; col: string } => s.row != null);
+    { group: groups[1], col: "col-start-1" },
+    { group: groups[0], col: "col-start-2" },
+    { group: groups[2], col: "col-start-3" },
+  ].filter((s): s is { group: PodiumGroup; col: string } => s.group != null);
 
   const ring: Record<number, string> = {
     1: "ring-gold-500",
@@ -67,47 +71,59 @@ function Podium({ rows }: { rows: LeaderboardRow[] }) {
         Top of the board
       </p>
       <ol className="mx-auto mt-4 grid max-w-lg grid-cols-3 items-end gap-2">
-        {slots.map(({ row, col }) => {
-          const first = row === rows[0];
-          const tier = Math.min(row.place, 3);
+        {slots.map(({ group, col }) => {
+          const top = group === groups[0];
+          const tier = Math.min(group.place, 3);
+          const shared = group.rows.length > 1;
           return (
             <li
-              key={row.memberId}
-              className={`row-start-1 min-w-0 text-center ${col} ${first ? "" : "pt-6"}`}
+              key={group.place}
+              className={`row-start-1 flex min-w-0 flex-col items-center gap-3 text-center ${col} ${
+                top ? "" : "pt-6"
+              }`}
             >
-              <Link
-                href={row.isMe ? "/me" : `/members/${row.memberId}`}
-                className="group inline-flex w-full flex-col items-center"
-              >
-                <span className="relative">
-                  <Avatar
-                    src={avatarUrl(row.memberId, row.avatarPath)}
-                    firstName={row.firstName}
-                    lastName={row.lastName}
-                    size={first ? "lg" : "md"}
-                    className={`ring-4 ${ring[tier]}`}
-                  />
-                  <span
-                    className={`absolute -bottom-1 -right-1 grid size-6 place-items-center rounded-full font-display text-xs tabular-nums ${chip[tier]}`}
-                  >
-                    {row.place}
+              {group.rows.map((row) => (
+                <Link
+                  key={row.memberId}
+                  href={row.isMe ? "/me" : `/members/${row.memberId}`}
+                  className="group inline-flex w-full flex-col items-center"
+                >
+                  <span className="relative">
+                    <Avatar
+                      src={avatarUrl(row.memberId, row.avatarPath)}
+                      firstName={row.firstName}
+                      lastName={row.lastName}
+                      size={top && !shared ? "lg" : "md"}
+                      className={`ring-4 ${ring[tier]}`}
+                    />
+                    <span
+                      className={`absolute -bottom-1 -right-1 grid size-6 place-items-center rounded-full font-display text-xs tabular-nums ${chip[tier]}`}
+                    >
+                      {row.place}
+                    </span>
                   </span>
+                  <span
+                    className={`mt-2.5 block w-full truncate font-display text-ink group-hover:text-brand-600 ${
+                      top && !shared ? "text-base" : "text-sm"
+                    }`}
+                  >
+                    {row.isMe ? "You" : fullName(row)}
+                  </span>
+                  <span
+                    className={`text-xs font-medium tabular-nums ${
+                      top ? "text-gold-700" : "text-brand-600"
+                    }`}
+                  >
+                    {row.points} pts
+                  </span>
+                </Link>
+              ))}
+
+              {shared ? (
+                <span className="text-[11px] uppercase tracking-wider text-ink-faint">
+                  Joint {ordinal(group.place)}
                 </span>
-                <span
-                  className={`mt-2.5 block w-full truncate font-display text-ink group-hover:text-brand-600 ${
-                    first ? "text-base" : "text-sm"
-                  }`}
-                >
-                  {row.isMe ? "You" : fullName(row)}
-                </span>
-                <span
-                  className={`text-xs font-medium tabular-nums ${
-                    first ? "text-gold-700" : "text-brand-600"
-                  }`}
-                >
-                  {row.points} pts
-                </span>
-              </Link>
+              ) : null}
             </li>
           );
         })}
@@ -128,8 +144,16 @@ export default async function LeaderboardPage({
   // into forty members tied last on zero says "nobody here does anything".
   const rows = (await getLeaderboard(period)).filter((r) => r.points > 0);
   const clubs = activeMemberships(member);
-  const podium = rows.slice(0, 3);
-  const rest = rows.slice(3);
+  // The first three PLACES, with everyone who shares them. Ties put two
+  // people on one step instead of pushing the second into the list below.
+  const podium: { place: number; rows: typeof rows }[] = [];
+  for (const row of rows) {
+    const group = podium.find((g) => g.place === row.place);
+    if (group) group.rows.push(row);
+    else if (podium.length < 3) podium.push({ place: row.place, rows: [row] });
+  }
+  const onPodium = new Set(podium.flatMap((g) => g.rows.map((r) => r.memberId)));
+  const rest = rows.filter((r) => !onPodium.has(r.memberId));
 
   const me = rows.find((r) => r.isMe);
   // Everyone below the fold still deserves to know where they stand, so the
@@ -206,7 +230,7 @@ export default async function LeaderboardPage({
             </Card>
           ) : null}
 
-          <Podium rows={podium} />
+          <Podium groups={podium} />
 
           {!me && clubs.length ? (
             <p className="mb-3 text-sm text-ink-muted">

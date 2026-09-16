@@ -102,6 +102,39 @@ export async function saveSession(
   return { ok: true, data: { sessionId: data as unknown as string } };
 }
 
+/**
+ * Attaches the cover picture a club uploaded to a session, or clears it.
+ *
+ * The file goes straight from the browser into the flyers bucket, whose
+ * policy already limits writes to staff of the session's club; the RPC
+ * re-checks that, and that the key sits under this session's folder.
+ */
+export async function setSessionImage(
+  sessionId: string,
+  path: string | null,
+): Promise<ActionResult> {
+  await requireSecretary();
+  if (!z.string().uuid().safeParse(sessionId).success) {
+    return { ok: false, error: "Unknown session." };
+  }
+  if (path != null && (path.length < 3 || path.length > 400)) {
+    return { ok: false, error: "Invalid file." };
+  }
+
+  const supabase = await getActionSupabase();
+  const { error } = await supabase.rpc("set_session_image", {
+    p_session_id: sessionId,
+    p_path: path ?? undefined,
+  });
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/admin/sessions");
+  revalidatePath(`/admin/sessions/${sessionId}`);
+  revalidatePath("/sessions");
+  revalidatePath("/feed");
+  return { ok: true };
+}
+
 const CODES = ["attend", "present", "present_other_club", "guest_session"] as const;
 
 const attendanceSchema = z.object({

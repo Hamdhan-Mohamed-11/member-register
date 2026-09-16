@@ -19,6 +19,8 @@ export type SessionSummary = {
   presenterCount: number | null;
   /** Object key of the saved flyer in the public bucket, or null. */
   flyerPath: string | null;
+  /** Cover picture for the card, in the public flyers bucket. */
+  imagePath: string | null;
   flyerTemplate: string | null;
   hostClub: { id: string; name: string } | null;
   presenter: { id: string; firstName: string; lastName: string } | null;
@@ -47,6 +49,7 @@ type RawSession = {
   capacity: number | null;
   presenter_count: number | null;
   flyer_path: string | null;
+  image_path: string | null;
   flyer_template: string | null;
   host_club_id: string;
   clubs: { id: string; name: string } | null;
@@ -60,7 +63,7 @@ type RawSession = {
 const SESSION_SELECT = `
   id, title, book_title, book_author, held_at, location, notes, video_url,
   status, pricing_kind, guest_fee_lkr, capacity, presenter_count,
-  flyer_path, flyer_template, host_club_id,
+  flyer_path, flyer_template, image_path, host_club_id,
   clubs ( id, name ),
   presenter:profiles!sessions_presenter_member_id_fkey ( id, first_name, last_name )
 `;
@@ -82,6 +85,7 @@ function toSummary(raw: RawSession, now: number): SessionSummary {
     capacity: raw.capacity,
     presenterCount: raw.presenter_count,
     flyerPath: raw.flyer_path,
+    imagePath: raw.image_path,
     flyerTemplate: raw.flyer_template,
     hostClub: raw.clubs ? { id: raw.clubs.id, name: raw.clubs.name } : null,
     presenter: raw.presenter

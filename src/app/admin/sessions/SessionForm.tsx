@@ -9,7 +9,9 @@ import {
   TextareaField,
   selectClassName,
 } from "@/components/ui/Field";
-import { saveSession } from "./actions";
+import { getBrowserSupabaseClient } from "@/lib/supabase/browserClient";
+import { sessionImageUrl } from "@/lib/flyers/url";
+import { saveSession, setSessionImage } from "./actions";
 
 export type ClubOption = { id: string; name: string };
 export type MemberOption = { id: string; name: string };
@@ -30,6 +32,15 @@ export type SessionDefaults = {
   presenterCount: string;
   status: "scheduled" | "completed" | "cancelled";
   videoUrl: string;
+  /** The cover already saved, if this session has one. */
+  imagePath: string | null;
+};
+
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const IMAGE_EXT: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
 };
 
 
@@ -47,18 +58,85 @@ export function SessionForm({
   const [error, setError] = useState<string | null>(null);
   const [pricing, setPricing] = useState(defaults.pricingKind);
 
+  // The cover picture. Uploaded AFTER the session is saved, because the
+  // storage policy keys on the session id in the path -- a new session has no
+  // id to upload under until it exists.
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    sessionImageUrl(defaults.imagePath),
+  );
+  const [removeImage, setRemoveImage] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  function onImage(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (!IMAGE_EXT[file.type]) {
+      setError("A cover needs to be a JPEG, PNG or WebP image.");
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      setError("That picture is over 5MB. Please pick a smaller one.");
+      return;
+    }
+    setError(null);
+    setRemoveImage(false);
+    setImage(file);
+    setImagePreview((old) => {
+      if (old?.startsWith("blob:")) URL.revokeObjectURL(old);
+      return URL.createObjectURL(file);
+    });
+  }
+
+  function clearImage() {
+    setImage(null);
+    setRemoveImage(true);
+    setImagePreview((old) => {
+      if (old?.startsWith("blob:")) URL.revokeObjectURL(old);
+      return null;
+    });
+  }
+
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     const fd = new FormData(event.currentTarget);
+    setBusy(true);
 
     startTransition(async () => {
       const result = await saveSession(fd);
       if (!result.ok) {
+        setBusy(false);
         setError(result.error);
         return;
       }
-      router.push(`/admin/sessions/${result.data?.sessionId}`);
+
+      const sessionId = result.data?.sessionId;
+      if (sessionId && image) {
+        const key = `${sessionId}/cover-${crypto.randomUUID()}.${IMAGE_EXT[image.type]}`;
+        const { error: uploadError } = await getBrowserSupabaseClient()
+          .storage.from("flyers")
+          .upload(key, image, { contentType: image.type, upsert: false });
+        if (uploadError) {
+          // The session itself saved, so say what did not rather than
+          // pretending the whole thing failed.
+          setBusy(false);
+          setError(`Session saved, but the picture did not upload: ${uploadError.message}`);
+          return;
+        }
+        const attached = await setSessionImage(sessionId, key);
+        if (!attached.ok) {
+          setBusy(false);
+          setError(`Session saved, but the picture did not attach: ${attached.error}`);
+          return;
+        }
+      } else if (sessionId && removeImage && defaults.imagePath) {
+        await setSessionImage(sessionId, null);
+      }
+
+      setBusy(false);
+      router.push(`/admin/sessions/${sessionId}`);
       router.refresh();
     });
   }
@@ -67,6 +145,52 @@ export function SessionForm({
     <form onSubmit={onSubmit} className="space-y-4">
       {error ? <Notice>{error}</Notice> : null}
       <input type="hidden" name="sessionId" value={defaults.sessionId ?? ""} />
+
+      {/* The cover members see on the session card. */}
+      <div>
+        <label htmlFor="session-image" className="mb-1.5 block text-sm font-medium text-ink">
+          Cover picture
+        </label>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+          <div className="relative aspect-[16/7] w-full shrink-0 overflow-hidden rounded-card border border-line bg-canvas-deep sm:w-56">
+            {imagePreview ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={imagePreview}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <span className="absolute inset-0 grid place-items-center px-3 text-center text-xs text-ink-faint">
+                No picture yet
+              </span>
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <input
+              id="session-image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={onImage}
+              className="block w-full text-sm text-ink-muted file:mr-3 file:min-h-9 file:rounded-lg file:border-0 file:bg-brand-600 file:px-3 file:text-sm file:font-medium file:text-white hover:file:bg-brand-700"
+            />
+            <p className="mt-1.5 text-xs text-ink-muted">
+              JPEG, PNG or WebP, up to 5MB. A wide photo works best — the card crops it
+              to a band across the top. Without one, the card shows the book on a
+              brand-coloured plate.
+            </p>
+            {imagePreview ? (
+              <button
+                type="button"
+                onClick={clearImage}
+                className="mt-2 text-xs text-danger-600 hover:underline"
+              >
+                Remove the picture
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </div>
 
       <div>
         <label htmlFor="hostClubId" className="block text-sm font-medium text-ink mb-1.5">
@@ -214,7 +338,7 @@ export function SessionForm({
 
       <TextareaField label="Notes" name="notes" defaultValue={defaults.notes} />
 
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" disabled={pending || busy}>
         {pending ? "Saving…" : defaults.sessionId ? "Save changes" : "Create session"}
       </Button>
     </form>

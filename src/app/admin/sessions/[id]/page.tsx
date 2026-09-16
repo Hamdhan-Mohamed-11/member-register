@@ -120,6 +120,7 @@ export default async function AdminSessionPage({
                 session.presenterCount != null ? String(session.presenterCount) : "",
               status: session.status,
               videoUrl: session.videoUrl ?? "",
+              imagePath: session.imagePath,
             }}
           />
         </Card>

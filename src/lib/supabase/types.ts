@@ -1593,6 +1593,7 @@ export type Database = {
           held_at: string
           host_club_id: string
           id: string
+          image_path: string | null
           location: string | null
           notes: string | null
           presenter_count: number | null
@@ -1616,6 +1617,7 @@ export type Database = {
           held_at: string
           host_club_id: string
           id?: string
+          image_path?: string | null
           location?: string | null
           notes?: string | null
           presenter_count?: number | null
@@ -1639,6 +1641,7 @@ export type Database = {
           held_at?: string
           host_club_id?: string
           id?: string
+          image_path?: string | null
           location?: string | null
           notes?: string | null
           presenter_count?: number | null
@@ -2095,6 +2098,10 @@ export type Database = {
       }
       set_session_flyer: {
         Args: { p_path?: string; p_session_id: string; p_template?: string }
+        Returns: undefined
+      }
+      set_session_image: {
+        Args: { p_path?: string; p_session_id: string }
         Returns: undefined
       }
       shares_active_club: { Args: { p_member_id: string }; Returns: boolean }
