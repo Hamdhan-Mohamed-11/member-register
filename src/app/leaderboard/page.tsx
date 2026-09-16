@@ -85,7 +85,7 @@ function Podium({ groups }: { groups: PodiumGroup[] }) {
                 top ? "" : "pt-6"
               }`}
             >
-              <div className={`flex w-full min-w-0 items-end justify-center ${shared ? "gap-1.5" : ""}`}>
+              <div className={`flex w-full min-w-0 items-end justify-center ${shared ? "gap-3" : ""}`}>
               {group.rows.map((row) => (
                 <Link
                   key={row.memberId}
