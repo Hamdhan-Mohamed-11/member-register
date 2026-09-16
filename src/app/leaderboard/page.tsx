@@ -70,7 +70,7 @@ function Podium({ groups }: { groups: PodiumGroup[] }) {
       <p className="text-xs font-semibold uppercase tracking-wider text-gold-700">
         Top of the board
       </p>
-      <ol className="mx-auto mt-4 grid max-w-lg grid-cols-3 items-end gap-2">
+      <ol className="mx-auto mt-4 grid max-w-xl grid-cols-3 items-end gap-3">
         {slots.map(({ group, col }) => {
           const top = group === groups[0];
           const tier = Math.min(group.place, 3);
@@ -78,22 +78,26 @@ function Podium({ groups }: { groups: PodiumGroup[] }) {
           return (
             <li
               key={group.place}
-              className={`row-start-1 flex min-w-0 flex-col items-center gap-3 text-center ${col} ${
+              // Tied members stand side by side on their step. Stacked, the
+              // shared step grew taller than first place, which read as if
+              // they had won.
+              className={`row-start-1 flex min-w-0 flex-col items-center gap-1.5 text-center ${col} ${
                 top ? "" : "pt-6"
               }`}
             >
+              <div className={`flex w-full min-w-0 items-end justify-center ${shared ? "gap-1.5" : ""}`}>
               {group.rows.map((row) => (
                 <Link
                   key={row.memberId}
                   href={row.isMe ? "/me" : `/members/${row.memberId}`}
-                  className="group inline-flex w-full flex-col items-center"
+                  className={`group inline-flex min-w-0 flex-col items-center ${shared ? "flex-1" : "w-full"}`}
                 >
                   <span className="relative">
                     <Avatar
                       src={avatarUrl(row.memberId, row.avatarPath)}
                       firstName={row.firstName}
                       lastName={row.lastName}
-                      size={top && !shared ? "lg" : "md"}
+                      size={shared ? "sm" : top ? "lg" : "md"}
                       className={`ring-4 ${ring[tier]}`}
                     />
                     <span
@@ -103,14 +107,14 @@ function Podium({ groups }: { groups: PodiumGroup[] }) {
                     </span>
                   </span>
                   <span
-                    className={`mt-2.5 block w-full truncate font-display text-ink group-hover:text-brand-600 ${
-                      top && !shared ? "text-base" : "text-sm"
+                    className={`mt-2 block w-full truncate font-display text-ink group-hover:text-brand-600 ${
+                      shared ? "text-xs" : top ? "text-base" : "text-sm"
                     }`}
                   >
                     {row.isMe ? "You" : fullName(row)}
                   </span>
                   <span
-                    className={`text-xs font-medium tabular-nums ${
+                    className={`font-medium tabular-nums ${shared ? "text-[11px]" : "text-xs"} ${
                       top ? "text-gold-700" : "text-brand-600"
                     }`}
                   >
@@ -118,6 +122,7 @@ function Podium({ groups }: { groups: PodiumGroup[] }) {
                   </span>
                 </Link>
               ))}
+              </div>
 
               {shared ? (
                 <span className="text-[11px] uppercase tracking-wider text-ink-faint">
