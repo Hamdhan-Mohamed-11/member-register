@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getSessionMember } from "@/lib/auth/session";
 import { MEMBER_VIEW_COOKIE } from "@/lib/auth/viewMode";
+import { getSiteUrl } from "@/lib/supabase/env";
 
 /**
  * /view/member -- a secretary switches to seeing their club as a member.
@@ -11,12 +12,15 @@ import { MEMBER_VIEW_COOKIE } from "@/lib/auth/viewMode";
  * already in it. Either is just sent where they belong.
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ mode: string }> },
 ) {
   const { mode } = await params;
   const session = await getSessionMember();
-  const to = (path: string) => new URL(path, request.nextUrl.origin);
+  // The public site URL, not request.nextUrl.origin: behind nginx the request
+  // arrives at 127.0.0.1:3001, and a redirect built from that sends the
+  // browser to an address it cannot reach. Same as /auth/signout.
+  const to = (path: string) => new URL(path, getSiteUrl());
 
   if (!session) return NextResponse.redirect(to("/login"));
 
