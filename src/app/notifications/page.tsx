@@ -38,7 +38,7 @@ export default async function NotificationsPage() {
   const unread = notifications.filter((n) => !n.readAt).length;
 
   return (
-    <AppShell>
+    <AppShell allowStaff>
       <PageHeader
         title="Notifications"
         description={

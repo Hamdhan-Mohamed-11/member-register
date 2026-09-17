@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
-import { requireActiveMember } from "@/lib/auth/session";
+import { isAdmin, requireActiveMember } from "@/lib/auth/session";
 import { avatarUrl, getMemberProfile } from "@/lib/members/queries";
 import { AvatarUpload } from "./AvatarUpload";
 import { ProfileForm } from "./ProfileForm";
@@ -18,9 +18,14 @@ export default async function EditProfilePage() {
   const currentUrl = avatarUrl(member.userId, member.avatarPath);
 
   return (
-    <AppShell>
+    <AppShell allowStaff>
       <div className="mb-4">
-        <BackLink href="/me">My profile</BackLink>
+        {/* Staff have no member profile page to go back to. */}
+        {isAdmin(member) ? (
+          <BackLink href="/admin">Dashboard</BackLink>
+        ) : (
+          <BackLink href="/me">My profile</BackLink>
+        )}
         <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Edit profile</h1>
       </div>
 

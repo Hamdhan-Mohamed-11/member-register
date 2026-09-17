@@ -58,7 +58,7 @@ export default async function BookPage({
 
   if (!result.ok) {
     return (
-      <AppShell>
+      <AppShell allowStaff>
         <div className="mb-4">
           <BackLink href="/books">Books</BackLink>
         </div>
@@ -73,7 +73,7 @@ export default async function BookPage({
   const { listCents, memberCents, savedCents } = priceLine(book.priceLkr, discount);
 
   return (
-    <AppShell>
+    <AppShell allowStaff>
       <div className="mb-4">
         <BackLink href="/books">Books</BackLink>
       </div>

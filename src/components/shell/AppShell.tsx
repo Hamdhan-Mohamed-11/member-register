@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { redirect } from "next/navigation";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { BottomNav } from "./BottomNav";
 import { MemberSidebar } from "./MemberSidebar";
 import { SectionTabs } from "./SectionTabs";
@@ -28,6 +30,7 @@ export async function AppShell({
   children,
   wide = false,
   signedOut = false,
+  allowStaff = false,
 }: {
   children: ReactNode;
   /** Wider container for marketing pages; app pages keep the reading width. */
@@ -37,8 +40,23 @@ export async function AppShell({
    * /login, /join, the auth callbacks, the holding page.
    */
   signedOut?: boolean;
+  /**
+   * Whether club staff may use this page. Secretaries and super admins work
+   * in the admin area, not the member portal -- Discover, the library, the
+   * cart and the rest are member things -- so by default a staff account
+   * that lands on a member page is sent to the dashboard. The few pages staff
+   * genuinely need (their notifications, editing their own profile, looking
+   * at a member or a book an admin page linked to) opt in, and are drawn
+   * inside the admin frame so nothing around them looks like the member site.
+   */
+  allowStaff?: boolean;
 }) {
   const session = signedOut ? null : await getSessionMember();
+
+  if (session && session.status === "active" && isAdmin(session)) {
+    if (!allowStaff) redirect("/admin");
+    return <AdminShell>{children}</AdminShell>;
+  }
 
   // Only an ACTIVE member gets member chrome. A pending or suspended account
   // has a session but nothing the nav points at.

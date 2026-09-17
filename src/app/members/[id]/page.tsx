@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { ProfileView } from "@/components/members/ProfileView";
-import { requireActiveMember } from "@/lib/auth/session";
+import { isAdmin, requireActiveMember } from "@/lib/auth/session";
 import { getMemberProfile } from "@/lib/members/queries";
 import { getBadgesFor } from "@/lib/badges/queries";
 import { listMemberVideos } from "@/lib/videos/queries";
@@ -45,9 +45,13 @@ export default async function MemberProfilePage({
   const [badges, videos] = await Promise.all([getBadgesFor(id), listMemberVideos(id)]);
 
   return (
-    <AppShell>
+    <AppShell allowStaff>
       <div className="mb-4">
-        <BackLink href="/directory">Members</BackLink>
+        {isAdmin(viewer) ? (
+          <BackLink href="/admin/members">Members</BackLink>
+        ) : (
+          <BackLink href="/directory">Members</BackLink>
+        )}
       </div>
 
       <ProfileView profile={profile} badges={badges} />

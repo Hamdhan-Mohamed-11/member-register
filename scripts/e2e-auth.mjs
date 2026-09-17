@@ -103,10 +103,11 @@ relaxTimeouts(browser);
   const dashBody = await visibleText(page);
   check("admin sees the dashboard queue", /Needs your attention/.test(dashBody ?? ""), "");
 
+  // Staff work in the admin area: a member page sends them to the dashboard.
   await page.goto(`${BASE}/feed`, { waitUntil: "domcontentloaded" });
-  await settle(page, "/feed");
-  const feedBody = await visibleText(page);
-  check("admin DOES see the admin card on the feed", /Club admin/.test(feedBody ?? ""), "");
+  await page.waitForTimeout(1500);
+  check("admin opening the member feed is sent to /admin",
+    new URL(page.url()).pathname === "/admin", page.url());
 
   await page.goto(`${BASE}/admin`, { waitUntil: "domcontentloaded" });
   await settle(page, "/admin");

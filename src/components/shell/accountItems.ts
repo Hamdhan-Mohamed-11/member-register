@@ -34,6 +34,18 @@ export const ACCOUNT_ITEMS: AccountItem[] = [
   { href: "/admin", label: "Admin area", icon: "shield", adminOnly: true },
 ];
 
+/**
+ * What club staff see instead. Staff work in the admin area, so the member
+ * items -- wishlist, orders, borrowing, reading list -- are not theirs to
+ * reach from here (and the member pages would send them back anyway).
+ */
+export const STAFF_ITEMS: AccountItem[] = [
+  { href: "/admin", label: "Dashboard", icon: "shield" },
+  { href: "/notifications", label: "Notifications", icon: "bell" },
+  { href: "/me/edit", label: "Edit profile", icon: "pencil" },
+];
+
 export function accountItemsFor(isAdmin: boolean): AccountItem[] {
-  return ACCOUNT_ITEMS.filter((item) => !item.adminOnly || isAdmin);
+  if (isAdmin) return STAFF_ITEMS;
+  return ACCOUNT_ITEMS.filter((item) => !item.adminOnly);
 }
