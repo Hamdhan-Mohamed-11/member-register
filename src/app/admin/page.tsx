@@ -86,7 +86,13 @@ export default async function AdminDashboard() {
   const scope = adminClubScope(member);
   const { stats, upcoming, recentMembers } = await getDashboard(scope);
 
-  const hour = new Date().getHours();
+  // The club's hour, not the server's: the VPS runs in UTC, and at 3pm in
+  // Colombo it would still be saying good morning.
+  const hour = Number(
+    new Intl.DateTimeFormat("en-GB", { timeZone: CLUB_TZ, hour: "numeric", hourCycle: "h23" }).format(
+      new Date(),
+    ),
+  );
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   // The attention list: only things that genuinely wait on this person, in the
