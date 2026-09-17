@@ -72,6 +72,19 @@ function Identity({ isSuper, roleLabel, clubName }: Props) {
       <p className="mt-0.5 truncate text-sm font-medium text-white">
         {clubName ?? (isSuper ? "All clubs" : "No club assigned")}
       </p>
+      {/* A secretary is also a member of their club, and can look at it the
+          way members do. Super admins belong to no club, so no switch. */}
+      {!isSuper ? (
+        // A plain <a>, not Link: /view/member is a route handler that sets a
+        // cookie, and a Link would prefetch it -- switching views on hover.
+        // eslint-disable-next-line @next/next/no-html-link-for-pages
+        <a
+          href="/view/member"
+          className="press mt-2.5 flex min-h-9 items-center justify-center gap-1.5 rounded-lg bg-white/10 px-3 text-xs font-medium text-white hover:bg-white/20"
+        >
+          View as member
+        </a>
+      ) : null}
     </div>
   );
 }

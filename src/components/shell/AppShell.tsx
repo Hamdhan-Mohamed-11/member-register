@@ -8,6 +8,7 @@ import { TopBar } from "./TopBar";
 import { getSessionMember, isAdmin, activeMemberships } from "@/lib/auth/session";
 import { avatarUrl } from "@/lib/members/queries";
 import { getUnreadNotificationCount } from "@/lib/notifications/queries";
+import { inMemberView } from "@/lib/auth/viewMode";
 import { getCartCount } from "@/lib/orders/queries";
 
 /**
@@ -53,7 +54,15 @@ export async function AppShell({
 }) {
   const session = signedOut ? null : await getSessionMember();
 
-  if (session && session.status === "active" && isAdmin(session)) {
+  // A secretary who chose "View as member" sees the member portal for their
+  // club; every other staff account stays in the admin frame.
+  const memberView =
+    session != null &&
+    session.status === "active" &&
+    session.role === "secretary" &&
+    (await inMemberView());
+
+  if (session && session.status === "active" && isAdmin(session) && !memberView) {
     if (!allowStaff) redirect("/admin");
     return <AdminShell>{children}</AdminShell>;
   }
@@ -69,6 +78,7 @@ export async function AppShell({
           avatarUrl: avatarUrl(session.userId, session.avatarPath),
           pointsBalance: session.pointsBalance,
           isAdmin: isAdmin(session),
+          memberView,
         }
       : null;
 
@@ -107,6 +117,22 @@ export async function AppShell({
             wide ? "max-w-6xl" : "max-w-5xl"
           }`}
         >
+          {member.memberView ? (
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-card border border-brand-200 bg-brand-50 px-4 py-2.5 text-sm">
+              <span className="text-brand-700">
+                You&apos;re viewing{clubName ? ` ${clubName}` : " the portal"} as a member.
+              </span>
+              {/* A route handler, not a page: it sets a cookie and redirects,
+                  so it wants a full request rather than a client navigation. */}
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+              <a
+                href="/view/admin"
+                className="font-medium text-brand-700 underline-offset-2 hover:underline"
+              >
+                Back to admin
+              </a>
+            </div>
+          ) : null}
           <SectionTabs />
           {children}
         </main>

@@ -15,6 +15,8 @@ export type TopBarMember = {
   avatarUrl: string | null;
   pointsBalance: number;
   isAdmin: boolean;
+  /** A secretary looking at their club as a member. */
+  memberView?: boolean;
 };
 
 /**

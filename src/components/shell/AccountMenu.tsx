@@ -13,6 +13,7 @@ export type AccountMenuMember = {
   avatarUrl: string | null;
   pointsBalance: number;
   isAdmin: boolean;
+  memberView?: boolean;
 };
 
 /**
@@ -62,7 +63,7 @@ export function AccountMenu({ member }: { member: AccountMenuMember }) {
   }, [open]);
 
   const name = `${member.firstName} ${member.lastName}`.trim() || "Your account";
-  const items = accountItemsFor(member.isAdmin);
+  const items = accountItemsFor(member.isAdmin, member.memberView);
 
   return (
     <div ref={wrapRef} className="relative shrink-0">
@@ -113,24 +114,38 @@ export function AccountMenu({ member }: { member: AccountMenuMember }) {
           <ul className="py-1">
             {items.map((item) => (
               <li key={item.href}>
-                <Link
-                  href={item.href}
-                  role="menuitem"
-                  // Closing here rather than in an effect on the pathname: the
-                  // layout stays mounted across a client-side navigation, so
-                  // the panel would otherwise hang over the page you just
-                  // moved to. This is the event that actually means "done".
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 px-4 min-h-11 text-sm text-ink hover:bg-brand-50 hover:text-brand-700"
-                >
-                  <Icon name={item.icon} className="size-[18px] text-ink-faint" />
-                  <span className="flex-1">{item.label}</span>
-                  {item.hint === "points" ? (
-                    <span className="text-xs font-medium text-brand-600">
-                      {member.pointsBalance}
-                    </span>
-                  ) : null}
-                </Link>
+                {/* /view/* are route handlers that set a cookie: a plain <a>, so
+                    nothing prefetches them and the switch happens on click. */}
+                {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                {item.href.startsWith("/view/") ? (
+                  <a
+                    href={item.href}
+                    role="menuitem"
+                    className="flex items-center gap-3 px-4 min-h-11 text-sm font-medium text-brand-700 hover:bg-brand-50"
+                  >
+                    <Icon name={item.icon} className="size-[18px]" />
+                    <span className="flex-1">{item.label}</span>
+                  </a>
+                ) : (
+                  <Link
+                    href={item.href}
+                    role="menuitem"
+                    // Closing here rather than in an effect on the pathname: the
+                    // layout stays mounted across a client-side navigation, so
+                    // the panel would otherwise hang over the page you just
+                    // moved to. This is the event that actually means "done".
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-3 px-4 min-h-11 text-sm text-ink hover:bg-brand-50 hover:text-brand-700"
+                  >
+                    <Icon name={item.icon} className="size-[18px] text-ink-faint" />
+                    <span className="flex-1">{item.label}</span>
+                    {item.hint === "points" ? (
+                      <span className="text-xs font-medium text-brand-600">
+                        {member.pointsBalance}
+                      </span>
+                    ) : null}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

@@ -1,0 +1,44 @@
+import { NextResponse, type NextRequest } from "next/server";
+import { getSessionMember } from "@/lib/auth/session";
+import { MEMBER_VIEW_COOKIE } from "@/lib/auth/viewMode";
+
+/**
+ * /view/member -- a secretary switches to seeing their club as a member.
+ * /view/admin  -- back to the admin area.
+ *
+ * Only a secretary may enter member view. A super admin runs every club and
+ * belongs to none, so there is no member view for them to be in; a member is
+ * already in it. Either is just sent where they belong.
+ */
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ mode: string }> },
+) {
+  const { mode } = await params;
+  const session = await getSessionMember();
+  const to = (path: string) => new URL(path, request.nextUrl.origin);
+
+  if (!session) return NextResponse.redirect(to("/login"));
+
+  if (mode === "member" && session.role === "secretary") {
+    const response = NextResponse.redirect(to("/feed"));
+    response.cookies.set(MEMBER_VIEW_COOKIE, "1", {
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 12,
+    });
+    return response;
+  }
+
+  if (mode === "admin") {
+    const response = NextResponse.redirect(
+      to(session.role === "member" ? "/feed" : "/admin"),
+    );
+    response.cookies.delete(MEMBER_VIEW_COOKIE);
+    return response;
+  }
+
+  return NextResponse.redirect(to("/home"));
+}

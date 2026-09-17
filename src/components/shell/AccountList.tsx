@@ -17,40 +17,56 @@ import { accountItemsFor } from "./accountItems";
  */
 export function AccountList({
   isAdmin,
+  memberView = false,
   pointsBalance,
   videoCount,
 }: {
   isAdmin: boolean;
+  memberView?: boolean;
   pointsBalance: number;
   videoCount?: number;
 }) {
-  const items = accountItemsFor(isAdmin);
+  const items = accountItemsFor(isAdmin, memberView);
 
   return (
     <ul className="divide-y divide-line">
       {items.map((item) => (
         <li key={item.href}>
-          <Link
-            href={item.href}
-            className="flex items-center gap-3 px-4 min-h-14 text-sm transition-colors hover:bg-canvas"
-          >
-            <span className="grid size-9 shrink-0 place-items-center rounded-full bg-canvas-deep text-ink-muted">
-              <Icon name={item.icon} className="size-[18px]" />
-            </span>
-
-            <span className="flex-1 font-medium text-ink">{item.label}</span>
-
-            {item.hint === "points" ? (
-              <span className="text-sm font-semibold text-brand-600 tabular-nums">
-                {pointsBalance}
+          {item.href.startsWith("/view/") ? (
+            // A route handler that sets a cookie: plain <a>, never prefetched.
+            // eslint-disable-next-line @next/next/no-html-link-for-pages
+            <a
+              href={item.href}
+              className="flex items-center gap-3 px-4 min-h-14 text-sm font-medium text-brand-700 transition-colors hover:bg-canvas"
+            >
+              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-700">
+                <Icon name={item.icon} className="size-[18px]" />
               </span>
-            ) : null}
-            {item.hint === "videos" && videoCount !== undefined ? (
-              <span className="text-sm text-ink-muted tabular-nums">{videoCount}</span>
-            ) : null}
+              <span className="flex-1">{item.label}</span>
+            </a>
+          ) : (
+            <Link
+              href={item.href}
+              className="flex items-center gap-3 px-4 min-h-14 text-sm transition-colors hover:bg-canvas"
+            >
+              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-canvas-deep text-ink-muted">
+                <Icon name={item.icon} className="size-[18px]" />
+              </span>
 
-            <Icon name="chevron-right" className="size-4 shrink-0 text-ink-faint" />
-          </Link>
+              <span className="flex-1 font-medium text-ink">{item.label}</span>
+
+              {item.hint === "points" ? (
+                <span className="text-sm font-semibold text-brand-600 tabular-nums">
+                  {pointsBalance}
+                </span>
+              ) : null}
+              {item.hint === "videos" && videoCount !== undefined ? (
+                <span className="text-sm text-ink-muted tabular-nums">{videoCount}</span>
+              ) : null}
+
+              <Icon name="chevron-right" className="size-4 shrink-0 text-ink-faint" />
+            </Link>
+          )}
         </li>
       ))}
     </ul>

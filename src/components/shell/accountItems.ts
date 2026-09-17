@@ -45,7 +45,12 @@ export const STAFF_ITEMS: AccountItem[] = [
   { href: "/me/edit", label: "Edit profile", icon: "pencil" },
 ];
 
-export function accountItemsFor(isAdmin: boolean): AccountItem[] {
+export function accountItemsFor(isAdmin: boolean, memberView = false): AccountItem[] {
+  const memberItems = ACCOUNT_ITEMS.filter((item) => !item.adminOnly);
+  // A secretary in member view gets the member's list, plus the way back.
+  if (isAdmin && memberView) {
+    return [{ href: "/view/admin", label: "Back to admin", icon: "shield" }, ...memberItems];
+  }
   if (isAdmin) return STAFF_ITEMS;
-  return ACCOUNT_ITEMS.filter((item) => !item.adminOnly);
+  return memberItems;
 }

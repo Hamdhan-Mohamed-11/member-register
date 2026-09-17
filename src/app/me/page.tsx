@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { inMemberView } from "@/lib/auth/viewMode";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
 import { AccountList } from "@/components/shell/AccountList";
@@ -124,6 +125,7 @@ export default async function MyProfilePage() {
           </div>
           <AccountList
             isAdmin={isAdmin(member)}
+            memberView={member.role === "secretary" && (await inMemberView())}
             pointsBalance={member.pointsBalance}
           />
         </Card>
