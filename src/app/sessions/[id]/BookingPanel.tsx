@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Notice } from "@/components/ui/Field";
 import { formatLkr } from "@/components/sessions/SessionCard";
+import { Icon } from "@/components/ui/Icon";
 import { bookSession, cancelBooking } from "./actions";
 import type { MyBooking } from "@/lib/sessions/queries";
 
@@ -63,9 +64,8 @@ export function BookingPanel({
         {!isPast ? (
           <Button
             variant="secondary"
-            size="sm"
             disabled={pending}
-            className="border-danger-600/40 text-danger-600 hover:border-danger-600 hover:bg-danger-100"
+            className="w-full border-danger-600/40 text-danger-600 hover:border-danger-600 hover:bg-danger-100"
             onClick={() =>
               run(cancelBooking, { bookingId: booking.id, sessionId })
             }
@@ -81,21 +81,20 @@ export function BookingPanel({
     return <p className="text-sm text-ink-muted">This session has already happened.</p>;
   }
 
+  // The price is shown large just above this panel, so it is not repeated
+  // here -- only on the button, where it is what the tap commits to.
   return (
     <div className="space-y-3">
       {error ? <Notice>{error}</Notice> : null}
 
-      <p className="text-sm text-ink-muted">
-        {fee === 0
-          ? "This session is free for you."
-          : `Guests from other clubs pay ${formatLkr(fee)}.`}
-      </p>
-
       <Button
+        size="lg"
         disabled={pending}
         onClick={() => run(bookSession, { sessionId })}
+        className="w-full gap-2"
       >
         {pending ? "Booking…" : fee === 0 ? "Book my place" : `Book · ${formatLkr(fee)}`}
+        {pending ? null : <Icon name="arrow-right" className="size-4" />}
       </Button>
     </div>
   );

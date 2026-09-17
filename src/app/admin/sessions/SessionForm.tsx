@@ -7,6 +7,7 @@ import {
   Field,
   Notice,
   TextareaField,
+  controlClassName,
   selectClassName,
 } from "@/components/ui/Field";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browserClient";
@@ -34,6 +35,9 @@ export type SessionDefaults = {
   videoUrl: string;
   /** The cover already saved, if this session has one. */
   imagePath: string | null;
+  label: string;
+  tagline: string;
+  highlights: string[];
 };
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -336,7 +340,58 @@ export function SessionForm({
         hint="YouTube or Vimeo. Members watch it on the session page."
       />
 
-      <TextareaField label="Notes" name="notes" defaultValue={defaults.notes} />
+      {/* What members read on the session page. Placeholders show the kind
+          of thing to write; every field is optional. */}
+      <fieldset className="space-y-3 rounded-card border border-line p-4">
+        <legend className="px-1 text-sm font-medium text-ink">On the session page</legend>
+
+        <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+          <Field
+            label="Label"
+            name="label"
+            defaultValue={defaults.label}
+            maxLength={40}
+            placeholder="Special event"
+            hint="A short tag on the banner."
+          />
+          <Field
+            label="Tagline"
+            name="tagline"
+            defaultValue={defaults.tagline}
+            maxLength={140}
+            placeholder="Ideas, stories and meaningful conversations."
+            hint="One line under the title."
+          />
+        </div>
+
+        <TextareaField
+          label="About this session"
+          name="notes"
+          rows={4}
+          defaultValue={defaults.notes}
+          placeholder="What the evening is about, what the presenter will cover, and who will enjoy it."
+        />
+
+        <div>
+          <p className="mb-1.5 text-sm font-medium text-ink">What to expect</p>
+          <div className="grid gap-2 sm:grid-cols-3">
+            {[0, 1, 2].map((i) => (
+              <input
+                key={i}
+                name="highlight"
+                aria-label={`What to expect, point ${i + 1}`}
+                defaultValue={defaults.highlights[i] ?? ""}
+                maxLength={80}
+                placeholder={
+                  ["Thoughtful discussion", "A short reading from the book", "Tea and new friends"][i]
+                }
+                className={controlClassName}
+              />
+            ))}
+          </div>
+          <p className="mt-1.5 text-xs text-ink-muted">Up to three short points.</p>
+        </div>
+      </fieldset>
 
       <Button type="submit" disabled={pending || busy}>
         {pending ? "Saving…" : defaults.sessionId ? "Save changes" : "Create session"}

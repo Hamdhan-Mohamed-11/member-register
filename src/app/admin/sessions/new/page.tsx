@@ -47,6 +47,9 @@ export default async function NewSessionPage() {
               status: "scheduled",
               videoUrl: "",
               imagePath: null,
+              label: "",
+              tagline: "",
+              highlights: [],
             }}
           />
         )}

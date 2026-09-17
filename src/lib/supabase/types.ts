@@ -1591,15 +1591,18 @@ export type Database = {
           flyer_updated_at: string | null
           guest_fee_lkr: number | null
           held_at: string
+          highlights: string[]
           host_club_id: string
           id: string
           image_path: string | null
+          label: string | null
           location: string | null
           notes: string | null
           presenter_count: number | null
           presenter_member_id: string | null
           pricing_kind: string
           status: string
+          tagline: string | null
           title: string
           updated_at: string
           video_url: string | null
@@ -1615,15 +1618,18 @@ export type Database = {
           flyer_updated_at?: string | null
           guest_fee_lkr?: number | null
           held_at: string
+          highlights?: string[]
           host_club_id: string
           id?: string
           image_path?: string | null
+          label?: string | null
           location?: string | null
           notes?: string | null
           presenter_count?: number | null
           presenter_member_id?: string | null
           pricing_kind?: string
           status?: string
+          tagline?: string | null
           title: string
           updated_at?: string
           video_url?: string | null
@@ -1639,15 +1645,18 @@ export type Database = {
           flyer_updated_at?: string | null
           guest_fee_lkr?: number | null
           held_at?: string
+          highlights?: string[]
           host_club_id?: string
           id?: string
           image_path?: string | null
+          label?: string | null
           location?: string | null
           notes?: string | null
           presenter_count?: number | null
           presenter_member_id?: string | null
           pricing_kind?: string
           status?: string
+          tagline?: string | null
           title?: string
           updated_at?: string
           video_url?: string | null
@@ -2094,6 +2103,15 @@ export type Database = {
       }
       set_member_status: {
         Args: { p_member_id: string; p_status: string }
+        Returns: undefined
+      }
+      set_session_details: {
+        Args: {
+          p_highlights?: string[]
+          p_label?: string
+          p_session_id: string
+          p_tagline?: string
+        }
         Returns: undefined
       }
       set_session_flyer: {

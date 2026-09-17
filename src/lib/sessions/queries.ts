@@ -21,9 +21,15 @@ export type SessionSummary = {
   flyerPath: string | null;
   /** Cover picture for the card, in the public flyers bucket. */
   imagePath: string | null;
+  /** Short tag on the page banner, e.g. "Special event". */
+  label: string | null;
+  /** One line under the title. */
+  tagline: string | null;
+  /** Up to three "what to expect" points. */
+  highlights: string[];
   flyerTemplate: string | null;
   hostClub: { id: string; name: string } | null;
-  presenter: { id: string; firstName: string; lastName: string } | null;
+  presenter: { id: string; firstName: string; lastName: string; avatarPath: string | null } | null;
   /**
    * Whether the session has already happened, resolved at FETCH time.
    *
@@ -50,10 +56,13 @@ type RawSession = {
   presenter_count: number | null;
   flyer_path: string | null;
   image_path: string | null;
+  label: string | null;
+  tagline: string | null;
+  highlights: string[] | null;
   flyer_template: string | null;
   host_club_id: string;
   clubs: { id: string; name: string } | null;
-  presenter: { id: string; first_name: string; last_name: string } | null;
+  presenter: { id: string; first_name: string; last_name: string; avatar_path: string | null } | null;
 };
 
 // sessions has two FKs into profiles-adjacent tables, and one into clubs. The
@@ -63,9 +72,9 @@ type RawSession = {
 const SESSION_SELECT = `
   id, title, book_title, book_author, held_at, location, notes, video_url,
   status, pricing_kind, guest_fee_lkr, capacity, presenter_count,
-  flyer_path, flyer_template, image_path, host_club_id,
+  flyer_path, flyer_template, image_path, label, tagline, highlights, host_club_id,
   clubs ( id, name ),
-  presenter:profiles!sessions_presenter_member_id_fkey ( id, first_name, last_name )
+  presenter:profiles!sessions_presenter_member_id_fkey ( id, first_name, last_name, avatar_path )
 `;
 
 function toSummary(raw: RawSession, now: number): SessionSummary {
@@ -86,6 +95,9 @@ function toSummary(raw: RawSession, now: number): SessionSummary {
     presenterCount: raw.presenter_count,
     flyerPath: raw.flyer_path,
     imagePath: raw.image_path,
+    label: raw.label,
+    tagline: raw.tagline,
+    highlights: raw.highlights ?? [],
     flyerTemplate: raw.flyer_template,
     hostClub: raw.clubs ? { id: raw.clubs.id, name: raw.clubs.name } : null,
     presenter: raw.presenter
@@ -93,6 +105,7 @@ function toSummary(raw: RawSession, now: number): SessionSummary {
           id: raw.presenter.id,
           firstName: raw.presenter.first_name,
           lastName: raw.presenter.last_name,
+          avatarPath: raw.presenter.avatar_path,
         }
       : null,
   };

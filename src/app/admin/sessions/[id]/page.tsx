@@ -121,6 +121,9 @@ export default async function AdminSessionPage({
               status: session.status,
               videoUrl: session.videoUrl ?? "",
               imagePath: session.imagePath,
+              label: session.label ?? "",
+              tagline: session.tagline ?? "",
+              highlights: session.highlights,
             }}
           />
         </Card>

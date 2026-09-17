@@ -33,7 +33,12 @@ export type IconName =
   | "id"
   | "cart"
   | "home"
-  | "film";
+  | "film"
+  | "clock"
+  | "pin"
+  | "chat"
+  | "bulb"
+  | "arrow-right";
 
 export function Icon({
   name,
@@ -169,6 +174,38 @@ export function Icon({
         <svg {...common}>
           <path d="M3.5 10.5 12 3.5l8.5 7" />
           <path d="M5.5 9.2V20h13V9.2" />
+        </svg>
+      );
+    case "clock":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="8.5" />
+          <path d="M12 7.5V12l3 2" />
+        </svg>
+      );
+    case "pin":
+      return (
+        <svg {...common}>
+          <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z" />
+          <circle cx="12" cy="10" r="2.3" />
+        </svg>
+      );
+    case "chat":
+      return (
+        <svg {...common}>
+          <path d="M5 17.5 3.5 21l4.2-1.8A9 9 0 1 0 5 17.5z" />
+        </svg>
+      );
+    case "bulb":
+      return (
+        <svg {...common}>
+          <path d="M9 17.5h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" />
+        </svg>
+      );
+    case "arrow-right":
+      return (
+        <svg {...common}>
+          <path d="M5 12h14M13 6l6 6-6 6" />
         </svg>
       );
     case "film":

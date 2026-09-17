@@ -18,6 +18,9 @@ const sessionSchema = z.object({
   heldAt: z.string().min(1, "Please pick a date and time"),
   location: z.string().trim().max(200),
   notes: z.string().trim().max(2000),
+  label: z.string().trim().max(40, "Keep the label under 40 characters"),
+  tagline: z.string().trim().max(140, "Keep the tagline under 140 characters"),
+  highlights: z.array(z.string().trim().max(80, "Keep each point under 80 characters")).max(3),
   presenter: z.string().uuid().nullable(),
   pricingKind: z.enum(["free", "paid"]),
   guestFee: z.coerce.number().min(0).nullable(),
@@ -46,6 +49,9 @@ export async function saveSession(
     heldAt: formData.get("heldAt") ?? "",
     location: formData.get("location") ?? "",
     notes: formData.get("notes") ?? "",
+    label: formData.get("label") ?? "",
+    tagline: formData.get("tagline") ?? "",
+    highlights: formData.getAll("highlight").map((v) => String(v)),
     presenter: emptyToNull(formData.get("presenter")),
     pricingKind: formData.get("pricingKind") ?? "free",
     guestFee: emptyToNull(formData.get("guestFee")),
@@ -97,9 +103,24 @@ export async function saveSession(
 
   if (error) return { ok: false, error: error.message };
 
+  const sessionId = data as unknown as string;
+
+  // The page copy -- label, tagline, what to expect -- goes through its own
+  // RPC (see migration 0038), with the same club check as the save above.
+  const { error: detailsError } = await supabase.rpc("set_session_details", {
+    p_session_id: sessionId,
+    p_label: d.label || undefined,
+    p_tagline: d.tagline || undefined,
+    p_highlights: d.highlights.filter(Boolean),
+  });
+  if (detailsError) {
+    return { ok: false, error: `Session saved, but its details did not: ${detailsError.message}` };
+  }
+
   revalidatePath("/admin/sessions");
   revalidatePath("/sessions");
-  return { ok: true, data: { sessionId: data as unknown as string } };
+  revalidatePath(`/sessions/${sessionId}`);
+  return { ok: true, data: { sessionId } };
 }
 
 /**
