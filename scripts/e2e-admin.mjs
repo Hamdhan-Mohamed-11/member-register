@@ -145,11 +145,18 @@ check("search narrows the list",
 // --- promote + the last-super-admin guard --------------------------------
 await page.goto(`${BASE}/admin/members/${ids[A2]}`, { waitUntil: "domcontentloaded" });
 await page.waitForTimeout(1500);
+// Choosing Secretary asks which club they will run -- the role alone grants
+// nothing -- so pick the fixture club, never a real one.
 await page.selectOption("#role", "secretary");
+await page.waitForSelector("#secretary-club");
+await page.selectOption("#secretary-club", club2.id);
+await page.click('button:has-text("Make secretary")');
 await page.waitForTimeout(3000);
 
 let profile = (await j(await admin(`/rest/v1/profiles?id=eq.${ids[A2]}&select=role`)))[0];
 check("a member can be promoted to secretary", profile?.role === "secretary", JSON.stringify(profile));
+const runs = (await j(await admin(`/rest/v1/clubs?id=eq.${club2.id}&select=secretary_id`)))[0];
+check("and is appointed to the club chosen", runs?.secretary_id === ids[A2], JSON.stringify(runs));
 await page.screenshot({ path: `${SHOT}e2e-member-admin.png`, fullPage: true });
 
 // The last-super-admin guard.

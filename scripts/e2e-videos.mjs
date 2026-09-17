@@ -169,17 +169,22 @@ console.log("\n--- moderation ---");
   const published = (await j(await admin("/rest/v1/videos?title=eq.VE%20Member%20video&select=status")))[0];
   check("publishing works", published?.status === "approved", JSON.stringify(published));
 
-  await page.goto(`${BASE}/videos`, { waitUntil: "domcontentloaded" });
-  await page.waitForTimeout(1500);
-  body = await visibleText(page);
+  // Checked as the member: staff are sent from member pages to /admin.
+  const memberCtx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const memberPage = await memberCtx.newPage();
+  await login(memberPage, BASE, MEMBER, PW);
+  await memberPage.goto(`${BASE}/videos`, { waitUntil: "domcontentloaded" });
+  await memberPage.waitForTimeout(1500);
+  body = await visibleText(memberPage);
   check("and it appears in the public feed", /VE Member video/.test(body ?? ""), "");
-  await page.screenshot({ path: `${SHOT}e2e-videos-feed.png`, fullPage: true });
+  await memberPage.screenshot({ path: `${SHOT}e2e-videos-feed.png`, fullPage: true });
 
   // The iframe must point at the constructed embed URL, not the pasted one.
-  const src = await page.getAttribute("iframe", "src");
+  const src = await memberPage.getAttribute("iframe", "src");
   check("the iframe src is the constructed embed URL",
     src === "https://www.youtube-nocookie.com/embed/BBBBBBBBBBB", String(src));
 
+  await memberCtx.close();
   await ctx.close();
 }
 
