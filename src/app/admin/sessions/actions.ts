@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { clubLocalToIso } from "@/lib/time";
 import { z } from "zod";
 import { requireSecretary } from "@/lib/auth/session";
 import { getActionSupabase } from "@/lib/supabase/actionClient";
@@ -72,10 +73,10 @@ export async function saveSession(
   }
 
   // datetime-local gives a naive local string; the column is timestamptz.
-  // new Date() interprets it in the SERVER's zone, which is the club's zone in
-  // production but may not be in development -- acceptable here, and worth
-  // knowing if times ever look shifted by a few hours.
-  const heldAtIso = new Date(d.heldAt).toISOString();
+  // Read it as Sri Lanka time explicitly. `new Date(d.heldAt)` used the
+  // server's zone, which in production is UTC, and stored every session five
+  // and a half hours late.
+  const heldAtIso = clubLocalToIso(d.heldAt);
 
   const supabase = await getActionSupabase();
   const { data, error } = await supabase.rpc("upsert_session", {

@@ -29,3 +29,35 @@ export function relativeTime(iso: string, now: Date = new Date()): string {
     ...(then.getFullYear() === now.getFullYear() ? {} : { year: "numeric" }),
   });
 }
+
+/**
+ * The club's timezone. Every session time is typed, stored and shown as Sri
+ * Lanka time, named explicitly rather than taken from the server's clock --
+ * the VPS runs in UTC, and relying on the process timezone stored a time typed
+ * as 6.30pm as 6.30pm UTC, five and a half hours late.
+ */
+export const CLUB_TZ = "Asia/Colombo";
+
+/** Sri Lanka is UTC+5:30 all year -- no daylight saving to account for. */
+const CLUB_OFFSET = "+05:30";
+
+/** A datetime-local value ("2026-09-17T18:30"), read as Sri Lanka time. */
+export function clubLocalToIso(local: string): string {
+  const withSeconds = /T\d{2}:\d{2}$/.test(local) ? `${local}:00` : local;
+  return new Date(`${withSeconds}${CLUB_OFFSET}`).toISOString();
+}
+
+/** An instant, as a datetime-local value in Sri Lanka time. */
+export function isoToClubLocal(iso: string): string {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: CLUB_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date(iso));
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "00";
+  return `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}`;
+}

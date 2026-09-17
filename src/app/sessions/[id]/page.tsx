@@ -11,6 +11,7 @@ import { avatarUrl } from "@/lib/members/queries";
 import { feeForMember, getSession, myBooking } from "@/lib/sessions/queries";
 import { flyerUrl, sessionImageUrl } from "@/lib/flyers/url";
 import { parseVideoUrl } from "@/lib/sessions/video";
+import { CLUB_TZ } from "@/lib/time";
 import { AddToCalendar } from "./AddToCalendar";
 import { BookingPanel } from "./BookingPanel";
 
@@ -27,7 +28,7 @@ export async function generateMetadata({
 // Sessions are held in Sri Lanka, and this renders on a server whose clock is
 // not necessarily the club's, so every date and time is formatted in Colombo
 // time explicitly.
-const TZ = "Asia/Colombo";
+const TZ = CLUB_TZ;
 
 function longDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-GB", {
@@ -201,7 +202,7 @@ export default async function SessionPage({
             the words sit at the bottom, so the shade does too. */}
         <div
           aria-hidden
-          className="absolute inset-0 -z-10 bg-gradient-to-t from-brand-950/90 via-brand-950/55 to-brand-950/10 sm:bg-gradient-to-r sm:from-brand-950/90 sm:via-brand-950/60 sm:to-transparent"
+          className="absolute inset-0 -z-10 bg-gradient-to-t from-brand-950/90 via-brand-950/55 to-brand-950/10 sm:bg-gradient-to-r sm:from-brand-950/95 sm:via-brand-950/75 sm:to-brand-950/5"
         />
 
         <div className="flex min-h-[240px] flex-col justify-end p-6 sm:min-h-[300px] sm:justify-center sm:p-10 lg:max-w-[62%]">

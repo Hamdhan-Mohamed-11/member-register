@@ -165,7 +165,7 @@ async function main() {
       const held = new Date(now);
       held.setMonth(held.getMonth() - back);
       held.setDate(6 + Math.floor(rand() * 18));
-      held.setHours(18, 30, 0, 0);
+      held.setUTCHours(13, 0, 0, 0); // 6.30pm in Sri Lanka
 
       const [bookTitle, bookAuthor] = pick(BOOKS);
       const month = held.toLocaleString("en-GB", { month: "long" });

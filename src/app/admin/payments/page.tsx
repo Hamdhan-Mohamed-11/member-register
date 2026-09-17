@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CLUB_TZ } from "@/lib/time";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { BackLink } from "@/components/ui/BackLink";
@@ -125,6 +126,7 @@ export default async function PaymentsPage() {
                           {p.provider_payment_id ? ` · PayHere ${p.provider_payment_id}` : ""}
                           {" · "}
                           {new Date(p.created_at).toLocaleString("en-GB", {
+                            timeZone: CLUB_TZ,
                             day: "numeric",
                             month: "short",
                             hour: "2-digit",

@@ -4,9 +4,11 @@ import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { sessionImageUrl } from "@/lib/flyers/url";
 import type { SessionSummary } from "@/lib/sessions/queries";
+import { CLUB_TZ } from "@/lib/time";
 
 export function formatWhen(iso: string): string {
   return new Date(iso).toLocaleString("en-GB", {
+    timeZone: CLUB_TZ,
     weekday: "short",
     day: "numeric",
     month: "short",
@@ -26,6 +28,7 @@ export function formatLkr(amount: number): string {
 /** Just the time, for the line under the title where the date is already shown. */
 function formatTime(iso: string): string {
   return new Date(iso).toLocaleString("en-GB", {
+    timeZone: CLUB_TZ,
     weekday: "long",
     hour: "2-digit",
     minute: "2-digit",
@@ -123,10 +126,10 @@ export function SessionCard({
           }`}
         >
           <span className="text-[10px] font-semibold uppercase tracking-wider">
-            {when.toLocaleString("en-GB", { month: "short" })}
+            {when.toLocaleString("en-GB", { timeZone: CLUB_TZ, month: "short" })}
           </span>
           <span className="font-display text-xl tabular-nums">
-            {when.toLocaleString("en-GB", { day: "numeric" })}
+            {when.toLocaleString("en-GB", { timeZone: CLUB_TZ, day: "numeric" })}
           </span>
         </div>
 

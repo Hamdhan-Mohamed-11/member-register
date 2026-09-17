@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CLUB_TZ } from "@/lib/time";
 import Link from "next/link";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Card } from "@/components/ui/Card";
@@ -14,6 +15,7 @@ const lkr = (n: number) =>
 
 function when(iso: string): string {
   return new Date(iso).toLocaleString("en-GB", {
+    timeZone: CLUB_TZ,
     weekday: "short",
     day: "numeric",
     month: "short",
