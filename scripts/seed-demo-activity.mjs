@@ -4,7 +4,10 @@
  * What it creates, all tagged so it can be removed again
  * (`scripts/clear-demo-activity.mjs`):
  *
- *   - past club sessions, one every few weeks per club, notes = 'demo-seed'
+ *   - past club sessions, one every few weeks per club, titled
+ *     "<Month> evening · <Club>" and with no created_by (a session made in the
+ *     app always has one) -- that pair is how the clear script finds them. Not
+ *     a marker in `notes`: notes is the description members read.
  *   - attendance and presenting on those sessions, which is what gives
  *     members DIFFERENT points totals: the triggers on member_activities
  *     recompute each balance and re-award badges
@@ -149,7 +152,9 @@ async function main() {
   }
 
   // --- past sessions, and who came ---------------------------------------
-  const existing = await read("/sessions?select=id,title,held_at,host_club_id&notes=eq." + NOTE);
+  const existing = await read(
+    "/sessions?select=id,title,held_at,host_club_id&created_by=is.null&title=like.*%20evening%20%C2%B7%20*",
+  );
   const existingKeys = new Set(existing.map((s) => `${s.host_club_id}|${s.title}`));
 
   const now = new Date();
@@ -188,7 +193,9 @@ async function main() {
             status: "completed",
             pricing_kind: "free",
             presenter_member_id: presenter,
-            notes: NOTE,
+            notes:
+              `An evening on ${bookTitle} by ${bookAuthor}. The presenter walks us through ` +
+              "what stayed with them, reads a passage or two, and opens it up to the room.",
           },
         ],
         { ignoreDuplicates: false },
