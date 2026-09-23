@@ -28,6 +28,12 @@ const PUBLIC_PATHS = [
   "/login",
   "/join",
   "/forgot-password",
+  // Two doors for people with no account and no club to join: an author or
+  // publisher registering, and a club asking to come onto the portal. Both
+  // create the account themselves, so requiring a session first would be a
+  // locked door with the key inside.
+  "/creator/register",
+  "/clubs/new",
   "/auth",
   "/api/payhere",
   "/api/health",
