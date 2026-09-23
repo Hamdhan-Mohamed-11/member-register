@@ -12,7 +12,14 @@ import { feeForMember, getSession, myBooking } from "@/lib/sessions/queries";
 import { flyerUrl, sessionImageUrl } from "@/lib/flyers/url";
 import { parseVideoUrl } from "@/lib/sessions/video";
 import { CLUB_TZ } from "@/lib/time";
+import {
+  attendedSession,
+  averageRating,
+  getMyFeedback,
+  getPresenterFeedback,
+} from "@/lib/sessions/feedback";
 import { AddToCalendar } from "./AddToCalendar";
+import { FeedbackForm } from "./FeedbackForm";
 import { BookingPanel } from "./BookingPanel";
 
 export async function generateMetadata({
@@ -126,6 +133,19 @@ export default async function SessionPage({
     feeForMember(id, member.userId),
     myBooking(id, member.userId),
   ]);
+
+  // Feedback opens once the evening has happened AND the club has recorded
+  // who was there -- attendance is the club's own record of the room.
+  const isPresenter = session.presenter?.id === member.userId;
+  const [attended, myFeedback, presenterFeedback] = session.isPast
+    ? await Promise.all([
+        attendedSession(id),
+        getMyFeedback(id),
+        isPresenter ? getPresenterFeedback(id) : Promise.resolve([]),
+      ])
+    : [false, [], []];
+  const feedbackFor = (kind: "session" | "presenter") =>
+    myFeedback.find((f) => f.kind === kind);
 
   const video = parseVideoUrl(session.videoUrl);
   const flyer = flyerUrl(session.flyerPath);
@@ -334,6 +354,65 @@ export default async function SessionPage({
                 {session.videoUrl}
               </a>
             </p>
+          ) : null}
+
+          {/* ---- Feedback ------------------------------------------------ */}
+          {attended && !cancelled ? (
+            <div className="mt-6 rounded-card border border-brand-200 bg-brand-50 p-4">
+              <h3 className="font-display text-xl text-ink">How was it?</h3>
+              <p className="mt-1 text-sm text-ink-muted">
+                Only the club admin reads what you say about the evening. The presenter
+                sees their own feedback without names.
+              </p>
+
+              <div className="mt-4 grid gap-5 lg:grid-cols-2">
+                <FeedbackForm
+                  sessionId={session.id}
+                  kind="session"
+                  title="The session"
+                  hint="The book, the discussion, the venue, the timing."
+                  initialRating={feedbackFor("session")?.rating ?? 0}
+                  initialComment={feedbackFor("session")?.comment ?? ""}
+                />
+                {session.presenter && !isPresenter ? (
+                  <FeedbackForm
+                    sessionId={session.id}
+                    kind="presenter"
+                    title={`${presenterName} presenting`}
+                    hint="How they covered the book, and how they ran the room."
+                    initialRating={feedbackFor("presenter")?.rating ?? 0}
+                    initialComment={feedbackFor("presenter")?.comment ?? ""}
+                  />
+                ) : null}
+              </div>
+            </div>
+          ) : null}
+
+          {/* What the presenter is told, without names. */}
+          {isPresenter && presenterFeedback.length > 0 ? (
+            <div className="mt-6">
+              <h3 className="font-display text-xl text-ink">
+                Your feedback{" "}
+                <span className="text-base font-normal text-ink-muted">
+                  · {averageRating(presenterFeedback)} out of 5 from{" "}
+                  {presenterFeedback.length}{" "}
+                  {presenterFeedback.length === 1 ? "person" : "people"}
+                </span>
+              </h3>
+              <p className="mt-1 text-sm text-ink-muted">
+                Names are not shown, so people can answer honestly.
+              </p>
+              <ul className="mt-3 space-y-2">
+                {presenterFeedback.map((f, i) => (
+                  <li key={i} className="rounded-card border border-line p-3">
+                    <p className="text-sm font-medium text-gold-700">{f.rating} / 5</p>
+                    {f.comment ? (
+                      <p className="mt-1 whitespace-pre-line text-sm text-ink">{f.comment}</p>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </div>
           ) : null}
 
           {/* The flyer if the club made one; otherwise a drawn banner. */}

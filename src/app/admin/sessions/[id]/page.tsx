@@ -11,6 +11,7 @@ import { getSessionFormOptions, toDatetimeLocal } from "@/lib/sessions/formOptio
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import { formatLkr, formatWhen } from "@/components/sessions/SessionCard";
 import { SessionForm } from "../SessionForm";
+import { averageRating, getSessionFeedback } from "@/lib/sessions/feedback";
 
 export async function generateMetadata({
   params,
@@ -39,6 +40,12 @@ export default async function AdminSessionPage({
   if (!canAdminClub(member, session.hostClub?.id ?? null)) notFound();
 
   const { clubs, members } = await getSessionFormOptions(adminClubScope(member));
+
+  // RLS returns feedback only to the club's admin, so a secretary opening
+  // this page simply sees nothing here.
+  const feedback = session.isPast ? await getSessionFeedback(id) : [];
+  const aboutSession = feedback.filter((f) => f.kind === "session");
+  const aboutPresenter = feedback.filter((f) => f.kind === "presenter");
   const supabase = await getServerComponentSupabase();
 
   const [{ count: bookingCount }, { count: activityCount }] = await Promise.all([
@@ -127,6 +134,53 @@ export default async function AdminSessionPage({
             }}
           />
         </Card>
+
+        {feedback.length > 0 ? (
+          <Card>
+            <CardHeader
+              title="Feedback"
+              description="From the people recorded as attending. The presenter sees their own, without names."
+            />
+
+            <div className="grid gap-5 sm:grid-cols-2">
+              {[
+                { label: "The session", rows: aboutSession },
+                { label: "The presenter", rows: aboutPresenter },
+              ].map(({ label, rows }) => (
+                <div key={label}>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-ink-faint">
+                    {label}
+                  </p>
+                  <p className="mt-1 font-display text-2xl text-ink">
+                    {averageRating(rows) ?? "—"}
+                    <span className="text-base text-ink-muted">
+                      {" "}
+                      / 5 · {rows.length} {rows.length === 1 ? "answer" : "answers"}
+                    </span>
+                  </p>
+
+                  <ul className="mt-3 space-y-2">
+                    {rows
+                      .filter((r) => r.comment)
+                      .map((r, i) => (
+                        <li key={i} className="rounded-card border border-line p-3">
+                          <p className="text-sm text-ink-muted">
+                            <span className="font-medium text-ink">
+                              {r.member
+                                ? `${r.member.firstName} ${r.member.lastName}`.trim()
+                                : "A member"}
+                            </span>{" "}
+                            · {r.rating} / 5
+                          </p>
+                          <p className="mt-1 whitespace-pre-line text-sm text-ink">{r.comment}</p>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </Card>
+        ) : null}
       </div>
     </AdminShell>
   );

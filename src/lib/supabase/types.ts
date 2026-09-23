@@ -1596,6 +1596,78 @@ export type Database = {
           },
         ]
       }
+      session_feedback: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          kind: string
+          member_id: string
+          presenter_id: string | null
+          rating: number
+          session_id: string
+          updated_at: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          member_id: string
+          presenter_id?: string | null
+          rating: number
+          session_id: string
+          updated_at?: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          member_id?: string
+          presenter_id?: string | null
+          rating?: number
+          session_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_feedback_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_feedback_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_feedback_presenter_id_fkey"
+            columns: ["presenter_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_feedback_presenter_id_fkey"
+            columns: ["presenter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_feedback_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sessions: {
         Row: {
           book_author: string
@@ -1964,6 +2036,15 @@ export type Database = {
           save_count: number
         }[]
       }
+      give_session_feedback: {
+        Args: {
+          p_comment?: string
+          p_kind: string
+          p_rating: number
+          p_session_id: string
+        }
+        Returns: undefined
+      }
       has_library_access: { Args: { p_member_id: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       is_public_club: { Args: { p_club_id: string }; Returns: boolean }
@@ -1988,6 +2069,17 @@ export type Database = {
       moderate_video: {
         Args: { p_note?: string; p_status: string; p_video_id: string }
         Returns: undefined
+      }
+      my_presenter_feedback: {
+        Args: never
+        Returns: {
+          comment: string
+          created_at: string
+          held_at: string
+          rating: number
+          session_id: string
+          title: string
+        }[]
       }
       new_payment_ref: { Args: { p_prefix: string }; Returns: string }
       notify_member: {
@@ -2017,6 +2109,14 @@ export type Database = {
       post_order_message: {
         Args: { p_body: string; p_order_id: string }
         Returns: string
+      }
+      presenter_feedback: {
+        Args: { p_session_id: string }
+        Returns: {
+          comment: string
+          created_at: string
+          rating: number
+        }[]
       }
       public_discover_highlights: {
         Args: { p_limit?: number }

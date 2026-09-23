@@ -49,3 +49,37 @@ export async function cancelBooking(formData: FormData): Promise<ActionResult> {
   revalidatePath("/sessions");
   return { ok: true };
 }
+
+/**
+ * Feedback on the evening, or on the person who presented.
+ *
+ * The database decides who may: only someone the club recorded as attending,
+ * only after the session, and never about their own presenting. Saving again
+ * replaces the earlier answer.
+ */
+export async function giveFeedback(
+  sessionId: string,
+  kind: "session" | "presenter",
+  rating: number,
+  comment: string,
+): Promise<ActionResult> {
+  await requireActiveMember();
+
+  if (!idSchema.safeParse(sessionId).success) return { ok: false, error: "Invalid session." };
+  if (!["session", "presenter"].includes(kind)) return { ok: false, error: "Invalid form." };
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return { ok: false, error: "Choose a rating from 1 to 5." };
+  }
+
+  const supabase = await getActionSupabase();
+  const { error } = await supabase.rpc("give_session_feedback", {
+    p_session_id: sessionId,
+    p_kind: kind,
+    p_rating: rating,
+    p_comment: comment.trim() || undefined,
+  });
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath(`/sessions/${sessionId}`);
+  return { ok: true };
+}
