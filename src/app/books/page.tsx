@@ -14,6 +14,7 @@ import { listBooks, listCategories, memberPriceToShopPrice } from "@/lib/legacy/
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import { getWishlistedIds } from "@/lib/library/queries";
 import { getCartBookIds } from "@/lib/orders/queries";
+import { listClubAuthorBooks } from "@/lib/creators/shop";
 import type { BookQuery } from "@/lib/legacy/types";
 
 export const metadata: Metadata = { title: "Books" };
@@ -80,12 +81,18 @@ export default async function BooksPage({
     page: Number(sp.page) || 1,
   };
 
-  const [result, categoriesResult, wishlisted, cartIds] = await Promise.all([
+  const [result, categoriesResult, wishlisted, cartIds, authorBooks] = await Promise.all([
     listBooks(query),
     listCategories(),
     getWishlistedIds(),
     getCartBookIds(),
+    listClubAuthorBooks(sp.q),
   ]);
+
+  // The club's own authors, on page one only. They are a shelf beside the
+  // catalogue, not part of its paging -- repeating them above every page of
+  // results would read as the search having gone wrong.
+  const showAuthorShelf = (Number(sp.page) || 1) === 1 && authorBooks.length > 0;
   const categories = categoriesResult.ok ? categoriesResult.data : [];
 
   return (
@@ -129,6 +136,40 @@ export default async function BooksPage({
             }}
           />
         </Card>
+
+        {showAuthorShelf ? (
+          <section>
+            <div className="mb-2 flex items-baseline justify-between gap-3">
+              <h2 className="font-display text-lg text-ink">From our authors</h2>
+              <p className="text-xs text-ink-muted">
+                Published by writers who work with the club.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {authorBooks.map((book) => (
+                <BookCard
+                  key={book.id}
+                  book={book}
+                  discountPercent={discount}
+                  href={`/books/${book.id}`}
+                  actions={
+                    <>
+                      <AddToCartButton
+                        book={{ id: book.id, title: book.title, author: book.author }}
+                        inCart={cartIds.has(book.id)}
+                      />
+                      <WishlistButton
+                        book={{ id: book.id, title: book.title, author: book.author }}
+                        kind="buy"
+                        saved={wishlisted.buy.has(book.id)}
+                      />
+                    </>
+                  }
+                />
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         {!result.ok ? (
           <CatalogueUnavailable reason={result.reason} />

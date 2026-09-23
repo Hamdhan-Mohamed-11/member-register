@@ -10,7 +10,7 @@ import { BookCover } from "@/components/books/BookCover";
 import { PlaceOrderForm, QuantityStepper } from "./CartClient";
 import { requireActiveMember } from "@/lib/auth/session";
 import { getCart } from "@/lib/orders/queries";
-import { getBookSnapshots } from "@/lib/legacy/books";
+import { getShopSnapshots } from "@/lib/shop/snapshots";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import { formatLkrCents, priceLine } from "@/lib/pricing";
 
@@ -41,8 +41,7 @@ export default async function CartPage({
   // Live prices, not the ones cached when the book went in the cart. A
   // cart that quotes last week's price and then charges this week's is the
   // single most annoying thing a shop can do.
-  const snapshots = await getBookSnapshots(cart.map((l) => l.bookId));
-  const byId = snapshots.ok ? snapshots.data : new Map();
+  const byId = await getShopSnapshots(cart.map((l) => l.bookId));
 
   const lines = cart.map((line) => {
     const snap = byId.get(line.bookId);

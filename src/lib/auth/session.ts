@@ -4,7 +4,15 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 
-export type MemberRole = "member" | "secretary" | "club_admin" | "super_admin";
+export type MemberRole =
+  | "member"
+  | "secretary"
+  | "club_admin"
+  | "super_admin"
+  /** Writes books and sells them through the club. Not a club member. */
+  | "author"
+  /** Lists authors and sells their books. Not a club member. */
+  | "publisher";
 export type MemberStatus = "pending" | "active" | "suspended" | "rejected";
 export type ClubKind = "public" | "company";
 export type MembershipStatus =
@@ -225,6 +233,24 @@ export async function requireClubManager(): Promise<SessionMember> {
 export async function requireSuperAdmin(): Promise<SessionMember> {
   const member = await requireMember();
   if (member.role !== "super_admin") redirect("/feed");
+  return member;
+}
+
+/**
+ * An author or a publisher.
+ *
+ * Their account signs in like any other and then sees an entirely different
+ * portal: no feed, no sessions, no points -- just their books and what those
+ * have sold. Kept apart from isAdmin because they decide nothing for the club.
+ */
+export function isCreator(member: SessionMember): boolean {
+  return member.role === "author" || member.role === "publisher";
+}
+
+/** Signed in as an author or a publisher. The gate for /creator. */
+export async function requireCreator(): Promise<SessionMember> {
+  const member = await requireMember();
+  if (!isCreator(member)) redirect(isAdmin(member) ? "/admin" : "/feed");
   return member;
 }
 

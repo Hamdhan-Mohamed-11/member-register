@@ -11,7 +11,7 @@ import { startBookOrderPayment } from "@/app/renew/actions";
 import { CancelOrderButton, OrderThread, QuoteResponse } from "../OrderClient";
 import { OPEN_STATUSES, STATUS, formatWhen, orderRef } from "../status";
 import { BookCover } from "@/components/books/BookCover";
-import { getBookSnapshots } from "@/lib/legacy/books";
+import { getShopSnapshots } from "@/lib/shop/snapshots";
 import { requireActiveMember } from "@/lib/auth/session";
 import { getOrder } from "@/lib/orders/queries";
 import { formatLkrCents } from "@/lib/pricing";
@@ -36,9 +36,9 @@ export default async function OrderPage({
 
   const open = OPEN_STATUSES.includes(order.status);
 
-  const snapshots = await getBookSnapshots(order.items.map((i) => i.bookId));
+  const snapshots = await getShopSnapshots(order.items.map((i) => i.bookId));
   const coverOf = (bookId: number) =>
-    snapshots.ok ? (snapshots.data.get(bookId)?.imageUrl ?? null) : null;
+    snapshots.get(bookId)?.imageUrl ?? null;
 
   return (
     <AppShell>

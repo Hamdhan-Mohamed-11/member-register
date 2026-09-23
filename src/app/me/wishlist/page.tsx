@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { buttonClassName } from "@/components/ui/Button";
 import { WishlistButton } from "@/components/books/BookActions";
 import { BookCover } from "@/components/books/BookCover";
-import { getBookSnapshots } from "@/lib/legacy/books";
+import { getShopSnapshots } from "@/lib/shop/snapshots";
 import { requireActiveMember } from "@/lib/auth/session";
 import {
   getLibraryAccess,
@@ -105,11 +105,9 @@ export default async function WishlistPage({
 
   // Covers from the live catalogue. If it is unreachable the list still
   // renders, with placeholders.
-  const snapshots = await getBookSnapshots(items.map((i) => i.bookId));
+  const snapshots = await getShopSnapshots(items.map((i) => i.bookId));
   const covers = new Map<number, string | null>();
-  if (snapshots.ok) {
-    for (const [id, snap] of snapshots.data) covers.set(id, snap.imageUrl);
-  }
+  for (const [id, snap] of snapshots) covers.set(id, snap.imageUrl);
 
   return (
     <AppShell>

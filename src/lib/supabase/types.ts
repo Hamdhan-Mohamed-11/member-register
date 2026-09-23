@@ -135,6 +135,178 @@ export type Database = {
           },
         ]
       }
+      author_books: {
+        Row: {
+          author_id: string
+          blurb: string | null
+          cover_path: string | null
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decline_reason: string | null
+          id: number
+          isbn: string | null
+          price_lkr: number
+          publisher_id: string | null
+          status: string
+          submitted_by: string | null
+          title: string
+        }
+        Insert: {
+          author_id: string
+          blurb?: string | null
+          cover_path?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decline_reason?: string | null
+          id?: number
+          isbn?: string | null
+          price_lkr: number
+          publisher_id?: string | null
+          status?: string
+          submitted_by?: string | null
+          title: string
+        }
+        Update: {
+          author_id?: string
+          blurb?: string | null
+          cover_path?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decline_reason?: string | null
+          id?: number
+          isbn?: string | null
+          price_lkr?: number
+          publisher_id?: string | null
+          status?: string
+          submitted_by?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "author_books_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "author_books_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "author_books_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "author_books_publisher_id_fkey"
+            columns: ["publisher_id"]
+            isOneToOne: false
+            referencedRelation: "publishers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "author_books_submitted_by_fkey"
+            columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "author_books_submitted_by_fkey"
+            columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      authors: {
+        Row: {
+          bio: string | null
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decline_reason: string | null
+          id: string
+          name: string
+          owner_id: string | null
+          photo_path: string | null
+          publisher_id: string | null
+          status: string
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decline_reason?: string | null
+          id?: string
+          name: string
+          owner_id?: string | null
+          photo_path?: string | null
+          publisher_id?: string | null
+          status?: string
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decline_reason?: string | null
+          id?: string
+          name?: string
+          owner_id?: string | null
+          photo_path?: string | null
+          publisher_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "authors_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "authors_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "authors_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "authors_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "authors_publisher_id_fkey"
+            columns: ["publisher_id"]
+            isOneToOne: false
+            referencedRelation: "publishers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       badges: {
         Row: {
           code: string
@@ -1474,6 +1646,74 @@ export type Database = {
         }
         Relationships: []
       }
+      publishers: {
+        Row: {
+          about: string | null
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decline_reason: string | null
+          id: string
+          name: string
+          owner_id: string
+          status: string
+          website: string | null
+        }
+        Insert: {
+          about?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decline_reason?: string | null
+          id?: string
+          name: string
+          owner_id: string
+          status?: string
+          website?: string | null
+        }
+        Update: {
+          about?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decline_reason?: string | null
+          id?: string
+          name?: string
+          owner_id?: string
+          status?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "publishers_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "publishers_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "publishers_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "publishers_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reading_items: {
         Row: {
           author: string
@@ -1921,6 +2161,19 @@ export type Database = {
         Returns: undefined
       }
       approve_join_request: { Args: { p_request_id: string }; Returns: string }
+      author_book_sales: {
+        Args: { p_author_id?: string }
+        Returns: {
+          author_name: string
+          book_id: number
+          copies_sold: number
+          last_sold_at: string
+          price_lkr: number
+          revenue_lkr: number
+          status: string
+          title: string
+        }[]
+      }
       badge_progress: {
         Args: never
         Returns: {
@@ -1998,6 +2251,15 @@ export type Database = {
       current_member_has_library: { Args: never; Returns: boolean }
       current_member_is_active: { Args: never; Returns: boolean }
       current_member_role: { Args: never; Returns: string }
+      decide_creator: {
+        Args: {
+          p_approve: boolean
+          p_id: string
+          p_kind: string
+          p_reason?: string
+        }
+        Returns: undefined
+      }
       delete_club: { Args: { p_club_id: string }; Returns: undefined }
       delete_club_type: { Args: { p_type_id: string }; Returns: undefined }
       delete_discover_post: { Args: { p_id: string }; Returns: undefined }
@@ -2063,6 +2325,7 @@ export type Database = {
         Args: { p_note?: string; p_status: string; p_video_id: string }
         Returns: undefined
       }
+      my_author_id: { Args: never; Returns: string }
       my_presenter_feedback: {
         Args: never
         Returns: {
@@ -2074,6 +2337,7 @@ export type Database = {
           title: string
         }[]
       }
+      my_publisher_id: { Args: never; Returns: string }
       new_payment_ref: { Args: { p_prefix: string }; Returns: string }
       notify_member: {
         Args: {
@@ -2133,6 +2397,10 @@ export type Database = {
           sessions_held: number
         }[]
       }
+      publisher_add_author: {
+        Args: { p_bio?: string; p_name: string }
+        Returns: string
+      }
       readrise_books_funded: { Args: { p_member_id: string }; Returns: number }
       readrise_donated_lkr: { Args: { p_member_id: string }; Returns: number }
       readrise_totals: {
@@ -2162,6 +2430,15 @@ export type Database = {
       record_session_attendance: {
         Args: { p_entries: Json; p_session_id: string }
         Returns: number
+      }
+      register_creator: {
+        Args: {
+          p_about?: string
+          p_kind: string
+          p_name: string
+          p_website?: string
+        }
+        Returns: string
       }
       reject_join_request: {
         Args: { p_reason?: string; p_request_id: string }
@@ -2289,6 +2566,17 @@ export type Database = {
           session_title: string
         }[]
       }
+      submit_author_book: {
+        Args: {
+          p_author_id: string
+          p_blurb?: string
+          p_cover_path?: string
+          p_isbn?: string
+          p_price_lkr: number
+          p_title: string
+        }
+        Returns: number
+      }
       submit_video: {
         Args: {
           p_description?: string
@@ -2379,6 +2667,7 @@ export type Database = {
         }
         Returns: string
       }
+      withdraw_author_book: { Args: { p_book_id: number }; Returns: undefined }
       write_audit: {
         Args: {
           p_action: string

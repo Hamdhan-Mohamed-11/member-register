@@ -14,6 +14,7 @@ import {
 } from "@/lib/library/queries";
 import { getCartBookIds } from "@/lib/orders/queries";
 import { getBook } from "@/lib/legacy/books";
+import { getClubAuthorBook, isAuthorBookId } from "@/lib/creators/shop";
 import { formatLkrCents, priceLine } from "@/lib/pricing";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 
@@ -28,6 +29,10 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
+  if (isAuthorBookId(Number(id))) {
+    const book = await getClubAuthorBook(Number(id));
+    return { title: book ? book.title : "Book" };
+  }
   const result = await getBook(Number(id));
   return { title: result.ok && result.data ? result.data.title : "Book" };
 }
@@ -47,7 +52,9 @@ export default async function BookPage({
   const [{ data: settings }, result, wishlisted, openBorrows, access, cartIds] =
     await Promise.all([
     supabase.from("app_settings").select("book_discount_percent").eq("id", 1).maybeSingle(),
-    getBook(bookId),
+    isAuthorBookId(bookId)
+      ? getClubAuthorBook(bookId).then((data) => ({ ok: true as const, data }))
+      : getBook(bookId),
     getWishlistedIds(),
     getOpenBorrowBookIds(),
     getLibraryAccess(member.userId),

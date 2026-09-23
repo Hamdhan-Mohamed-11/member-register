@@ -1,7 +1,7 @@
 import "server-only";
 
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
-import { getBookSnapshots } from "@/lib/legacy/books";
+import { getShopSnapshots } from "@/lib/shop/snapshots";
 
 export type PopularBook = {
   bookId: number;
@@ -25,8 +25,7 @@ export async function getPopularBooks(limit = 6): Promise<PopularBook[]> {
     members: number | string;
   }[];
 
-  const snapshots = await getBookSnapshots(rows.map((r) => Number(r.book_id)));
-  const byId = snapshots.ok ? snapshots.data : new Map();
+  const byId = await getShopSnapshots(rows.map((r) => Number(r.book_id)));
 
   return rows.map((r) => {
     const snap = byId.get(Number(r.book_id));

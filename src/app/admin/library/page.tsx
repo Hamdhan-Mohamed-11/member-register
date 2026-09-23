@@ -14,7 +14,7 @@ import {
 } from "@/lib/library/queries";
 import { BorrowActions } from "./BorrowActions";
 import { BookCover } from "@/components/books/BookCover";
-import { getBookSnapshots } from "@/lib/legacy/books";
+import { getShopSnapshots } from "@/lib/shop/snapshots";
 
 export const metadata: Metadata = { title: "Borrow requests" };
 export const dynamic = "force-dynamic";
@@ -112,9 +112,9 @@ function Section({
 export default async function AdminLibraryPage() {
   await requireStaff();
   const all = await getAllBorrowRequests();
-  const snapshots = await getBookSnapshots(all.map((r) => r.bookId));
+  const snapshots = await getShopSnapshots(all.map((r) => r.bookId));
   const covers = new Map<number, string | null>();
-  if (snapshots.ok) for (const [id, snap] of snapshots.data) covers.set(id, snap.imageUrl);
+  for (const [id, snap] of snapshots) covers.set(id, snap.imageUrl);
 
   const today = new Date().toISOString().slice(0, 10);
 

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireActiveMember } from "@/lib/auth/session";
 import { getActionSupabase } from "@/lib/supabase/actionClient";
-import { getBookSnapshots } from "@/lib/legacy/books";
+import { getShopSnapshots } from "@/lib/shop/snapshots";
 import { priceLine } from "@/lib/pricing";
 
 export type ActionResult<T = undefined> =
@@ -119,8 +119,7 @@ export async function placeOrder(note: string): Promise<ActionResult<{ orderId: 
     .maybeSingle();
   const discount = Number(settings?.book_discount_percent ?? 0);
 
-  const snapshots = await getBookSnapshots(lines.map((l) => Number(l.book_id)));
-  const byId = snapshots.ok ? snapshots.data : new Map();
+  const byId = await getShopSnapshots(lines.map((l) => Number(l.book_id)));
 
   const items = lines.map((l) => {
     const snap = byId.get(Number(l.book_id));

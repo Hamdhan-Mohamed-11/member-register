@@ -5,7 +5,7 @@ import { BottomNav } from "./BottomNav";
 import { MemberSidebar } from "./MemberSidebar";
 import { SectionTabs } from "./SectionTabs";
 import { TopBar } from "./TopBar";
-import { getSessionMember, isAdmin, activeMemberships } from "@/lib/auth/session";
+import { getSessionMember, isAdmin, isCreator, activeMemberships } from "@/lib/auth/session";
 import { avatarUrl } from "@/lib/members/queries";
 import { getUnreadNotificationCount } from "@/lib/notifications/queries";
 import { inMemberView } from "@/lib/auth/viewMode";
@@ -66,6 +66,11 @@ export async function AppShell({
     if (!allowStaff) redirect("/admin");
     return <AdminShell>{children}</AdminShell>;
   }
+
+  // Authors and publishers have their own portal. They are not members, so a
+  // member page would show them a feed they cannot post to and a points total
+  // that will always be zero.
+  if (session && isCreator(session)) redirect("/creator");
 
   // Only an ACTIVE member gets member chrome. A pending or suspended account
   // has a session but nothing the nav points at.

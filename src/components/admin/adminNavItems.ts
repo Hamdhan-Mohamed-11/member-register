@@ -57,6 +57,7 @@ export const ADMIN_NAV: AdminNavGroup[] = [
     title: "Books and money",
     items: [
       { href: "/admin/orders", label: "Book orders", icon: "book", level: "super" },
+      { href: "/admin/creators", label: "Authors and publishers", icon: "pencil", level: "super" },
       { href: "/admin/library", label: "Borrow requests", icon: "bookmark", level: "super" },
       { href: "/admin/payments", label: "Payments", icon: "card", level: "club_admin" },
     ],

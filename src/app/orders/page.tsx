@@ -11,7 +11,7 @@ import { CancelOrderButton } from "./OrderClient";
 import { OPEN_STATUSES, STATUS, formatWhen, orderRef } from "./status";
 import { requireActiveMember } from "@/lib/auth/session";
 import { getMyOrders, type BookOrder } from "@/lib/orders/queries";
-import { getBookSnapshots } from "@/lib/legacy/books";
+import { getShopSnapshots } from "@/lib/shop/snapshots";
 import { formatLkrCents } from "@/lib/pricing";
 
 export const metadata: Metadata = { title: "My orders" };
@@ -169,13 +169,11 @@ export default async function OrdersPage({
   );
 
   // Covers from the live catalogue. Unreachable just means placeholders.
-  const snapshots = await getBookSnapshots(
+  const snapshots = await getShopSnapshots(
     orders.flatMap((o) => o.items.map((i) => i.bookId)),
   );
   const covers = new Map<number, string | null>();
-  if (snapshots.ok) {
-    for (const [id, snap] of snapshots.data) covers.set(id, snap.imageUrl);
-  }
+  for (const [id, snap] of snapshots) covers.set(id, snap.imageUrl);
 
   return (
     <AppShell>

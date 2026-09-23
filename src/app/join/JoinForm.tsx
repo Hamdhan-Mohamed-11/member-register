@@ -229,6 +229,13 @@ export function JoinForm({
           Log in
         </Link>
       </p>
+
+      <p className="text-sm text-ink-muted">
+        Write or publish books?{" "}
+        <Link href="/creator/register" className="text-brand-600 hover:underline">
+          Sell them through the club
+        </Link>
+      </p>
     </form>
   );
 }
