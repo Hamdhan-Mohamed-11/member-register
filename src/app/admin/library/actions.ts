@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { requireSecretary } from "@/lib/auth/session";
+import { requireStaff } from "@/lib/auth/session";
 import { getActionSupabase } from "@/lib/supabase/actionClient";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
@@ -18,13 +18,13 @@ const schema = z.object({
  * Moves a borrow request along: approve, hand over, take back, decline.
  *
  * The authorisation is re-checked inside set_borrow_status via is_admin(), so
- * requireSecretary here is about not showing a stranger the page, not about
+ * requireStaff here is about not showing a stranger the page, not about
  * being the control. The RPC also writes the audit row and notifies the
  * member, which is why this action is so thin -- doing either of those here
  * would mean a psql fix-up silently skipped them.
  */
 export async function setBorrowStatus(formData: FormData): Promise<ActionResult> {
-  await requireSecretary();
+  await requireStaff();
 
   const parsed = schema.safeParse({
     id: formData.get("id"),

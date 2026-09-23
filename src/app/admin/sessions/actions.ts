@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { clubLocalToIso } from "@/lib/time";
 import { z } from "zod";
-import { requireSecretary } from "@/lib/auth/session";
+import { requireStaff } from "@/lib/auth/session";
 import { getActionSupabase } from "@/lib/supabase/actionClient";
 
 export type ActionResult<T = undefined> =
@@ -39,7 +39,7 @@ function emptyToNull(value: FormDataEntryValue | null): string | null {
 export async function saveSession(
   formData: FormData,
 ): Promise<ActionResult<{ sessionId: string }>> {
-  await requireSecretary();
+  await requireStaff();
 
   const parsed = sessionSchema.safeParse({
     sessionId: emptyToNull(formData.get("sessionId")),
@@ -135,7 +135,7 @@ export async function setSessionImage(
   sessionId: string,
   path: string | null,
 ): Promise<ActionResult> {
-  await requireSecretary();
+  await requireStaff();
   if (!z.string().uuid().safeParse(sessionId).success) {
     return { ok: false, error: "Unknown session." };
   }
@@ -180,7 +180,7 @@ export async function saveAttendance(
   sessionId: string,
   entries: { member_id: string; codes: string[] }[],
 ): Promise<ActionResult> {
-  await requireSecretary();
+  await requireStaff();
 
   const parsed = attendanceSchema.safeParse({ sessionId, entries });
   if (!parsed.success) return { ok: false, error: "Invalid attendance data." };

@@ -266,6 +266,33 @@ const appointSchema = z.object({
  * club can never point at someone who cannot reach the admin area. Doing that
  * here in two calls would leave a window where the two disagree.
  */
+/**
+ * Appoints the club's admin -- the person who runs it: its members, its
+ * secretary and its money. A super admin's call alone, which the RPC checks.
+ */
+export async function appointClubAdmin(formData: FormData): Promise<ActionResult> {
+  await requireSuperAdmin();
+
+  const raw = formData.get("memberId");
+  const parsed = appointSchema.safeParse({
+    clubId: formData.get("clubId"),
+    memberId: typeof raw === "string" && raw.trim() !== "" ? raw : null,
+  });
+  if (!parsed.success) return { ok: false, error: "Choose a member, or none." };
+
+  const supabase = await getActionSupabase();
+  const { error } = await supabase.rpc("appoint_club_admin", {
+    p_club_id: parsed.data.clubId,
+    p_member_id: parsed.data.memberId ?? undefined,
+  });
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/admin/clubs");
+  revalidatePath("/admin");
+  revalidatePath("/admin/members");
+  return { ok: true };
+}
+
 export async function appointSecretary(formData: FormData): Promise<ActionResult> {
   await requireSuperAdmin();
 

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Card } from "@/components/ui/Card";
 import { Icon, type IconName } from "@/components/ui/Icon";
-import { adminClubScope, requireSecretary } from "@/lib/auth/session";
+import { adminClubScope, requireStaff } from "@/lib/auth/session";
 import { getDashboard } from "@/lib/admin/dashboard";
 
 export const metadata: Metadata = { title: "Admin" };
@@ -81,7 +81,7 @@ function Kpi({
 }
 
 export default async function AdminDashboard() {
-  const member = await requireSecretary();
+  const member = await requireStaff();
   const isSuper = member.role === "super_admin";
   const scope = adminClubScope(member);
   const { stats, upcoming, recentMembers } = await getDashboard(scope);
@@ -97,8 +97,10 @@ export default async function AdminDashboard() {
 
   // The attention list: only things that genuinely wait on this person, in the
   // order they should be done. Empty is the good state, and it says so.
+  const canManage = member.role !== "secretary";
   const attention = [
-    stats.pendingJoinRequests > 0 && {
+    canManage &&
+      stats.pendingJoinRequests > 0 && {
       href: "/admin/join-requests",
       text: `${stats.pendingJoinRequests} join request${stats.pendingJoinRequests === 1 ? "" : "s"} to decide`,
       icon: "inbox" as const,
@@ -136,7 +138,7 @@ export default async function AdminDashboard() {
     },
   ].filter(Boolean) as { href: string; text: string; icon: IconName }[];
 
-  const noClub = !isSuper && !member.secretaryClubId;
+  const noClub = !isSuper && !member.staffClubId;
 
   return (
     <AdminShell>
@@ -161,8 +163,8 @@ export default async function AdminDashboard() {
             <p className="mt-1 text-sm text-on-navy-muted">
               {isSuper
                 ? "Everything across every club."
-                : member.secretaryClubName
-                  ? `Everything for ${member.secretaryClubName}.`
+                : member.staffClubName
+                  ? `Everything for ${member.staffClubName}.`
                   : "No club has been assigned to you yet."}
             </p>
           </div>

@@ -12,11 +12,20 @@ import type { IconName } from "@/components/ui/Icon";
  * a secretary cannot use is about not offering a door that will be shut in
  * their face.
  */
+/**
+ * The least senior staff role that gets this item.
+ *
+ *   secretary  -- the club's day-to-day work
+ *   club_admin -- deciding for one club: its members, its money
+ *   super      -- everything central: clubs, companies, settings, the library
+ */
+export type AdminNavLevel = "secretary" | "club_admin" | "super";
+
 export type AdminNavItem = {
   href: string;
   label: string;
   icon: IconName;
-  superOnly: boolean;
+  level: AdminNavLevel;
 };
 
 export type AdminNavGroup = {
@@ -28,36 +37,39 @@ export const ADMIN_NAV: AdminNavGroup[] = [
   {
     title: "Running your club",
     items: [
-      { href: "/admin", label: "Dashboard", icon: "sparkle", superOnly: false },
-      { href: "/admin/sessions", label: "Sessions", icon: "calendar", superOnly: false },
-      { href: "/admin/join-requests", label: "Join requests", icon: "inbox", superOnly: false },
-      { href: "/admin/videos", label: "Videos", icon: "play", superOnly: false },
-      { href: "/admin/discover", label: "Discover", icon: "id", superOnly: false },
+      { href: "/admin", label: "Dashboard", icon: "sparkle", level: "secretary" },
+      { href: "/admin/sessions", label: "Sessions", icon: "calendar", level: "secretary" },
+      { href: "/admin/join-requests", label: "Join requests", icon: "inbox", level: "club_admin" },
+      { href: "/admin/videos", label: "Videos", icon: "play", level: "secretary" },
+      { href: "/admin/discover", label: "Discover", icon: "id", level: "secretary" },
     ],
   },
   {
     title: "People and setup",
     items: [
-      { href: "/admin/clubs", label: "Clubs and types", icon: "users", superOnly: true },
-      { href: "/admin/companies", label: "Companies", icon: "shield", superOnly: true },
-      { href: "/admin/members", label: "Members", icon: "id", superOnly: true },
-      { href: "/admin/settings", label: "Settings", icon: "pencil", superOnly: true },
+      { href: "/admin/clubs", label: "Clubs and types", icon: "users", level: "super" },
+      { href: "/admin/companies", label: "Companies", icon: "shield", level: "super" },
+      { href: "/admin/members", label: "Members", icon: "id", level: "club_admin" },
+      { href: "/admin/settings", label: "Settings", icon: "pencil", level: "super" },
     ],
   },
   {
     title: "Books and money",
     items: [
-      { href: "/admin/orders", label: "Book orders", icon: "book", superOnly: true },
-      { href: "/admin/library", label: "Borrow requests", icon: "bookmark", superOnly: true },
-      { href: "/admin/payments", label: "Payments", icon: "card", superOnly: true },
+      { href: "/admin/orders", label: "Book orders", icon: "book", level: "super" },
+      { href: "/admin/library", label: "Borrow requests", icon: "bookmark", level: "super" },
+      { href: "/admin/payments", label: "Payments", icon: "card", level: "club_admin" },
     ],
   },
 ];
 
-export function adminNavFor(isSuper: boolean): AdminNavGroup[] {
+const RANK: Record<AdminNavLevel, number> = { secretary: 0, club_admin: 1, super: 2 };
+
+export function adminNavFor(role: string): AdminNavGroup[] {
+  const mine = role === "super_admin" ? 2 : role === "club_admin" ? 1 : 0;
   return ADMIN_NAV.map((group) => ({
     ...group,
-    items: group.items.filter((item) => isSuper || !item.superOnly),
+    items: group.items.filter((item) => RANK[item.level] <= mine),
   })).filter((group) => group.items.length > 0);
 }
 

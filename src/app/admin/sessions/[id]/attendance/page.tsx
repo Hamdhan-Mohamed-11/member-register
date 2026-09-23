@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { Card } from "@/components/ui/Card";
 import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { BackLink } from "@/components/ui/BackLink";
-import { canAdminClub, requireSecretary } from "@/lib/auth/session";
+import { canAdminClub, requireStaff } from "@/lib/auth/session";
 import { avatarUrl } from "@/lib/members/queries";
 import { getSession } from "@/lib/sessions/queries";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
@@ -20,7 +21,7 @@ export default async function AttendancePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const member = await requireSecretary();
+  const member = await requireStaff();
   const { id } = await params;
 
   const session = await getSession(id);
@@ -146,6 +147,17 @@ export default async function AttendancePage({
         </p>
       </div>
 
+      {/* Points are a record of an evening that happened. The RPC refuses to
+          write them early; saying so here stops anyone filling the form first
+          and losing the work. */}
+      {!session.isPast ? (
+        <Card tone="warning" className="mb-4">
+          <p className="text-sm text-ink">
+            This session has not happened yet. Attendance and points can be recorded
+            from {formatWhen(session.heldAt)}.
+          </p>
+        </Card>
+      ) : (
       <AttendanceRecorder
         sessionId={id}
         rules={rules}
@@ -153,6 +165,7 @@ export default async function AttendancePage({
         withdrawn={withdrawn}
         presenterCap={session.presenterCount}
       />
+      )}
     </AdminShell>
   );
 }

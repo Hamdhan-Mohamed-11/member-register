@@ -6,7 +6,7 @@ import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { requireSecretary } from "@/lib/auth/session";
+import { requireStaff } from "@/lib/auth/session";
 import { getAllOrders, type BookOrder, type OrderStatus } from "@/lib/orders/queries";
 import { AdminReply, FulfilButton, OrderReview } from "./OrderReview";
 
@@ -121,7 +121,7 @@ function OrderCard({ order }: { order: BookOrder }) {
 }
 
 export default async function AdminOrdersPage() {
-  await requireSecretary();
+  await requireStaff();
   const all = await getAllOrders();
 
   const needsYou = all.filter((o) => o.status === "review");

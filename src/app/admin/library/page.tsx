@@ -6,7 +6,7 @@ import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { requireSecretary } from "@/lib/auth/session";
+import { requireStaff } from "@/lib/auth/session";
 import {
   getAllBorrowRequests,
   type AdminBorrowRequest,
@@ -110,7 +110,7 @@ function Section({
 }
 
 export default async function AdminLibraryPage() {
-  await requireSecretary();
+  await requireStaff();
   const all = await getAllBorrowRequests();
   const snapshots = await getBookSnapshots(all.map((r) => r.bookId));
   const covers = new Map<number, string | null>();

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { requireSecretary } from "@/lib/auth/session";
+import { requireStaff } from "@/lib/auth/session";
 import { getActionSupabase } from "@/lib/supabase/actionClient";
 
 export type ActionResult = { ok: true; status?: string } | { ok: false; error: string };
@@ -28,7 +28,7 @@ export async function setOrderPrice(input: {
   prices: { item_id: string; unit_price: number }[];
   message?: string;
 }): Promise<ActionResult> {
-  await requireSecretary();
+  await requireStaff();
 
   const parsed = priceSchema.safeParse(input);
   if (!parsed.success) {
@@ -49,7 +49,7 @@ export async function setOrderPrice(input: {
 }
 
 export async function markOrderFulfilled(orderId: string): Promise<ActionResult> {
-  await requireSecretary();
+  await requireStaff();
   if (!z.string().uuid().safeParse(orderId).success) {
     return { ok: false, error: "Unknown order." };
   }

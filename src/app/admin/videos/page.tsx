@@ -6,13 +6,13 @@ import { Card, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { VideoCard } from "@/components/videos/VideoCard";
 import { ModerateVideo } from "@/app/videos/VideoActions";
-import { adminClubScope, requireSecretary } from "@/lib/auth/session";
+import { adminClubScope, requireStaff } from "@/lib/auth/session";
 import { listForModeration } from "@/lib/videos/queries";
 
 export const metadata: Metadata = { title: "Videos · Admin" };
 
 export default async function AdminVideosPage() {
-  const member = await requireSecretary();
+  const member = await requireStaff();
   const { pending, recent } = await listForModeration(adminClubScope(member));
 
   return (
@@ -22,8 +22,8 @@ export default async function AdminVideosPage() {
         <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Videos</h1>
         <p className="text-sm text-ink-muted">
           Member submissions are visible only to them until published here.
-          {member.secretaryClubName
-            ? ` Showing ${member.secretaryClubName}'s sessions only.`
+          {member.staffClubName
+            ? ` Showing ${member.staffClubName}'s sessions only.`
             : ""}
         </p>
       </div>

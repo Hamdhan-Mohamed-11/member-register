@@ -9,22 +9,24 @@ import { adminNavFor, isAdminActive } from "./adminNavItems";
 
 type Props = {
   isSuper: boolean;
+  /** "secretary" | "club_admin" | "super_admin" -- decides what the nav shows. */
+  role: string;
   roleLabel: string;
   clubName: string | null;
 };
 
 function NavList({
-  isSuper,
+  role,
   onNavigate,
 }: {
-  isSuper: boolean;
+  role: string;
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
 
   return (
     <nav aria-label="Admin" className="space-y-6">
-      {adminNavFor(isSuper).map((group) => (
+      {adminNavFor(role).map((group) => (
         <div key={group.title}>
           <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-on-navy-muted/70">
             {group.title}
@@ -65,7 +67,7 @@ function NavList({
   );
 }
 
-function Identity({ isSuper, roleLabel, clubName }: Props) {
+function Identity({ isSuper, role, roleLabel, clubName }: Props) {
   return (
     <div className="rounded-card border border-white/12 bg-white/6 px-3 py-2.5">
       <p className="text-[11px] uppercase tracking-[0.14em] text-sky-300">{roleLabel}</p>
@@ -73,8 +75,8 @@ function Identity({ isSuper, roleLabel, clubName }: Props) {
         {clubName ?? (isSuper ? "All clubs" : "No club assigned")}
       </p>
       {/* A secretary is also a member of their club, and can look at it the
-          way members do. Super admins belong to no club, so no switch. */}
-      {!isSuper ? (
+          way members do. Club admins and super admins belong to no club. */}
+      {role === "secretary" ? (
         // A plain <a>, not Link: /view/member is a route handler that sets a
         // cookie, and a Link would prefetch it -- switching views on hover.
         // eslint-disable-next-line @next/next/no-html-link-for-pages
@@ -115,7 +117,7 @@ export function AdminNav(props: Props) {
       </Link>
       <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-3 py-5">
         <Identity {...props} />
-        <NavList isSuper={props.isSuper} />
+        <NavList role={props.role} />
       </div>
     </aside>
   );
@@ -214,7 +216,7 @@ export function AdminMobileNav(props: Props) {
               </button>
             </div>
             <Identity {...props} />
-            <NavList isSuper={props.isSuper} onNavigate={() => setOpen(false)} />
+            <NavList role={props.role} onNavigate={() => setOpen(false)} />
           </aside>
         </div>
       ) : null}

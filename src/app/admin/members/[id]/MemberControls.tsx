@@ -10,9 +10,14 @@ import {
   setMemberStatus,
   setMembership,
 } from "../actions";
-import { appointSecretary } from "@/app/admin/clubs/actions";
+import { appointClubAdmin, appointSecretary } from "@/app/admin/clubs/actions";
 
-export type SecretaryClubOption = { id: string; name: string; hasSecretary: boolean };
+export type SecretaryClubOption = {
+  id: string;
+  name: string;
+  hasSecretary: boolean;
+  hasAdmin: boolean;
+};
 
 
 
@@ -54,43 +59,61 @@ export function RoleAndStatus({
   isSelf,
   clubs,
   secretaryOf,
+  adminOf,
 }: {
   memberId: string;
   role: string;
   status: string;
   isSelf: boolean;
-  /** Active clubs, for choosing which one a secretary runs. */
+  /** Active clubs, for choosing which one this person runs. */
   clubs: SecretaryClubOption[];
-  /** The club this member runs, if any. */
+  /** The club they run as its secretary, if any. */
   secretaryOf: { id: string; name: string } | null;
+  /** The club they run as its admin, if any. */
+  adminOf: { id: string; name: string } | null;
 }) {
   const { pending, error, saved, run } = useAction();
-  // A secretary is a person AND a club: the role alone grants nothing, because
-  // every admin action asks "may they act on THIS club?". Picking "Secretary"
-  // therefore opens a club picker instead of saving straight away -- saving
-  // the bare role is exactly how an account ended up secretary of nothing.
-  const [choosingClub, setChoosingClub] = useState(false);
-  const [clubId, setClubId] = useState(secretaryOf?.id ?? "");
+  // Staff are a person AND a club: the role alone grants nothing, because
+  // every admin action asks "may they act on THIS club?". Picking Secretary or
+  // Club admin therefore opens a club picker instead of saving straight away
+  // -- saving the bare role is exactly how an account ended up secretary of
+  // nothing.
+  const [choosing, setChoosing] = useState<"secretary" | "club_admin" | null>(null);
+  const runs = adminOf ?? secretaryOf;
+  const [clubId, setClubId] = useState(runs?.id ?? "");
   const [roleValue, setRoleValue] = useState(role);
 
-  const orphaned = role === "secretary" && !secretaryOf;
-  const showPicker = choosingClub || orphaned;
+  const orphaned = (role === "secretary" || role === "club_admin") && !runs;
+  const picking = choosing ?? (orphaned ? (role as "secretary" | "club_admin") : null);
   const chosen = clubs.find((c) => c.id === clubId);
+  const taken =
+    picking === "club_admin" ? chosen?.hasAdmin && chosen.id !== adminOf?.id
+      : chosen?.hasSecretary && chosen.id !== secretaryOf?.id;
 
   function onRole(next: string) {
     setRoleValue(next);
-    if (next === "secretary") {
-      setChoosingClub(true);
+    if (next === "secretary" || next === "club_admin") {
+      setChoosing(next);
       return;
     }
-    setChoosingClub(false);
+    setChoosing(null);
+    // Stepping down: clearing the club's staff also returns the role to
+    // member, in one step on the database side.
+    if (adminOf && next === "member") {
+      run(appointClubAdmin, { clubId: adminOf.id, memberId: "" });
+      return;
+    }
     if (secretaryOf && next === "member") {
-      // Stepping down: clearing the club's secretary also returns the role
-      // to member, in one step on the database side.
       run(appointSecretary, { clubId: secretaryOf.id, memberId: "" });
       return;
     }
     run(setMemberRole, { memberId, role: next });
+  }
+
+  function appoint() {
+    const action = picking === "club_admin" ? appointClubAdmin : appointSecretary;
+    run(action, { clubId, memberId });
+    setChoosing(null);
   }
 
   return (
@@ -107,8 +130,8 @@ export function RoleAndStatus({
 
       {orphaned ? (
         <Notice>
-          This account is a secretary but is not running any club, so it can open the
-          admin area but cannot do anything there. Choose the club they run below.
+          This account is staff but is not running any club, so it can open the admin
+          area and do nothing there. Choose the club they run below.
         </Notice>
       ) : null}
 
@@ -126,14 +149,16 @@ export function RoleAndStatus({
           >
             <option value="member">Member</option>
             <option value="secretary">Secretary</option>
+            <option value="club_admin">Club admin</option>
             <option value="super_admin">Super admin</option>
           </select>
-          {secretaryOf && !choosingClub ? (
+          {runs && !choosing ? (
             <p className="mt-1.5 text-xs text-ink-muted">
-              Runs <span className="font-medium text-ink">{secretaryOf.name}</span> ·{" "}
+              {adminOf ? "Runs" : "Secretary of"}{" "}
+              <span className="font-medium text-ink">{runs.name}</span> ·{" "}
               <button
                 type="button"
-                onClick={() => setChoosingClub(true)}
+                onClick={() => setChoosing(adminOf ? "club_admin" : "secretary")}
                 className="text-brand-600 hover:underline"
               >
                 change club
@@ -161,10 +186,10 @@ export function RoleAndStatus({
         </div>
       </div>
 
-      {showPicker ? (
+      {picking ? (
         <div className="rounded-lg border border-brand-200 bg-brand-50 p-3">
           <label htmlFor="secretary-club" className="block text-sm font-medium text-ink mb-1.5">
-            Which club will they run?
+            Which club will they {picking === "club_admin" ? "run" : "be secretary of"}?
           </label>
           <div className="flex flex-col gap-2 sm:flex-row">
             <select
@@ -177,27 +202,30 @@ export function RoleAndStatus({
               {clubs.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
-                  {c.hasSecretary && c.id !== secretaryOf?.id ? " (has a secretary)" : ""}
+                  {picking === "club_admin"
+                    ? c.hasAdmin && c.id !== adminOf?.id
+                      ? " (has an admin)"
+                      : ""
+                    : c.hasSecretary && c.id !== secretaryOf?.id
+                      ? " (has a secretary)"
+                      : ""}
                 </option>
               ))}
             </select>
             <Button
               size="sm"
-              disabled={pending || !clubId || clubId === secretaryOf?.id}
-              onClick={() => {
-                run(appointSecretary, { clubId, memberId });
-                setChoosingClub(false);
-              }}
+              disabled={pending || !clubId || clubId === runs?.id}
+              onClick={appoint}
               className="sm:self-center"
             >
-              {pending ? "Saving…" : "Make secretary"}
+              {pending ? "Saving…" : picking === "club_admin" ? "Make club admin" : "Make secretary"}
             </Button>
             {!orphaned ? (
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={() => {
-                  setChoosingClub(false);
+                  setChoosing(null);
                   setRoleValue(role);
                 }}
                 className="sm:self-center"
@@ -207,9 +235,13 @@ export function RoleAndStatus({
             ) : null}
           </div>
           <p className="mt-2 text-xs text-ink-muted">
-            A secretary runs one club: its sessions, attendance, join requests and videos.
-            {chosen?.hasSecretary && chosen.id !== secretaryOf?.id
-              ? " The current secretary of that club goes back to being a member."
+            {picking === "club_admin"
+              ? "A club admin runs one club: its sessions, members, join requests, secretary and payments. Not the library, the settings, or any other club."
+              : "A secretary runs one club's evenings: sessions, attendance, videos and Discover. Members and money stay with the club admin."}
+            {taken
+              ? picking === "club_admin"
+                ? " The current admin of that club goes back to being a member."
+                : " The current secretary of that club goes back to being a member."
               : ""}
           </p>
         </div>

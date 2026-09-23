@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { requireSecretary } from "@/lib/auth/session";
+import { requireStaff } from "@/lib/auth/session";
 import { getActionSupabase } from "@/lib/supabase/actionClient";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
@@ -27,7 +27,7 @@ export async function saveFlyer(
   path: string,
   template: string,
 ): Promise<ActionResult> {
-  await requireSecretary();
+  await requireStaff();
 
   const parsed = saveSchema.safeParse({ sessionId, path, template });
   if (!parsed.success) return { ok: false, error: "Invalid flyer." };
@@ -45,7 +45,7 @@ export async function saveFlyer(
 }
 
 export async function clearFlyer(sessionId: string): Promise<ActionResult> {
-  await requireSecretary();
+  await requireStaff();
   if (!z.string().uuid().safeParse(sessionId).success) {
     return { ok: false, error: "Unknown session." };
   }

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { canAdminClub, requireSecretary } from "@/lib/auth/session";
+import { canAdminClub, requireStaff } from "@/lib/auth/session";
 import { getSession } from "@/lib/sessions/queries";
 import { flyerUrl } from "@/lib/flyers/url";
 import { FlyerDesigner } from "./FlyerDesigner";
@@ -39,7 +39,7 @@ export default async function FlyerPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const member = await requireSecretary();
+  const member = await requireStaff();
   const { id } = await params;
 
   const session = await getSession(id);

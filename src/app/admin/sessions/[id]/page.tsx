@@ -5,7 +5,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { buttonClassName } from "@/components/ui/Button";
-import { adminClubScope, canAdminClub, requireSecretary } from "@/lib/auth/session";
+import { adminClubScope, canAdminClub, requireStaff } from "@/lib/auth/session";
 import { getSession } from "@/lib/sessions/queries";
 import { getSessionFormOptions, toDatetimeLocal } from "@/lib/sessions/formOptions";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
@@ -27,7 +27,7 @@ export default async function AdminSessionPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const member = await requireSecretary();
+  const member = await requireStaff();
   const { id } = await params;
 
   const session = await getSession(id);

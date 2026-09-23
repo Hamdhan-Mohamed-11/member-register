@@ -6,7 +6,7 @@ import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Notice, controlClassName } from "@/components/ui/Field";
-import { requireSuperAdmin } from "@/lib/auth/session";
+import { requireClubManager } from "@/lib/auth/session";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 
 export const metadata: Metadata = { title: "Members · Admin" };
@@ -14,6 +14,7 @@ export const metadata: Metadata = { title: "Members · Admin" };
 const ROLE_LABEL: Record<string, string> = {
   member: "Member",
   secretary: "Secretary",
+  club_admin: "Club admin",
   super_admin: "Super admin",
 };
 
@@ -38,14 +39,27 @@ export default async function AdminMembersPage({
 }: {
   searchParams: Promise<{ q?: string }>;
 }) {
-  await requireSuperAdmin();
+  const staff = await requireClubManager();
   const { q } = await searchParams;
   const supabase = await getServerComponentSupabase();
+
+  // A club admin sees the people in their own club, and nobody else. The ids
+  // come from that club's memberships; profiles RLS refuses the rest anyway.
+  let mine: string[] | null = null;
+  if (staff.role !== "super_admin" && staff.staffClubId) {
+    const { data: rows } = await supabase
+      .from("club_memberships")
+      .select("member_id")
+      .eq("club_id", staff.staffClubId)
+      .eq("status", "active");
+    mine = (rows ?? []).map((r) => r.member_id);
+  }
 
   let query = supabase
     .from("admin_members")
     .select("*")
     .order("first_name", { ascending: true });
+  if (mine) query = query.in("id", mine.length ? mine : ["00000000-0000-0000-0000-000000000000"]);
 
   if (q?.trim()) {
     const term = `%${q.trim()}%`;
@@ -63,7 +77,8 @@ export default async function AdminMembersPage({
         <BackLink href="/admin">Admin</BackLink>
         <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Members</h1>
         <p className="text-sm text-ink-muted">
-          {members.length} {members.length === 1 ? "account" : "accounts"}.
+          {members.length} {members.length === 1 ? "account" : "accounts"}
+          {staff.role === "super_admin" ? "" : ` in ${staff.staffClubName ?? "your club"}`}.
         </p>
       </div>
 

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { requireActiveMember, requireSecretary } from "@/lib/auth/session";
+import { requireActiveMember, requireStaff } from "@/lib/auth/session";
 import { getActionSupabase } from "@/lib/supabase/actionClient";
 import { parseVideoUrl } from "@/lib/sessions/video";
 
@@ -73,7 +73,7 @@ const moderateSchema = z.object({
 });
 
 export async function moderateVideo(formData: FormData): Promise<ActionResult> {
-  await requireSecretary();
+  await requireStaff();
 
   const parsed = moderateSchema.safeParse({
     videoId: formData.get("videoId"),

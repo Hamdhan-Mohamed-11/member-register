@@ -6,7 +6,7 @@ import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { requireSuperAdmin } from "@/lib/auth/session";
+import { requireClubManager } from "@/lib/auth/session";
 import { avatarUrl } from "@/lib/members/queries";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import { AddClubForm, MembershipRow, RoleAndStatus } from "./MemberControls";
@@ -22,12 +22,23 @@ type MembershipRowData = {
   clubs: { id: string; name: string } | null;
 };
 
+const ROLE_LABELS: Record<string, string> = {
+  member: "Member",
+  secretary: "Secretary",
+  club_admin: "Club admin",
+  super_admin: "Super admin",
+};
+
 export default async function AdminMemberPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const admin = await requireSuperAdmin();
+  const admin = await requireClubManager();
+  // A club admin can look at their members, but roles, statuses and club
+  // memberships are a super admin's to change -- every one of those RPCs
+  // refuses them anyway, so the controls are not offered.
+  const canEdit = admin.role === "super_admin";
   const { id } = await params;
   const supabase = await getServerComponentSupabase();
 
@@ -44,7 +55,7 @@ export default async function AdminMemberPage({
         .from("club_memberships")
         .select("id, status, is_primary, renewal_date, joined_on, clubs(id, name)")
         .eq("member_id", id),
-      supabase.from("clubs").select("id, name, secretary_id").eq("is_active", true).order("name"),
+      supabase.from("clubs").select("id, name, secretary_id, admin_id").eq("is_active", true).order("name"),
     ]);
 
   if (!profile) notFound();
@@ -55,10 +66,12 @@ export default async function AdminMemberPage({
     .filter((c) => !joinedClubIds.has(c.id))
     .map((c) => ({ id: c.id, name: c.name }));
   const secretaryOf = (allClubs ?? []).find((c) => c.secretary_id === id) ?? null;
+  const adminOf = (allClubs ?? []).find((c) => c.admin_id === id) ?? null;
   const secretaryClubs = (allClubs ?? []).map((c) => ({
     id: c.id,
     name: c.name,
     hasSecretary: c.secretary_id != null,
+    hasAdmin: c.admin_id != null,
   }));
 
   const name = `${profile.first_name} ${profile.last_name}`.trim() || profile.email;
@@ -102,6 +115,7 @@ export default async function AdminMemberPage({
           </div>
         </Card>
 
+        {canEdit ? (
         <Card>
           <CardHeader title="Role and access" />
           <RoleAndStatus
@@ -111,8 +125,18 @@ export default async function AdminMemberPage({
             isSelf={profile.id === admin.userId}
             clubs={secretaryClubs}
             secretaryOf={secretaryOf ? { id: secretaryOf.id, name: secretaryOf.name } : null}
+            adminOf={adminOf ? { id: adminOf.id, name: adminOf.name } : null}
           />
         </Card>
+        ) : (
+          <Card>
+            <CardHeader title="Role and access" />
+            <p className="text-sm text-ink-muted">
+              {ROLE_LABELS[profile.role] ?? profile.role} · {profile.status}. Roles and account
+              status are set by a super admin.
+            </p>
+          </Card>
+        )}
 
         <Card flush>
           <div className="p-4 pb-2">
@@ -126,7 +150,8 @@ export default async function AdminMemberPage({
             <EmptyState title="Not in any club" />
           ) : (
             <ul className="divide-y divide-line">
-              {memberships.map((m) => (
+              {memberships.map((m) =>
+                canEdit ? (
                 <MembershipRow
                   key={m.id}
                   memberId={profile.id}
@@ -136,13 +161,21 @@ export default async function AdminMemberPage({
                   renewalDate={m.renewal_date}
                   isPrimary={m.is_primary}
                 />
-              ))}
+                ) : (
+                  <li key={m.id} className="px-4 py-3 text-sm text-ink">
+                    {m.clubs?.name ?? "Unknown club"}{" "}
+                    <span className="text-ink-muted">· {m.status}</span>
+                  </li>
+                ),
+              )}
             </ul>
           )}
 
-          <div className="px-4 py-3 border-t border-line">
-            <AddClubForm memberId={profile.id} clubs={availableClubs} />
-          </div>
+          {canEdit ? (
+            <div className="px-4 py-3 border-t border-line">
+              <AddClubForm memberId={profile.id} clubs={availableClubs} />
+            </div>
+          ) : null}
         </Card>
       </div>
     </AdminShell>

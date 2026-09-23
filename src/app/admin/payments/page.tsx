@@ -7,7 +7,7 @@ import { Card, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Notice } from "@/components/ui/Field";
 import { formatLkr } from "@/components/sessions/SessionCard";
-import { requireSuperAdmin } from "@/lib/auth/session";
+import { requireClubManager } from "@/lib/auth/session";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import { getPayHereMode, isPayHereConfigured } from "@/lib/payments/payhere";
 import { MarkPaid } from "./MarkPaid";
@@ -45,25 +45,35 @@ type PaymentRow = {
 };
 
 export default async function PaymentsPage() {
-  await requireSuperAdmin();
+  const staff = await requireClubManager();
+  const isSuper = staff.role === "super_admin";
   const supabase = await getServerComponentSupabase();
 
+  // A club admin sees their own club's payments; a super admin sees them all.
+  // RLS enforces the same rule, so this filter is about what to fetch rather
+  // than what is allowed.
+  let paymentQuery = supabase
+    .from("payments")
+    .select(
+      `id, purpose, provider_order_ref, provider_payment_id, amount_lkr, status,
+       note, created_at, paid_at,
+       profiles ( first_name, last_name, email ),
+       clubs ( name )`,
+    )
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (!isSuper && staff.staffClubId) paymentQuery = paymentQuery.eq("club_id", staff.staffClubId);
+
   const [{ data, error }, { data: events }] = await Promise.all([
-    supabase
-      .from("payments")
-      .select(
-        `id, purpose, provider_order_ref, provider_payment_id, amount_lkr, status,
-         note, created_at, paid_at,
-         profiles ( first_name, last_name, email ),
-         clubs ( name )`,
-      )
-      .order("created_at", { ascending: false })
-      .limit(100),
-    supabase
-      .from("payment_events")
-      .select("id, provider_order_ref, status_code, signature_ok, applied, outcome, received_at")
-      .order("received_at", { ascending: false })
-      .limit(20),
+    paymentQuery,
+    // The provider's raw callbacks are a central diagnostic, not a club's.
+    isSuper
+      ? supabase
+          .from("payment_events")
+          .select("id, provider_order_ref, status_code, signature_ok, applied, outcome, received_at")
+          .order("received_at", { ascending: false })
+          .limit(20)
+      : Promise.resolve({ data: [] }),
   ]);
 
   const payments = (data ?? []) as unknown as PaymentRow[];
@@ -141,7 +151,7 @@ export default async function PaymentsPage() {
                           column, rather than the button on a row of its own. */}
                       <div className="flex shrink-0 flex-col items-end gap-2">
                         <Badge tone={STATUS_TONE[p.status] ?? "neutral"}>{p.status}</Badge>
-                        {!settled ? <MarkPaid paymentId={p.id} /> : null}
+                        {!settled && isSuper ? <MarkPaid paymentId={p.id} /> : null}
                       </div>
                     </div>
                   </li>

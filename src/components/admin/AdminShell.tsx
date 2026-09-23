@@ -23,7 +23,7 @@ import { getUnreadNotificationCount } from "@/lib/notifications/queries";
 export async function AdminShell({ children }: { children: ReactNode }) {
   const session = await getSessionMember();
 
-  // The pages each re-check with requireSecretary() / requireSuperAdmin(),
+  // The pages each re-check with requireStaff() / requireSuperAdmin(),
   // which are the real gates. This only avoids drawing admin chrome for
   // someone about to be redirected anyway.
   if (!session || session.status !== "active" || !isAdmin(session)) {
@@ -31,6 +31,12 @@ export async function AdminShell({ children }: { children: ReactNode }) {
   }
 
   const isSuper = session.role === "super_admin";
+  const roleLabel =
+    session.role === "super_admin"
+      ? "Super admin"
+      : session.role === "club_admin"
+        ? "Club admin"
+        : "Secretary";
   const unread = await getUnreadNotificationCount();
 
   return (
@@ -41,8 +47,9 @@ export async function AdminShell({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen">
       <AdminNav
         isSuper={isSuper}
-        roleLabel={isSuper ? "Super admin" : "Secretary"}
-        clubName={isSuper ? null : session.secretaryClubName}
+        role={session.role}
+        roleLabel={roleLabel}
+        clubName={isSuper ? null : session.staffClubName}
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
@@ -60,8 +67,9 @@ export async function AdminShell({ children }: { children: ReactNode }) {
         />
         <AdminMobileNav
           isSuper={isSuper}
-          roleLabel={isSuper ? "Super admin" : "Secretary"}
-          clubName={isSuper ? null : session.secretaryClubName}
+          role={session.role}
+          roleLabel={roleLabel}
+          clubName={isSuper ? null : session.staffClubName}
         />
 
         <main className="mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 py-5 pb-12 sm:px-6 lg:px-8 lg:py-7">

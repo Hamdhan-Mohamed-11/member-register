@@ -6,13 +6,13 @@ import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { buttonClassName } from "@/components/ui/Button";
 import { SessionCard } from "@/components/sessions/SessionCard";
-import { adminClubScope, requireSecretary } from "@/lib/auth/session";
+import { adminClubScope, requireStaff } from "@/lib/auth/session";
 import { listAllSessions } from "@/lib/sessions/queries";
 
 export const metadata: Metadata = { title: "Sessions · Admin" };
 
 export default async function AdminSessionsPage() {
-  const member = await requireSecretary();
+  const member = await requireStaff();
   const scope = adminClubScope(member);
   const all = await listAllSessions();
 
@@ -32,8 +32,8 @@ export default async function AdminSessionsPage() {
           <BackLink href="/admin">Admin</BackLink>
           <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Sessions</h1>
           <p className="text-sm text-ink-muted">
-            {member.secretaryClubName
-              ? `${member.secretaryClubName} — create sessions and record attendance as they happen.`
+            {member.staffClubName
+              ? `${member.staffClubName} — create sessions and record attendance as they happen.`
               : "Create sessions and record attendance as they happen."}
           </p>
         </div>

@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Notice } from "@/components/ui/Field";
 import { Avatar } from "@/components/ui/Avatar";
-import { requireSecretary } from "@/lib/auth/session";
+import { requireClubManager } from "@/lib/auth/session";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import { DecisionButtons } from "./DecisionButtons";
 
@@ -20,7 +20,8 @@ type RequestRow = {
 };
 
 export default async function JoinRequestsPage() {
-  await requireSecretary();
+  // A secretary no longer admits members: that is the club admin's call.
+  await requireClubManager();
   const supabase = await getServerComponentSupabase();
 
   // The `!club_join_requests_member_id_fkey` hint is REQUIRED, not decoration:

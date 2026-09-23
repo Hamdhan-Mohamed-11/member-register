@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { requireActiveMember, requireSecretary } from "@/lib/auth/session";
+import { requireActiveMember, requireStaff } from "@/lib/auth/session";
 import { getActionSupabase } from "@/lib/supabase/actionClient";
 
 export type ActionResult<T = undefined> =
@@ -124,7 +124,7 @@ export async function createPost(input: {
   height?: number;
   durationS?: number;
 }): Promise<ActionResult<{ id: string }>> {
-  await requireSecretary();
+  await requireStaff();
 
   const parsed = postSchema.safeParse(input);
   if (!parsed.success) {
@@ -150,7 +150,7 @@ export async function createPost(input: {
 }
 
 export async function deletePost(postId: string): Promise<ActionResult> {
-  await requireSecretary();
+  await requireStaff();
   if (!idSchema.safeParse(postId).success) {
     return { ok: false, error: "Unknown post." };
   }
@@ -168,7 +168,7 @@ export async function deletePost(postId: string): Promise<ActionResult> {
  * under the post's club folder. set_discover_poster re-checks both.
  */
 export async function setPostPoster(postId: string, posterPath: string): Promise<ActionResult> {
-  await requireSecretary();
+  await requireStaff();
   if (!idSchema.safeParse(postId).success || posterPath.length < 3 || posterPath.length > 400) {
     return { ok: false, error: "Unknown post." };
   }
@@ -199,7 +199,7 @@ export async function updatePost(
   postId: string,
   input: { caption: string; sessionId: string | null; showOnHome: boolean },
 ): Promise<ActionResult> {
-  await requireSecretary();
+  await requireStaff();
   const parsed = updateSchema.safeParse(input);
   if (!idSchema.safeParse(postId).success || !parsed.success) {
     return { ok: false, error: parsed.error?.issues[0]?.message ?? "Unknown post." };

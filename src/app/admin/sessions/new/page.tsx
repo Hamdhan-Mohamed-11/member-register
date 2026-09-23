@@ -3,14 +3,14 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { adminClubScope, requireSecretary } from "@/lib/auth/session";
+import { adminClubScope, requireStaff } from "@/lib/auth/session";
 import { getSessionFormOptions } from "@/lib/sessions/formOptions";
 import { SessionForm } from "../SessionForm";
 
 export const metadata: Metadata = { title: "New session" };
 
 export default async function NewSessionPage() {
-  const member = await requireSecretary();
+  const member = await requireStaff();
   const { clubs, members } = await getSessionFormOptions(adminClubScope(member));
 
   return (

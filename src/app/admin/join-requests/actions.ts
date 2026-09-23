@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { requireSecretary } from "@/lib/auth/session";
+import { requireClubManager } from "@/lib/auth/session";
 import { getActionSupabase } from "@/lib/supabase/actionClient";
 
 const decisionSchema = z.object({
@@ -23,7 +23,7 @@ export type ActionResult = { ok: true } | { ok: false; error: string };
  * actually load-bearing.
  */
 export async function approveJoinRequest(formData: FormData): Promise<ActionResult> {
-  await requireSecretary();
+  await requireClubManager();
 
   const parsed = decisionSchema.safeParse({
     requestId: formData.get("requestId"),
@@ -48,7 +48,7 @@ export async function approveJoinRequest(formData: FormData): Promise<ActionResu
 }
 
 export async function rejectJoinRequest(formData: FormData): Promise<ActionResult> {
-  await requireSecretary();
+  await requireClubManager();
 
   const parsed = decisionSchema.safeParse({
     requestId: formData.get("requestId"),

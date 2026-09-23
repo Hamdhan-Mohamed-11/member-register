@@ -4,7 +4,7 @@ import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { adminClubScope, requireSecretary } from "@/lib/auth/session";
+import { adminClubScope, requireStaff } from "@/lib/auth/session";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import {
   getManageablePosts,
@@ -89,7 +89,7 @@ function TopList({
 }
 
 export default async function AdminDiscoverPage() {
-  const member = await requireSecretary();
+  const member = await requireStaff();
   const scope = adminClubScope(member);
   const supabase = await getServerComponentSupabase();
 

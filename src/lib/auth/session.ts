@@ -4,7 +4,7 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 
-export type MemberRole = "member" | "secretary" | "super_admin";
+export type MemberRole = "member" | "secretary" | "club_admin" | "super_admin";
 export type MemberStatus = "pending" | "active" | "suspended" | "rejected";
 export type ClubKind = "public" | "company";
 export type MembershipStatus =
@@ -39,14 +39,14 @@ export type SessionMember = {
   /**
    * The one club this member RUNS, or null.
    *
-   * Not the same as being in a club: a secretary may run a club they are not a
+   * Not the same as being in a club: staff may run a club they are not a
    * member of, and being a member of one grants nothing administrative. This
-   * mirrors clubs.secretary_id, and is null for a super admin -- their reach
-   * is not a club, so a page asking "which club is theirs" would get the wrong
-   * answer from a value here.
+   * mirrors clubs.admin_id for a club admin and clubs.secretary_id for a
+   * secretary, and is null for a super admin -- their reach is not a club, so
+   * a page asking "which club is theirs" would get the wrong answer here.
    */
-  secretaryClubId: string | null;
-  secretaryClubName: string | null;
+  staffClubId: string | null;
+  staffClubName: string | null;
 };
 
 export const getSessionMember = cache(async (): Promise<SessionMember | null> => {
@@ -72,7 +72,8 @@ export const getSessionMember = cache(async (): Promise<SessionMember | null> =>
          id, club_id, status, is_primary, renewal_date,
          clubs ( name, slug, kind )
        ),
-       runs:clubs!clubs_secretary_id_fkey ( id, name )`,
+       runs:clubs!clubs_secretary_id_fkey ( id, name ),
+       manages:clubs!clubs_admin_id_fkey ( id, name )`,
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -112,10 +113,16 @@ export const getSessionMember = cache(async (): Promise<SessionMember | null> =>
           : 1,
     );
 
-  // The embed comes back as an array because it is a reverse relation, but the
-  // unique index on clubs.secretary_id means there can only ever be one.
-  const runs = (profile as unknown as { runs?: { id: string; name: string }[] }).runs;
-  const runsClub = Array.isArray(runs) ? runs[0] : (runs ?? null);
+  // Both embeds come back as arrays because they are reverse relations, but
+  // the unique indexes on clubs.secretary_id and clubs.admin_id mean there can
+  // only ever be one of each. A club admin's club wins: someone who is both
+  // runs that club with the wider powers.
+  const raw = profile as unknown as {
+    runs?: { id: string; name: string }[] | { id: string; name: string } | null;
+    manages?: { id: string; name: string }[] | { id: string; name: string } | null;
+  };
+  const first = (v: typeof raw.runs) => (Array.isArray(v) ? (v[0] ?? null) : (v ?? null));
+  const runsClub = first(raw.manages) ?? first(raw.runs);
 
   return {
     userId: profile.id,
@@ -127,8 +134,8 @@ export const getSessionMember = cache(async (): Promise<SessionMember | null> =>
     avatarPath: profile.avatar_path,
     pointsBalance: profile.points_balance,
     memberships,
-    secretaryClubId: runsClub?.id ?? null,
-    secretaryClubName: runsClub?.name ?? null,
+    staffClubId: runsClub?.id ?? null,
+    staffClubName: runsClub?.name ?? null,
   };
 });
 
@@ -196,10 +203,21 @@ export async function requireActiveMember(): Promise<SessionMember> {
   return member;
 }
 
-export async function requireSecretary(): Promise<SessionMember> {
+/** Any staff: a secretary, a club admin, or a super admin. */
+export async function requireStaff(): Promise<SessionMember> {
   const member = await requireMember();
-  if (member.role !== "secretary" && member.role !== "super_admin") {
-    redirect("/feed");
+  if (!isAdmin(member)) redirect("/feed");
+  return member;
+}
+
+/**
+ * Staff who decide FOR a club rather than doing its work: admitting members,
+ * appointing its secretary, seeing its money. A secretary is not one.
+ */
+export async function requireClubManager(): Promise<SessionMember> {
+  const member = await requireMember();
+  if (member.role !== "club_admin" && member.role !== "super_admin") {
+    redirect(isAdmin(member) ? "/admin" : "/feed");
   }
   return member;
 }
@@ -211,7 +229,17 @@ export async function requireSuperAdmin(): Promise<SessionMember> {
 }
 
 export function isAdmin(member: SessionMember): boolean {
-  return member.role === "secretary" || member.role === "super_admin";
+  return (
+    member.role === "secretary" ||
+    member.role === "club_admin" ||
+    member.role === "super_admin"
+  );
+}
+
+/** May this member decide for this club? The twin of can_manage_club() in SQL. */
+export function canManageClub(member: SessionMember, clubId: string | null): boolean {
+  if (member.role === "super_admin") return true;
+  return member.role === "club_admin" && clubId != null && member.staffClubId === clubId;
 }
 
 /**
@@ -224,7 +252,7 @@ export function isAdmin(member: SessionMember): boolean {
  */
 export function canAdminClub(member: SessionMember, clubId: string | null): boolean {
   if (member.role === "super_admin") return true;
-  return clubId != null && member.secretaryClubId === clubId;
+  return clubId != null && member.staffClubId === clubId;
 }
 
 /**
@@ -235,7 +263,7 @@ export function canAdminClub(member: SessionMember, clubId: string | null): bool
  */
 export function adminClubScope(member: SessionMember): string[] | null {
   if (member.role === "super_admin") return null;
-  return member.secretaryClubId ? [member.secretaryClubId] : [];
+  return member.staffClubId ? [member.staffClubId] : [];
 }
 
 export function fullName(member: {
