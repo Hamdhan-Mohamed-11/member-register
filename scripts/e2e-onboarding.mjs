@@ -213,7 +213,15 @@ check("applicant profile is a plain member", profile?.role === "member", JSON.st
   check("the listing names the club", /Public Club/.test(body ?? ""), "");
   await page.screenshot({ path: `${SHOT}e2e-join-requests.png`, fullPage: true });
 
-  await page.click('button:has-text("Approve")');
+  // The Approve button INSIDE this applicant's card. A super admin sees every
+  // club's queue, so clicking the first Approve on the page approved whoever
+  // happened to be at the top -- a real applicant, not the fixture.
+  const card = page
+    .locator("div")
+    .filter({ hasText: "Ada Applicant" })
+    .filter({ has: page.getByRole("button", { name: "Approve" }) })
+    .last();
+  await card.getByRole("button", { name: "Approve" }).click();
   await page.waitForTimeout(3000);
 
   const after = await visibleText(page);
@@ -241,7 +249,7 @@ check("applicant profile is a plain member", profile?.role === "member", JSON.st
 
   const body = await visibleText(page);
   check("their feed shows the club they joined", /Public Club/.test(body ?? ""), "");
-  check("their feed greets them by name", /Hello, Ada/.test(body ?? ""), "");
+  check("their feed greets them by name", /Welcome back, Ada/i.test(body ?? ""), "");
   await page.screenshot({ path: `${SHOT}e2e-new-member.png`, fullPage: true });
   await ctx.close();
 }
