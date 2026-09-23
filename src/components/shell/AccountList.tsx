@@ -34,7 +34,7 @@ export function AccountList({
         <li key={item.href}>
           {item.href.startsWith("/view/") ? (
             // A route handler that sets a cookie: plain <a>, never prefetched.
-            // eslint-disable-next-line @next/next/no-html-link-for-pages
+             
             <a
               href={item.href}
               className="flex items-center gap-3 px-4 min-h-14 text-sm font-medium text-brand-700 transition-colors hover:bg-canvas"

@@ -200,6 +200,10 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
     return () => {
       alive = false;
     };
+    // Once, on mount. The session's saved assets are props from the server and
+    // a change to them arrives as a fresh page, so re-running on each would
+    // re-fetch the same two pictures for nothing.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fields: FlyerFields = {

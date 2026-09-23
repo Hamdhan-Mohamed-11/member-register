@@ -94,3 +94,41 @@ export async function updatePointsRule(formData: FormData): Promise<ActionResult
   revalidatePath("/admin/settings");
   return { ok: true };
 }
+
+const textsSchema = z.object({
+  libraryCollectAt: z.string().trim().max(200),
+  joinGuidelines: z.string().trim().max(4000),
+});
+
+/**
+ * The written settings: the collection place and the join guidelines.
+ *
+ * Kept apart from updateSettings so a fee change and a guidelines change do
+ * not overwrite each other, and so the guidelines can be long without the
+ * numbers form carrying a textarea.
+ */
+export async function updateAppTexts(formData: FormData): Promise<ActionResult> {
+  await requireSuperAdmin();
+
+  const parsed = textsSchema.safeParse({
+    libraryCollectAt: formData.get("libraryCollectAt") ?? "",
+    joinGuidelines: formData.get("joinGuidelines") ?? "",
+  });
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid text." };
+  }
+
+  const supabase = await getActionSupabase();
+  const { error } = await supabase.rpc("update_app_texts", {
+    p_library_collect_at: parsed.data.libraryCollectAt,
+    p_join_guidelines: parsed.data.joinGuidelines,
+  });
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/admin/settings");
+  // The guidelines are what someone ticks on the way in, so a change has to
+  // reach the signed-out join page and the one after confirmation.
+  revalidatePath("/join");
+  revalidatePath("/pending");
+  return { ok: true };
+}

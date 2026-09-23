@@ -6,17 +6,20 @@ import { Notice } from "@/components/ui/Field";
 import { requireSuperAdmin } from "@/lib/auth/session";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import {
+  AppTextsForm,
   PointsRulesForm,
   SettingsForm,
   type PointsRule,
   type Settings,
 } from "./SettingsForms";
+import { getAppTexts } from "@/lib/settings/texts";
 
 export const metadata: Metadata = { title: "Settings" };
 
 export default async function SettingsPage() {
   await requireSuperAdmin();
   const supabase = await getServerComponentSupabase();
+  const texts = await getAppTexts();
 
   const [{ data: settingsRow, error: settingsError }, { data: ruleRows }] =
     await Promise.all([
@@ -73,6 +76,19 @@ export default async function SettingsPage() {
           ) : (
             <SettingsForm settings={settings} />
           )}
+        </Card>
+
+        <Card>
+          <CardHeader
+            title="Joining and borrowing"
+            description="The words members see when they apply, and when a book is ready for them."
+          />
+          <AppTextsForm
+            texts={{
+              libraryCollectAt: texts.libraryCollectAt,
+              joinGuidelines: texts.joinGuidelinesRaw,
+            }}
+          />
         </Card>
 
         <Card>

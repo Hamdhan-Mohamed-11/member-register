@@ -7,31 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       admin_audit_log: {
@@ -91,8 +66,10 @@ export type Database = {
           currency: string
           expiring_soon_days: number
           id: number
+          join_guidelines: string | null
           library_addon_fee_lkr: number
           library_addon_term_months: number
+          library_collect_at: string | null
           membership_fee_lkr: number
           membership_term_months: number
           readrise_book_cost_lkr: number
@@ -108,8 +85,10 @@ export type Database = {
           currency?: string
           expiring_soon_days?: number
           id?: number
+          join_guidelines?: string | null
           library_addon_fee_lkr?: number
           library_addon_term_months?: number
+          library_collect_at?: string | null
           membership_fee_lkr?: number
           membership_term_months?: number
           readrise_book_cost_lkr?: number
@@ -125,8 +104,10 @@ export type Database = {
           currency?: string
           expiring_soon_days?: number
           id?: number
+          join_guidelines?: string | null
           library_addon_fee_lkr?: number
           library_addon_term_months?: number
+          library_collect_at?: string | null
           membership_fee_lkr?: number
           membership_term_months?: number
           readrise_book_cost_lkr?: number
@@ -533,6 +514,7 @@ export type Database = {
           created_at: string
           decided_at: string | null
           decided_by: string | null
+          guidelines_accepted_at: string | null
           id: string
           member_id: string
           message: string | null
@@ -543,6 +525,7 @@ export type Database = {
           created_at?: string
           decided_at?: string | null
           decided_by?: string | null
+          guidelines_accepted_at?: string | null
           id?: string
           member_id: string
           message?: string | null
@@ -553,6 +536,7 @@ export type Database = {
           created_at?: string
           decided_at?: string | null
           decided_by?: string | null
+          guidelines_accepted_at?: string | null
           id?: string
           member_id?: string
           message?: string | null
@@ -2187,7 +2171,7 @@ export type Database = {
         Returns: string
       }
       request_club_join: {
-        Args: { p_club_id: string; p_message?: string }
+        Args: { p_accepted?: boolean; p_club_id: string; p_message?: string }
         Returns: string
       }
       require_club_admin: { Args: { p_club_id: string }; Returns: undefined }
@@ -2330,6 +2314,10 @@ export type Database = {
           p_readrise_target_on?: string
           p_term_months?: number
         }
+        Returns: undefined
+      }
+      update_app_texts: {
+        Args: { p_join_guidelines: string; p_library_collect_at: string }
         Returns: undefined
       }
       update_club: {
@@ -2528,9 +2516,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

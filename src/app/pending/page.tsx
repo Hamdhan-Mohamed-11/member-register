@@ -7,6 +7,7 @@ import { requireMember } from "@/lib/auth/session";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import type { JoinableClub } from "@/app/join/JoinForm";
 import { ApplyToClub } from "./ApplyToClub";
+import { getAppTexts } from "@/lib/settings/texts";
 
 export const metadata: Metadata = { title: "Awaiting approval" };
 
@@ -27,6 +28,7 @@ export default async function PendingPage() {
   // Approved members have no business here.
   if (member.status === "active") redirect("/feed");
 
+  const texts = await getAppTexts();
   const supabase = await getServerComponentSupabase();
 
   const { data: request } = await supabase
@@ -75,7 +77,7 @@ export default async function PendingPage() {
                 Your email is confirmed. Choose the club you&apos;d like to join
                 and a club admin will review it.
               </p>
-              <ApplyToClub clubs={clubs} />
+              <ApplyToClub clubs={clubs} guidelines={texts.joinGuidelines} />
             </>
           ) : (
             <>

@@ -4,6 +4,9 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireStaff } from "@/lib/auth/session";
 import { getActionSupabase } from "@/lib/supabase/actionClient";
+import { getSiteUrl } from "@/lib/supabase/env";
+import { sendMail } from "@/lib/email/mailer";
+import { borrowApprovedEmail } from "@/lib/email/templates";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -45,6 +48,56 @@ export async function setBorrowStatus(formData: FormData): Promise<ActionResult>
   });
   if (error) return { ok: false, error: error.message };
 
+  if (parsed.data.status === "approved") {
+    await tellTheMember(supabase, parsed.data.id, parsed.data.dueOn ?? null);
+  }
+
   revalidatePath("/admin/library");
   return { ok: true };
+}
+
+/**
+ * Emails the member that their book is waiting for them.
+ *
+ * The in-app notification is written by the RPC, but the place they collect
+ * from is a physical office, so someone who is not in the portal that week
+ * would never learn the book is ready. The send is deliberately swallowed:
+ * the approval is already recorded, and failing the action over a mail server
+ * would make an admin click approve twice.
+ */
+async function tellTheMember(
+  supabase: Awaited<ReturnType<typeof getActionSupabase>>,
+  requestId: string,
+  dueOn: string | null,
+): Promise<void> {
+  try {
+    const [{ data: request }, { data: settings }] = await Promise.all([
+      supabase
+        .from("borrow_requests")
+        .select(
+          "title, author, due_on, profiles!borrow_requests_member_id_fkey ( first_name, email )",
+        )
+        .eq("id", requestId)
+        .maybeSingle(),
+      supabase.from("app_settings").select("library_collect_at").eq("id", 1).maybeSingle(),
+    ]);
+
+    const member = (request as { profiles?: { first_name: string; email: string } | null } | null)
+      ?.profiles;
+    if (!request || !member?.email) return;
+
+    await sendMail(
+      borrowApprovedEmail({
+        to: member.email,
+        firstName: member.first_name,
+        bookTitle: request.title,
+        bookAuthor: request.author,
+        dueOn: dueOn ?? request.due_on,
+        collectAt: settings?.library_collect_at ?? null,
+        link: `${getSiteUrl()}/library`,
+      }),
+    );
+  } catch (error) {
+    console.error("[library] borrow approval email:", error);
+  }
 }

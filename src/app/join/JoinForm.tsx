@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Field, Notice, selectClassName } from "@/components/ui/Field";
 import { OtpStep } from "@/components/auth/OtpStep";
 import { useHydrated } from "@/lib/useHydrated";
+import { GuidelinesChecklist } from "@/components/clubs/GuidelinesChecklist";
 import { requestSignupCode } from "./actions";
 
 export type JoinableClub = {
@@ -43,13 +44,20 @@ type Pending = {
  * in sessionStorage: the password is among them, and the flow never leaves
  * this page, so there is nothing to persist for.
  */
-export function JoinForm({ clubs }: { clubs: JoinableClub[] }) {
+export function JoinForm({
+  clubs,
+  guidelines,
+}: {
+  clubs: JoinableClub[];
+  guidelines: string[];
+}) {
   const groups = groupByType(clubs);
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const hydrated = useHydrated();
   const [pending, setPending] = useState<Pending | null>(null);
   const [busy, setBusy] = useState(false);
+  const [accepted, setAccepted] = useState(guidelines.length === 0);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -70,6 +78,10 @@ export function JoinForm({ clubs }: { clubs: JoinableClub[] }) {
     }
     if (!details.clubId) {
       setError("Please choose a club to join.");
+      return;
+    }
+    if (!accepted) {
+      setError("Please tick each guideline before applying.");
       return;
     }
 
@@ -102,6 +114,7 @@ export function JoinForm({ clubs }: { clubs: JoinableClub[] }) {
     // is the only one that needs a session.
     const { error: joinError } = await supabase.rpc("request_club_join", {
       p_club_id: pending.clubId,
+      p_accepted: true,
     });
     if (joinError) return joinError.message;
 
@@ -200,7 +213,13 @@ export function JoinForm({ clubs }: { clubs: JoinableClub[] }) {
         </p>
       </div>
 
-      <Button type="submit" disabled={busy || !hydrated} className="w-full">
+      <GuidelinesChecklist guidelines={guidelines} onChange={setAccepted} />
+
+      <Button
+        type="submit"
+        disabled={busy || !hydrated || !accepted}
+        className="w-full"
+      >
         {busy ? "Sending your code…" : "Send my code"}
       </Button>
 

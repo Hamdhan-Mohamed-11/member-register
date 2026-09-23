@@ -116,7 +116,7 @@ export function AccountMenu({ member }: { member: AccountMenuMember }) {
               <li key={item.href}>
                 {/* /view/* are route handlers that set a cookie: a plain <a>, so
                     nothing prefetches them and the switch happens on click. */}
-                {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                { }
                 {item.href.startsWith("/view/") ? (
                   <a
                     href={item.href}

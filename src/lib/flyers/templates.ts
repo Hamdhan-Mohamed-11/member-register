@@ -935,11 +935,11 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       ctx.fillStyle = INK;
       const textW = f.bookCover ? 600 : 860;
       const size = fitSize(ctx, f.title, (s) => `700 ${s}px ${DISPLAY}`, textW, 84, 50, 3);
-      let y = wrap(ctx, f.title, 80, 550 + size * 1.25, textW, size * 1.1, 3);
+      const y = wrap(ctx, f.title, 80, 550 + size * 1.25, textW, size * 1.1, 3);
       if (f.bookTitle) {
         ctx.fillStyle = BRAND;
         ctx.font = `italic 500 36px ${DISPLAY}`;
-        y = wrap(ctx, bookLine(f), 80, y + 10, textW, 46, 2);
+        wrap(ctx, bookLine(f), 80, y + 10, textW, 46, 2);
       }
 
       ctx.fillStyle = INK;

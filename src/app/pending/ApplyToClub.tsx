@@ -6,6 +6,7 @@ import { getBrowserSupabaseClient } from "@/lib/supabase/browserClient";
 import { Button } from "@/components/ui/Button";
 import { Notice, selectClassName } from "@/components/ui/Field";
 import type { JoinableClub } from "@/app/join/JoinForm";
+import { GuidelinesChecklist } from "@/components/clubs/GuidelinesChecklist";
 
 /**
  * Shown to a confirmed account that has no application yet.
@@ -16,11 +17,18 @@ import type { JoinableClub } from "@/app/join/JoinForm";
  * and applied here. If the stash is gone -- different device, cleared tab --
  * they just pick again.
  */
-export function ApplyToClub({ clubs }: { clubs: JoinableClub[] }) {
+export function ApplyToClub({
+  clubs,
+  guidelines,
+}: {
+  clubs: JoinableClub[];
+  guidelines: string[];
+}) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const selectRef = useRef<HTMLSelectElement>(null);
+  const [accepted, setAccepted] = useState(guidelines.length === 0);
 
   // The select stays UNCONTROLLED and the stashed choice is written straight
   // to the DOM node after mount. sessionStorage does not exist during SSR, so
@@ -41,6 +49,7 @@ export function ApplyToClub({ clubs }: { clubs: JoinableClub[] }) {
     const supabase = getBrowserSupabaseClient();
     const { error: rpcError } = await supabase.rpc("request_club_join", {
       p_club_id: clubId,
+      p_accepted: true,
     });
 
     if (rpcError) {
@@ -59,6 +68,10 @@ export function ApplyToClub({ clubs }: { clubs: JoinableClub[] }) {
     const clubId = String(form.get("club_id") ?? "");
     if (!clubId) {
       setError("Please choose a club.");
+      return;
+    }
+    if (!accepted) {
+      setError("Please tick each guideline before applying.");
       return;
     }
     await apply(clubId);
@@ -98,7 +111,9 @@ export function ApplyToClub({ clubs }: { clubs: JoinableClub[] }) {
         ))}
       </select>
 
-      <Button type="submit" disabled={busy} className="w-full">
+      <GuidelinesChecklist guidelines={guidelines} onChange={setAccepted} />
+
+      <Button type="submit" disabled={busy || !accepted} className="w-full">
         {busy ? "Sending…" : "Apply to join"}
       </Button>
     </form>

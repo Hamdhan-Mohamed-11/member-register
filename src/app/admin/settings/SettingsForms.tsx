@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Field, Notice, controlClassName } from "@/components/ui/Field";
-import { updatePointsRule, updateSettings } from "./actions";
+import { updateAppTexts, updatePointsRule, updateSettings } from "./actions";
 
 export type Settings = {
   membershipFee: number;
@@ -254,5 +254,82 @@ export function PointsRulesForm({ rules }: { rules: PointsRule[] }) {
         ))}
       </ul>
     </div>
+  );
+}
+
+export type AppTextsValue = { libraryCollectAt: string; joinGuidelines: string };
+
+/**
+ * The club's own writing: the collection place and the join guidelines.
+ *
+ * One guideline per line, because the join form turns each line into its own
+ * tick box -- so the shape of this textarea is the shape of what an applicant
+ * has to agree to, and an admin can see that without a preview.
+ */
+export function AppTextsForm({ texts }: { texts: AppTextsValue }) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+  const [guidelines, setGuidelines] = useState(texts.joinGuidelines);
+
+  const count = guidelines.split("\n").filter((line) => line.trim()).length;
+
+  function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setSaved(false);
+    const fd = new FormData(event.currentTarget);
+
+    startTransition(async () => {
+      const result = await updateAppTexts(fd);
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      setSaved(true);
+      router.refresh();
+    });
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-4">
+      {error ? <Notice>{error}</Notice> : null}
+      {saved ? <Notice tone="success">Saved.</Notice> : null}
+
+      <Field
+        label="Where books are collected"
+        name="libraryCollectAt"
+        defaultValue={texts.libraryCollectAt}
+        maxLength={200}
+        hint="Named in the email a member gets when their borrow request is approved."
+      />
+
+      <div>
+        <label
+          htmlFor="joinGuidelines"
+          className="block text-sm font-medium text-ink mb-1.5"
+        >
+          Registration guidelines
+        </label>
+        <textarea
+          id="joinGuidelines"
+          name="joinGuidelines"
+          value={guidelines}
+          onChange={(e) => setGuidelines(e.target.value)}
+          rows={8}
+          maxLength={4000}
+          className={`${controlClassName} min-h-40 leading-relaxed`}
+        />
+        <p className="mt-1 text-xs text-ink-muted">
+          One guideline per line. An applicant has to tick every line before
+          they can apply — {count} {count === 1 ? "line" : "lines"} right now.
+        </p>
+      </div>
+
+      <Button type="submit" disabled={pending}>
+        {pending ? "Saving…" : "Save"}
+      </Button>
+    </form>
   );
 }

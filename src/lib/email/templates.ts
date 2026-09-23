@@ -139,3 +139,62 @@ export function passwordResetCodeEmail(args: {
     ),
   };
 }
+
+/**
+ * The book is ready to collect.
+ *
+ * Sent when an admin approves a borrow request: the member is expected to
+ * come to the office for it, so the message has to say what, where and by
+ * when, and say it in the email rather than only behind a login.
+ */
+export function borrowApprovedEmail(args: {
+  to: string;
+  firstName: string;
+  bookTitle: string;
+  bookAuthor?: string | null;
+  dueOn?: string | null;
+  collectAt?: string | null;
+  link: string;
+}): Mail {
+  const book = args.bookAuthor
+    ? `${args.bookTitle} by ${args.bookAuthor}`
+    : args.bookTitle;
+  const where = args.collectAt?.trim() || `the ${BRAND} office`;
+  const due = args.dueOn
+    ? new Date(`${args.dueOn}T00:00:00`).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : null;
+  const hello = args.firstName?.trim() ? `Hello ${args.firstName.trim()},` : "Hello,";
+
+  return {
+    to: args.to,
+    subject: `${args.bookTitle} is ready to collect`,
+    text: [
+      hello,
+      "",
+      `Your borrow request for ${book} has been approved.`,
+      `Come to ${where} to pick it up, and bring your member details.`,
+      due ? `Please return it by ${due}.` : "",
+      "",
+      `You can see your borrowing here: ${args.link}`,
+      "",
+      "See you soon.",
+    ]
+      .filter(Boolean)
+      .join("\n"),
+    html: layout(
+      `${escapeHtml(args.bookTitle)} is ready to collect`,
+      `<p style="margin:0 0 16px;font-size:15px;line-height:1.6;">${escapeHtml(hello)}</p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Your borrow request for <strong>${escapeHtml(book)}</strong> has been approved.</p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Come to <strong>${escapeHtml(where)}</strong> to pick it up, and bring your member details.</p>
+      ${due ? `<p style="margin:0 0 20px;font-size:15px;line-height:1.6;">Please return it by <strong>${escapeHtml(due)}</strong>.</p>` : ""}
+      <p style="margin:0 0 20px;">
+        <a href="${escapeHtml(args.link)}" style="display:inline-block;background:#1f3a5f;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:8px;font-size:15px;font-weight:600;">See my borrowing</a>
+      </p>
+      <p style="margin:0;font-size:13px;line-height:1.6;color:#6f6a60;">If you no longer need it, cancel from that page so someone else can take it.</p>`,
+    ),
+  };
+}
