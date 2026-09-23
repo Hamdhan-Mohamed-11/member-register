@@ -48,6 +48,7 @@ export const ADMIN_NAV: AdminNavGroup[] = [
     title: "People and setup",
     items: [
       { href: "/admin/clubs", label: "Clubs and types", icon: "users", level: "super" },
+      { href: "/admin/club-requests", label: "Club applications", icon: "inbox", level: "super" },
       { href: "/admin/companies", label: "Companies", icon: "shield", level: "super" },
       { href: "/admin/members", label: "Members", icon: "id", level: "club_admin" },
       { href: "/admin/settings", label: "Settings", icon: "pencil", level: "super" },

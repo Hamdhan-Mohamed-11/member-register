@@ -810,6 +810,93 @@ export type Database = {
           },
         ]
       }
+      club_requests: {
+        Row: {
+          applicant_id: string
+          city: string | null
+          club_id: string | null
+          club_name: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decline_reason: string | null
+          description: string | null
+          id: string
+          meets: string | null
+          member_count: number | null
+          message: string | null
+          status: string
+        }
+        Insert: {
+          applicant_id: string
+          city?: string | null
+          club_id?: string | null
+          club_name: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decline_reason?: string | null
+          description?: string | null
+          id?: string
+          meets?: string | null
+          member_count?: number | null
+          message?: string | null
+          status?: string
+        }
+        Update: {
+          applicant_id?: string
+          city?: string | null
+          club_id?: string | null
+          club_name?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decline_reason?: string | null
+          description?: string | null
+          id?: string
+          meets?: string | null
+          member_count?: number | null
+          message?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_requests_applicant_id_fkey"
+            columns: ["applicant_id"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "club_requests_applicant_id_fkey"
+            columns: ["applicant_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "club_requests_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "club_requests_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "admin_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "club_requests_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       club_types: {
         Row: {
           created_at: string
@@ -2251,6 +2338,10 @@ export type Database = {
       current_member_has_library: { Args: never; Returns: boolean }
       current_member_is_active: { Args: never; Returns: boolean }
       current_member_role: { Args: never; Returns: string }
+      decide_club_request: {
+        Args: { p_approve: boolean; p_reason?: string; p_request_id: string }
+        Returns: string
+      }
       decide_creator: {
         Args: {
           p_approve: boolean
@@ -2450,6 +2541,17 @@ export type Database = {
       }
       request_club_join: {
         Args: { p_accepted?: boolean; p_club_id: string; p_message?: string }
+        Returns: string
+      }
+      request_new_club: {
+        Args: {
+          p_city?: string
+          p_club_name: string
+          p_description?: string
+          p_meets?: string
+          p_member_count?: number
+          p_message?: string
+        }
         Returns: string
       }
       require_club_admin: { Args: { p_club_id: string }; Returns: undefined }

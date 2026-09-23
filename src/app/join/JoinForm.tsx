@@ -231,6 +231,13 @@ export function JoinForm({
       </p>
 
       <p className="text-sm text-ink-muted">
+        Run a club of your own?{" "}
+        <Link href="/clubs/new" className="text-brand-600 hover:underline">
+          Bring it to Pick a Book
+        </Link>
+      </p>
+
+      <p className="text-sm text-ink-muted">
         Write or publish books?{" "}
         <Link href="/creator/register" className="text-brand-600 hover:underline">
           Sell them through the club
