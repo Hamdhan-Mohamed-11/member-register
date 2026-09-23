@@ -71,3 +71,34 @@ function revalidateSession(id: string) {
   revalidatePath(`/sessions/${id}`);
   revalidatePath("/sessions");
 }
+
+/**
+ * The flyer's book cover and sponsor, once their files are uploaded.
+ *
+ * Kept on the session rather than on one flyer, so the next flyer for the
+ * same evening does not ask for them again. The RPC re-checks the club and
+ * that each key sits under this session's folder.
+ */
+export async function saveFlyerAssets(input: {
+  sessionId: string;
+  bookImagePath: string | null;
+  sponsorPath: string | null;
+  sponsorName: string;
+}): Promise<ActionResult> {
+  await requireStaff();
+  if (!z.string().uuid().safeParse(input.sessionId).success) {
+    return { ok: false, error: "Unknown session." };
+  }
+
+  const supabase = await getActionSupabase();
+  const { error } = await supabase.rpc("set_session_flyer_assets", {
+    p_session_id: input.sessionId,
+    p_book_image_path: input.bookImagePath ?? undefined,
+    p_sponsor_path: input.sponsorPath ?? undefined,
+    p_sponsor_name: input.sponsorName.trim() || undefined,
+  });
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath(`/admin/sessions/${input.sessionId}/flyer`);
+  return { ok: true };
+}

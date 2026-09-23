@@ -49,6 +49,15 @@ export type FlyerFields = {
   photoPos: PhotoPos;
   /** The Pick a Book logo, once loaded. */
   logo: FlyerImage | null;
+  /**
+   * The book's cover -- from the shop catalogue where it has one, otherwise
+   * whatever was uploaded. Every template shows it: a flyer for a book
+   * evening with no book on it was the commonest thing to redo by hand.
+   */
+  bookCover: FlyerImage | null;
+  /** An optional sponsor's logo, and the name printed beside it. */
+  sponsor: FlyerImage | null;
+  sponsorName: string;
   /** Told where the photo landed, so the designer can map a drag onto it. */
   onPhotoBox?: (box: PhotoBox) => void;
 };
@@ -365,6 +374,133 @@ function logo(
   ctx.drawImage(img, left, y, width, h);
 }
 
+/**
+ * The book, drawn as a book: a cover with a darker spine down its left edge
+ * and a soft shadow under it. When there is no cover image, the title is set
+ * on a brand-coloured jacket instead, so the shape is always there.
+ */
+function bookCover(
+  ctx: CanvasRenderingContext2D,
+  f: FlyerFields,
+  x: number,
+  y: number,
+  h: number,
+  tilt = 0,
+) {
+  const img = f.bookCover;
+  const ratio = img ? img.width / img.height : 0.66;
+  const w = h * Math.min(0.85, Math.max(0.55, ratio));
+
+  ctx.save();
+  if (tilt) {
+    ctx.translate(x + w / 2, y + h / 2);
+    ctx.rotate((tilt * Math.PI) / 180);
+    ctx.translate(-(x + w / 2), -(y + h / 2));
+  }
+
+  ctx.shadowColor = "rgba(8,12,40,0.35)";
+  ctx.shadowBlur = 26;
+  ctx.shadowOffsetY = 12;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(x, y, w, h);
+  ctx.shadowColor = "transparent";
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+
+  if (img) {
+    ctx.drawImage(img, x, y, w, h);
+  } else {
+    const g = ctx.createLinearGradient(x, y, x + w, y + h);
+    g.addColorStop(0, BRAND);
+    g.addColorStop(1, BRAND_DEEP);
+    ctx.fillStyle = g;
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+    ctx.font = `600 ${Math.round(h * 0.075)}px ${DISPLAY}`;
+    wrap(ctx, f.bookTitle || f.title, x + w / 2, y + h * 0.42, w - 24, h * 0.09, 4);
+    ctx.textAlign = "left";
+  }
+
+  // Spine and edge.
+  ctx.fillStyle = "rgba(0,0,0,0.22)";
+  ctx.fillRect(x, y, w * 0.06, h);
+  ctx.strokeStyle = "rgba(255,255,255,0.35)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
+  ctx.restore();
+  return w;
+}
+
+/**
+ * "In association with <sponsor>", with their logo. Drawn only when a sponsor
+ * was added, so a flyer without one has no empty strip.
+ */
+function sponsorStrip(
+  ctx: CanvasRenderingContext2D,
+  f: FlyerFields,
+  y: number,
+  onDark: boolean,
+) {
+  if (!f.sponsor && !f.sponsorName) return;
+  const muted = onDark ? "rgba(255,255,255,0.7)" : MUTED;
+  const strong = onDark ? "#ffffff" : INK;
+
+  spaced(ctx, "In association with", FLYER_W / 2, y, muted, 18, 4, "center");
+
+  const logoH = 54;
+  const logoW = f.sponsor ? (logoH * f.sponsor.width) / f.sponsor.height : 0;
+  ctx.font = `600 30px ${BODY}`;
+  const nameW = f.sponsorName ? ctx.measureText(f.sponsorName).width : 0;
+  const gap = f.sponsor && f.sponsorName ? 18 : 0;
+  let cursor = FLYER_W / 2 - (logoW + gap + nameW) / 2;
+
+  if (f.sponsor) {
+    ctx.drawImage(f.sponsor, cursor, y + 16, logoW, logoH);
+    cursor += logoW + gap;
+  }
+  if (f.sponsorName) {
+    ctx.fillStyle = strong;
+    ctx.textAlign = "left";
+    ctx.fillText(f.sponsorName, cursor, y + 16 + logoH * 0.68);
+  }
+}
+
+/**
+ * The sponsor on one line -- logo then name -- anchored to a corner. For
+ * layouts whose foot is already carrying a date tile or a venue line.
+ */
+function sponsorCorner(
+  ctx: CanvasRenderingContext2D,
+  f: FlyerFields,
+  x: number,
+  y: number,
+  onDark: boolean,
+  align: "left" | "right" = "right",
+) {
+  if (!f.sponsor && !f.sponsorName) return;
+  const logoH = 40;
+  const logoW = f.sponsor ? (logoH * f.sponsor.width) / f.sponsor.height : 0;
+  ctx.font = `600 24px ${BODY}`;
+  const nameW = f.sponsorName ? ctx.measureText(f.sponsorName).width : 0;
+  const gap = f.sponsor && f.sponsorName ? 12 : 0;
+  const total = logoW + gap + nameW;
+  let cursor = align === "right" ? x - total : x;
+
+  spaced(ctx, "In association with", align === "right" ? x : x, y - 14,
+    onDark ? "rgba(255,255,255,0.65)" : MUTED, 15, 3, align);
+
+  if (f.sponsor) {
+    ctx.drawImage(f.sponsor, cursor, y, logoW, logoH);
+    cursor += logoW + gap;
+  }
+  if (f.sponsorName) {
+    ctx.fillStyle = onDark ? "#ffffff" : INK;
+    ctx.textAlign = "left";
+    ctx.fillText(f.sponsorName, cursor, y + logoH * 0.7);
+  }
+}
+
 function bookLine(f: FlyerFields): string {
   if (!f.bookTitle) return "";
   return f.bookAuthor ? `${f.bookTitle} by ${f.bookAuthor}` : f.bookTitle;
@@ -476,11 +612,14 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       ctx.fillText(f.date.day, sx, sy + 14);
       spaced(ctx, f.date.month, sx, sy + 54, GOLD_LIGHT, 22, 4, "center");
 
+      // The book itself, leaning against the arch on the left.
+      bookCover(ctx, f, 58, ay + ah - 268, 250, -7);
+
       // Title and book, centred.
       ctx.textAlign = "center";
       ctx.fillStyle = INK;
-      const size = fitSize(ctx, f.title, (s) => `700 ${s}px ${DISPLAY}`, 900, 70, 48, 2);
-      const y = wrap(ctx, f.title, FLYER_W / 2, 880, 900, size * 1.12, 2);
+      const size = fitSize(ctx, f.title, (s) => `700 ${s}px ${DISPLAY}`, 880, 66, 46, 2);
+      const y = wrap(ctx, f.title, FLYER_W / 2, 900, 880, size * 1.08, 2);
       if (f.bookTitle) {
         ctx.fillStyle = BRAND;
         ctx.font = `italic 500 34px ${DISPLAY}`;
@@ -488,7 +627,8 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       }
 
       ctx.fillStyle = GOLD;
-      ctx.fillRect(FLYER_W / 2 - 60, FLYER_H - 200, 120, 3);
+      ctx.fillRect(FLYER_W / 2 - 60, FLYER_H - 268, 120, 3);
+      if (f.sponsor || f.sponsorName) sponsorStrip(ctx, f, FLYER_H - 86, false);
       details(
         ctx,
         [
@@ -497,7 +637,7 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
           ["Presented by", f.presenter],
         ],
         90,
-        FLYER_H - 150,
+        FLYER_H - 218,
         FLYER_W - 180,
         GOLD,
         INK,
@@ -526,21 +666,27 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       const mast = fitSize(ctx, f.clubName, (s) => `700 ${s}px ${DISPLAY}`, FLYER_W - 160, 120, 56, 2);
       wrap(ctx, f.clubName, 80, 150 + mast * 0.9, FLYER_W - 160, mast * 1.02, 2);
 
+      // The book, standing at the right of the page -- drawn before the text
+      // so the words know how much room is left.
+      const coverRight = bookCover(ctx, f, FLYER_W - 280, FLYER_H - 700, 290, 4);
+
       // Bottom block, laid out upward from the details.
+      // The words keep clear of the cover standing on the right.
+      const textW = FLYER_W - 160 - (f.bookCover ? coverRight + 40 : 0);
       ctx.font = `700 84px ${DISPLAY}`;
-      const titleSize = fitSize(ctx, f.title, (s) => `700 ${s}px ${DISPLAY}`, FLYER_W - 160, 88, 56, 3);
-      const titleLines = lines(ctx, f.title, FLYER_W - 160, 3);
+      const titleSize = fitSize(ctx, f.title, (s) => `700 ${s}px ${DISPLAY}`, textW, 84, 52, 3);
+      const titleLines = lines(ctx, f.title, textW, 3);
       const bookH = f.bookTitle ? 100 : 0;
       let y = FLYER_H - 300 - bookH - titleLines.length * titleSize * 1.08;
 
       ctx.fillStyle = GOLD_LIGHT;
       ctx.fillRect(80, y - titleSize - 10, 90, 5);
       ctx.fillStyle = "#ffffff";
-      y = wrap(ctx, f.title, 80, y, FLYER_W - 160, titleSize * 1.08, 3);
+      y = wrap(ctx, f.title, 80, y, textW, titleSize * 1.08, 3);
       if (f.bookTitle) {
         ctx.fillStyle = "rgba(255,255,255,0.86)";
-        ctx.font = `italic 500 38px ${DISPLAY}`;
-        wrap(ctx, bookLine(f), 80, y + 6, FLYER_W - 160, 46, 2);
+        ctx.font = `italic 500 36px ${DISPLAY}`;
+        wrap(ctx, bookLine(f), 80, y + 6, textW, 44, 2);
       }
 
       // Date pill.
@@ -556,7 +702,8 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       ctx.fillStyle = "rgba(255,255,255,0.92)";
       ctx.font = `500 30px ${BODY}`;
       const bits = [f.location, f.presenter ? `with ${f.presenter}` : ""].filter(Boolean);
-      wrap(ctx, bits.join("  ·  "), 80, FLYER_H - 120, FLYER_W - 160, 40, 2);
+      wrap(ctx, bits.join("  ·  "), 80, FLYER_H - 120, FLYER_W - 420, 40, 2);
+      if (f.sponsor || f.sponsorName) sponsorCorner(ctx, f, FLYER_W - 80, FLYER_H - 150, true);
     },
   },
   {
@@ -592,12 +739,16 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
 
       ctx.textAlign = "center";
       ctx.fillStyle = GOLD_LIGHT;
-      ctx.font = `italic 500 46px ${DISPLAY}`;
-      ctx.fillText("You're invited to", mid, 330);
+      ctx.font = `italic 500 42px ${DISPLAY}`;
+      ctx.fillText("You're invited to", mid, 300);
+
+      // The book, centred under the invitation line.
+      const coverW = bookCover(ctx, f, mid - 90, 330, 250);
+      void coverW;
 
       ctx.fillStyle = "#ffffff";
-      const size = fitSize(ctx, f.title, (s) => `700 ${s}px ${DISPLAY}`, 860, 92, 56, 3);
-      let y = wrap(ctx, f.title, mid, 330 + size * 1.25, 860, size * 1.1, 3);
+      const size = fitSize(ctx, f.title, (s) => `700 ${s}px ${DISPLAY}`, 860, 76, 48, 3);
+      let y = wrap(ctx, f.title, mid, 660 + size, 860, size * 1.1, 3);
 
       // Divider: rules either side of a diamond.
       y += 10;
@@ -609,9 +760,9 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       if (f.bookTitle) {
         ctx.fillStyle = "rgba(255,255,255,0.88)";
         ctx.font = `italic 500 40px ${DISPLAY}`;
-        wrap(ctx, f.bookTitle, mid, y + 80, 860, 50, 2);
+        wrap(ctx, f.bookTitle, mid, y + 70, 860, 46, 1);
         if (f.bookAuthor) {
-          spaced(ctx, f.bookAuthor, mid, y + 80 + 70, "rgba(255,255,255,0.7)", 22, 4, "center");
+          spaced(ctx, f.bookAuthor, mid, y + 112, "rgba(255,255,255,0.7)", 20, 4, "center");
         }
       }
 
@@ -623,7 +774,7 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
           ["Venue", f.location],
         ],
         120,
-        FLYER_H - 350,
+        FLYER_H - 284,
         FLYER_W - 240,
         GOLD_LIGHT,
         "#ffffff",
@@ -633,10 +784,11 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       ctx.textAlign = "center";
       if (f.presenter) {
         ctx.fillStyle = BRAND_LIGHT;
-        ctx.font = `500 30px ${BODY}`;
-        ctx.fillText(`Presented by ${f.presenter}`, mid, FLYER_H - 168);
+        ctx.font = `500 28px ${BODY}`;
+        ctx.fillText(`Presented by ${f.presenter}`, mid, FLYER_H - 138);
       }
-      spaced(ctx, f.clubName, mid, FLYER_H - 110, GOLD, 20, 5, "center");
+      spaced(ctx, f.clubName, mid, FLYER_H - 102, GOLD, 20, 5, "center");
+      if (f.sponsor || f.sponsorName) sponsorCorner(ctx, f, mid - 90, FLYER_H - 78, true, "left");
       ctx.textAlign = "left";
     },
   },
@@ -713,6 +865,9 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
         wrap(ctx, bookLine(f), cx, y + 4, 880, 42, 1);
       }
 
+      // The book, propped at the top left beside the portrait.
+      bookCover(ctx, f, 56, 236, 250, -7);
+
       // Navy band with the details.
       ctx.fillStyle = BRAND;
       ctx.fillRect(0, FLYER_H - 200, FLYER_W, 200);
@@ -732,6 +887,7 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
         "#ffffff",
         "center",
       );
+      if (f.sponsor || f.sponsorName) sponsorCorner(ctx, f, FLYER_W - 70, FLYER_H - 262, false);
       ctx.textAlign = "left";
     },
   },
@@ -758,6 +914,9 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       ctx.arc(FLYER_W - 330, FLYER_H - 430, 46, 0, Math.PI * 2);
       ctx.fill();
 
+      // The book, large on the right, over the circles.
+      bookCover(ctx, f, FLYER_W - 330, 330, 400, 5);
+
       ctx.textAlign = "left";
       ctx.fillStyle = BRAND;
       ctx.font = `700 340px ${DISPLAY}`;
@@ -774,12 +933,13 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       spaced(ctx, f.clubName, 80, 550, BRAND_LIGHT, 22, 5);
 
       ctx.fillStyle = INK;
-      const size = fitSize(ctx, f.title, (s) => `700 ${s}px ${DISPLAY}`, 860, 92, 56, 3);
-      let y = wrap(ctx, f.title, 80, 550 + size * 1.25, 860, size * 1.1, 3);
+      const textW = f.bookCover ? 600 : 860;
+      const size = fitSize(ctx, f.title, (s) => `700 ${s}px ${DISPLAY}`, textW, 84, 50, 3);
+      let y = wrap(ctx, f.title, 80, 550 + size * 1.25, textW, size * 1.1, 3);
       if (f.bookTitle) {
         ctx.fillStyle = BRAND;
-        ctx.font = `italic 500 40px ${DISPLAY}`;
-        y = wrap(ctx, bookLine(f), 80, y + 10, 780, 50, 2);
+        ctx.font = `italic 500 36px ${DISPLAY}`;
+        y = wrap(ctx, bookLine(f), 80, y + 10, textW, 46, 2);
       }
 
       ctx.fillStyle = INK;
@@ -791,6 +951,7 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
         ctx.fillText(`Presented by ${f.presenter}`, 80, by + 4);
       }
       logo(ctx, f, 80, FLYER_H - 130, 210);
+      if (f.sponsor || f.sponsorName) sponsorCorner(ctx, f, FLYER_W - 80, FLYER_H - 120, false);
     },
   },
   {
@@ -836,15 +997,18 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       scrim(ctx, 0, 0, FLYER_W, 240, "rgba(10,14,40,0.5)", "rgba(10,14,40,0)");
       logo(ctx, f, 80, 60, 200, "#ffffff");
 
+      // The book across the diagonal, on the right.
+      bookCover(ctx, f, FLYER_W - 290, top - 210, 320, 6);
+
       spaced(ctx, f.clubName, 80, top + drop + 100, GOLD_LIGHT, 22, 5);
       ctx.fillStyle = "#ffffff";
       ctx.textAlign = "left";
-      const size = fitSize(ctx, f.title, (s) => `700 ${s}px ${DISPLAY}`, FLYER_W - 160, 80, 52, 2);
-      const y = wrap(ctx, f.title, 80, top + drop + 100 + size * 1.2, FLYER_W - 160, size * 1.1, 2);
+      const size = fitSize(ctx, f.title, (s) => `700 ${s}px ${DISPLAY}`, FLYER_W - 160, 76, 50, 2);
+      const y = wrap(ctx, f.title, 80, top + drop + 100 + size * 1.2, FLYER_W - 160, size * 1.08, 2);
       if (f.bookTitle) {
         ctx.fillStyle = "rgba(255,255,255,0.85)";
-        ctx.font = `italic 500 36px ${DISPLAY}`;
-        wrap(ctx, bookLine(f), 80, y + 4, FLYER_W - 160, 44, 1);
+        ctx.font = `italic 500 34px ${DISPLAY}`;
+        wrap(ctx, bookLine(f), 80, y + 4, FLYER_W - 160, 42, 1);
       }
 
       // Date tile, gold.
@@ -867,6 +1031,7 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       ctx.font = `400 28px ${BODY}`;
       const rest = [f.location, f.presenter ? `with ${f.presenter}` : ""].filter(Boolean);
       wrap(ctx, rest.join("  ·  "), tx + 164, ty + 88, FLYER_W - tx - 164 - 80, 36, 2);
+      if (f.sponsor || f.sponsorName) sponsorCorner(ctx, f, FLYER_W - 80, 150, true);
     },
   },
 ];

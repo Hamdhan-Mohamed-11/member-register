@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { canAdminClub, requireStaff } from "@/lib/auth/session";
 import { getSession } from "@/lib/sessions/queries";
 import { flyerUrl } from "@/lib/flyers/url";
+import { listBooks } from "@/lib/legacy/books";
 import { FlyerDesigner } from "./FlyerDesigner";
 
 export const metadata: Metadata = { title: "Flyer" };
@@ -49,6 +50,18 @@ export default async function FlyerPage({
   // this secretary's to make.
   if (!canAdminClub(member, session.hostClub.id)) notFound();
 
+  // The shop's cover for this book, when the shop has it: one search on the
+  // title, and the flyer maker needs nothing filled in. An uploaded cover
+  // (saved on the session) wins, because someone chose it deliberately.
+  let catalogueBookId: number | null = null;
+  if (!session.bookImagePath && session.bookTitle.trim()) {
+    const found = await listBooks({ search: session.bookTitle.trim(), page: 1 });
+    if (found.ok) {
+      const match = found.data.books.find((b) => b.imageUrl);
+      catalogueBookId = match ? match.id : null;
+    }
+  }
+
   return (
     <AdminShell>
       <BackLink href={`/admin/sessions/${id}`}>Session</BackLink>
@@ -72,6 +85,10 @@ export default async function FlyerPage({
             : "",
           flyerTemplate: session.flyerTemplate,
           flyerUrl: flyerUrl(session.flyerPath),
+          bookImageUrl: flyerUrl(session.bookImagePath),
+          catalogueBookId,
+          sponsorUrl: flyerUrl(session.sponsorPath),
+          sponsorName: session.sponsorName ?? "",
         }}
       />
     </AdminShell>

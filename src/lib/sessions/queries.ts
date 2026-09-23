@@ -21,6 +21,10 @@ export type SessionSummary = {
   flyerPath: string | null;
   /** Cover picture for the card, in the public flyers bucket. */
   imagePath: string | null;
+  /** Flyer extras: an uploaded book cover, and a sponsor. */
+  bookImagePath: string | null;
+  sponsorPath: string | null;
+  sponsorName: string | null;
   /** Short tag on the page banner, e.g. "Special event". */
   label: string | null;
   /** One line under the title. */
@@ -56,6 +60,9 @@ type RawSession = {
   presenter_count: number | null;
   flyer_path: string | null;
   image_path: string | null;
+  book_image_path: string | null;
+  sponsor_path: string | null;
+  sponsor_name: string | null;
   label: string | null;
   tagline: string | null;
   highlights: string[] | null;
@@ -72,7 +79,8 @@ type RawSession = {
 const SESSION_SELECT = `
   id, title, book_title, book_author, held_at, location, notes, video_url,
   status, pricing_kind, guest_fee_lkr, capacity, presenter_count,
-  flyer_path, flyer_template, image_path, label, tagline, highlights, host_club_id,
+  flyer_path, flyer_template, image_path, label, tagline, highlights,
+  book_image_path, sponsor_path, sponsor_name, host_club_id,
   clubs ( id, name ),
   presenter:profiles!sessions_presenter_member_id_fkey ( id, first_name, last_name, avatar_path )
 `;
@@ -95,6 +103,9 @@ function toSummary(raw: RawSession, now: number): SessionSummary {
     presenterCount: raw.presenter_count,
     flyerPath: raw.flyer_path,
     imagePath: raw.image_path,
+    bookImagePath: raw.book_image_path,
+    sponsorPath: raw.sponsor_path,
+    sponsorName: raw.sponsor_name,
     label: raw.label,
     tagline: raw.tagline,
     highlights: raw.highlights ?? [],

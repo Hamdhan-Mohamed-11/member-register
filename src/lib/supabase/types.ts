@@ -1671,6 +1671,7 @@ export type Database = {
       sessions: {
         Row: {
           book_author: string
+          book_image_path: string | null
           book_title: string
           capacity: number | null
           created_at: string
@@ -1690,6 +1691,8 @@ export type Database = {
           presenter_count: number | null
           presenter_member_id: string | null
           pricing_kind: string
+          sponsor_name: string | null
+          sponsor_path: string | null
           status: string
           tagline: string | null
           title: string
@@ -1698,6 +1701,7 @@ export type Database = {
         }
         Insert: {
           book_author?: string
+          book_image_path?: string | null
           book_title?: string
           capacity?: number | null
           created_at?: string
@@ -1717,6 +1721,8 @@ export type Database = {
           presenter_count?: number | null
           presenter_member_id?: string | null
           pricing_kind?: string
+          sponsor_name?: string | null
+          sponsor_path?: string | null
           status?: string
           tagline?: string | null
           title: string
@@ -1725,6 +1731,7 @@ export type Database = {
         }
         Update: {
           book_author?: string
+          book_image_path?: string | null
           book_title?: string
           capacity?: number | null
           created_at?: string
@@ -1744,6 +1751,8 @@ export type Database = {
           presenter_count?: number | null
           presenter_member_id?: string | null
           pricing_kind?: string
+          sponsor_name?: string | null
+          sponsor_path?: string | null
           status?: string
           tagline?: string | null
           title?: string
@@ -2241,6 +2250,15 @@ export type Database = {
       }
       set_session_flyer: {
         Args: { p_path?: string; p_session_id: string; p_template?: string }
+        Returns: undefined
+      }
+      set_session_flyer_assets: {
+        Args: {
+          p_book_image_path?: string
+          p_session_id: string
+          p_sponsor_name?: string
+          p_sponsor_path?: string
+        }
         Returns: undefined
       }
       set_session_image: {

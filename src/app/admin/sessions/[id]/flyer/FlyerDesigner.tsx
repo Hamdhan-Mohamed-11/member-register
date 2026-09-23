@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Notice } from "@/components/ui/Field";
+import { Notice, controlClassName } from "@/components/ui/Field";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browserClient";
 import { useHydrated } from "@/lib/useHydrated";
 import {
@@ -21,7 +21,7 @@ import {
   type PhotoBox,
   type PhotoPos,
 } from "@/lib/flyers/templates";
-import { clearFlyer, saveFlyer } from "./actions";
+import { clearFlyer, saveFlyer, saveFlyerAssets } from "./actions";
 
 export type FlyerSession = {
   id: string;
@@ -34,6 +34,12 @@ export type FlyerSession = {
   presenter: string;
   flyerTemplate: string | null;
   flyerUrl: string | null;
+  /** A cover someone uploaded for this session's book. */
+  bookImageUrl: string | null;
+  /** The shop's id for this book, when the catalogue has a cover for it. */
+  catalogueBookId: number | null;
+  sponsorUrl: string | null;
+  sponsorName: string;
 };
 
 const MAX_PHOTO_BYTES = 12 * 1024 * 1024;
@@ -141,6 +147,10 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
   const [photoPos, setPhotoPos] = useState<PhotoPos>(CENTRED);
   const [logo, setLogo] = useState<FlyerImage | null>(null);
   const [fontsReady, setFontsReady] = useState(false);
+  const [bookCover, setBookCover] = useState<FlyerImage | null>(null);
+  const [sponsor, setSponsor] = useState<FlyerImage | null>(null);
+  const [sponsorName, setSponsorName] = useState(session.sponsorName);
+  const [assetsSaved, setAssetsSaved] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -170,6 +180,23 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
     loadImage("/logo.png")
       .then((img) => alive && setLogo(img))
       .catch(() => {});
+
+    // The book's cover: whatever was uploaded for this session, otherwise the
+    // shop's own picture of it, served from our origin so the canvas can
+    // still export (a canvas that has drawn a cross-origin image cannot).
+    const coverSrc =
+      session.bookImageUrl ??
+      (session.catalogueBookId ? `/api/book-cover/${session.catalogueBookId}` : null);
+    if (coverSrc) {
+      loadImage(coverSrc)
+        .then((img) => alive && setBookCover(downscale(img)))
+        .catch(() => {});
+    }
+    if (session.sponsorUrl) {
+      loadImage(session.sponsorUrl)
+        .then((img) => alive && setSponsor(downscale(img)))
+        .catch(() => {});
+    }
     return () => {
       alive = false;
     };
@@ -186,6 +213,9 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
     photo: template.usesPhoto ? photo : null,
     photoPos,
     logo,
+    bookCover,
+    sponsor,
+    sponsorName,
     onPhotoBox: (box) => {
       boxRef.current = box;
     },
@@ -202,14 +232,82 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
     // fields is rebuilt every render from props and state; listing it as a
     // dependency would redraw on every render forever.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [templateId, photo, photoPos, logo, fontsReady, session]);
+  }, [templateId, photo, photoPos, logo, bookCover, sponsor, sponsorName, fontsReady, session]);
 
   useEffect(() => {
     draw();
   }, [draw]);
 
   // Bumps when anything the thumbnails show changes.
-  const thumbVersion = (photo ? 1 : 0) + (logo ? 2 : 0) + (fontsReady ? 4 : 0);
+  const thumbVersion =
+    (photo ? 1 : 0) +
+    (logo ? 2 : 0) +
+    (fontsReady ? 4 : 0) +
+    (bookCover ? 8 : 0) +
+    (sponsor ? 16 : 0) +
+    sponsorName.length * 32;
+
+  /**
+   * Uploads a book cover or a sponsor logo and records it on the session, so
+   * the next flyer for this evening already has it.
+   */
+  async function onAsset(
+    event: React.ChangeEvent<HTMLInputElement>,
+    which: "book" | "sponsor",
+  ) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Please choose an image.");
+      return;
+    }
+    if (file.size > MAX_PHOTO_BYTES) {
+      setError("That image is too large. Please pick a smaller one.");
+      return;
+    }
+
+    setError(null);
+    setAssetsSaved(false);
+    const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+    const key = `${session.id}/${which}-${crypto.randomUUID()}.${ext}`;
+    const { error: uploadError } = await getBrowserSupabaseClient()
+      .storage.from("flyers")
+      .upload(key, file, { contentType: file.type, upsert: false });
+    if (uploadError) {
+      setError(uploadError.message);
+      return;
+    }
+
+    const saved = await saveFlyerAssets({
+      sessionId: session.id,
+      bookImagePath: which === "book" ? key : (session.bookImageUrl ? null : null),
+      sponsorPath: which === "sponsor" ? key : null,
+      sponsorName,
+    });
+    if (!saved.ok) {
+      setError(saved.error);
+      return;
+    }
+
+    const img = downscale(await loadImage(URL.createObjectURL(file)));
+    if (which === "book") setBookCover(img);
+    else setSponsor(img);
+    setAssetsSaved(true);
+    router.refresh();
+  }
+
+  async function saveSponsorName() {
+    setError(null);
+    const saved = await saveFlyerAssets({
+      sessionId: session.id,
+      bookImagePath: null,
+      sponsorPath: null,
+      sponsorName,
+    });
+    if (!saved.ok) setError(saved.error);
+    else setAssetsSaved(true);
+  }
 
   async function onPhoto(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -461,6 +559,81 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
                 Re-centre
               </Button>
             </div>
+          ) : null}
+        </Card>
+
+        <Card>
+          <p className="mb-1 text-sm font-medium text-ink">The book</p>
+          <div className="flex items-start gap-3">
+            <div className="grid h-24 w-16 shrink-0 place-items-center overflow-hidden rounded-md border border-line bg-canvas-deep text-center text-[11px] text-ink-faint">
+              {bookCover ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={session.bookImageUrl ?? `/api/book-cover/${session.catalogueBookId}`}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span className="px-1">No cover</span>
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-ink-muted">
+                {bookCover
+                  ? session.bookImageUrl
+                    ? "Using the cover you uploaded."
+                    : "Using the shop's cover for this book."
+                  : "The shop has no cover for this book. Upload one and every template will show it."}
+              </p>
+              <label className="press mt-2 inline-flex min-h-9 cursor-pointer items-center rounded-lg border border-line-strong bg-surface px-3 text-sm font-medium text-brand-700 hover:bg-canvas">
+                {bookCover ? "Replace cover" : "Upload a cover"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => onAsset(e, "book")}
+                  className="sr-only"
+                />
+              </label>
+            </div>
+          </div>
+
+          <hr className="my-4 border-line" />
+
+          <p className="mb-1 text-sm font-medium text-ink">Sponsor (optional)</p>
+          <div className="flex items-start gap-3">
+            <div className="grid h-16 w-20 shrink-0 place-items-center overflow-hidden rounded-md border border-line bg-surface text-center text-[11px] text-ink-faint">
+              {session.sponsorUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={session.sponsorUrl} alt="" className="max-h-full max-w-full object-contain" />
+              ) : (
+                <span className="px-1">No logo</span>
+              )}
+            </div>
+            <div className="min-w-0 flex-1 space-y-2">
+              <input
+                value={sponsorName}
+                onChange={(e) => setSponsorName(e.target.value)}
+                onBlur={saveSponsorName}
+                maxLength={60}
+                placeholder="Sponsor name"
+                className={controlClassName}
+              />
+              <label className="press inline-flex min-h-9 cursor-pointer items-center rounded-lg border border-line-strong bg-surface px-3 text-sm font-medium text-brand-700 hover:bg-canvas">
+                {sponsor ? "Replace logo" : "Upload a logo"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => onAsset(e, "sponsor")}
+                  className="sr-only"
+                />
+              </label>
+              <p className="text-xs text-ink-muted">
+                Printed small at the foot of the flyer, as &ldquo;In association with&rdquo;.
+              </p>
+            </div>
+          </div>
+          {assetsSaved ? (
+            <p className="mt-2 text-xs text-success-600">Saved to this session.</p>
           ) : null}
         </Card>
 
