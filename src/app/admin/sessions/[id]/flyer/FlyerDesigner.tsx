@@ -279,11 +279,12 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
       return;
     }
 
+    // Only the field that changed: null leaves the others alone (0044).
     const saved = await saveFlyerAssets({
       sessionId: session.id,
-      bookImagePath: which === "book" ? key : (session.bookImageUrl ? null : null),
+      bookImagePath: which === "book" ? key : null,
       sponsorPath: which === "sponsor" ? key : null,
-      sponsorName,
+      sponsorName: null,
     });
     if (!saved.ok) {
       setError(saved.error);
@@ -303,7 +304,7 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
       sessionId: session.id,
       bookImagePath: null,
       sponsorPath: null,
-      sponsorName,
+      sponsorName: sponsorName.trim() || "",
     });
     if (!saved.ok) setError(saved.error);
     else setAssetsSaved(true);

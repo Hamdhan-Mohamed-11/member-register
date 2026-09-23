@@ -81,9 +81,10 @@ function revalidateSession(id: string) {
  */
 export async function saveFlyerAssets(input: {
   sessionId: string;
+  /** null leaves the stored value alone; "" clears it. */
   bookImagePath: string | null;
   sponsorPath: string | null;
-  sponsorName: string;
+  sponsorName: string | null;
 }): Promise<ActionResult> {
   await requireStaff();
   if (!z.string().uuid().safeParse(input.sessionId).success) {
@@ -95,7 +96,7 @@ export async function saveFlyerAssets(input: {
     p_session_id: input.sessionId,
     p_book_image_path: input.bookImagePath ?? undefined,
     p_sponsor_path: input.sponsorPath ?? undefined,
-    p_sponsor_name: input.sponsorName.trim() || undefined,
+    p_sponsor_name: input.sponsorName ?? undefined,
   });
   if (error) return { ok: false, error: error.message };
 
