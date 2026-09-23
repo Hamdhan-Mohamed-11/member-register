@@ -75,6 +75,17 @@ await admin("/rest/v1/club_memberships", {
   }),
 });
 
+/**
+ * Ticks every club guideline on the page, if any are shown.
+ *
+ * "Tick all" is one click rather than N, and its absence means the club has
+ * no guidelines set -- which is a valid state, not a failure.
+ */
+async function tickGuidelines(page) {
+  const all = page.getByRole("button", { name: /tick all/i });
+  if (await all.count()) await all.first().click();
+}
+
 const browser = await chromium.launch();
 
 relaxTimeouts(browser);
@@ -113,6 +124,13 @@ let signupExercised = false;
   await page.fill('input[name="email"]', APPLICANT);
   await page.fill('input[name="password"]', PW);
   await page.selectOption('select[name="club_id"]', pubClub.id);
+  // The guidelines have to be ticked before the form will submit -- the same
+  // agreement request_club_join demands.
+  await tickGuidelines(page);
+  check(
+    "the guidelines gate the form",
+    await page.locator('button[type="submit"]').isEnabled(),
+  );
   await page.click('button[type="submit"]');
 
   const codeField = await page
@@ -186,6 +204,7 @@ check("applicant profile is a plain member", profile?.role === "member", JSON.st
   const picker = await page.$('select[name="club_id"]');
   if (picker) {
     await page.selectOption('select[name="club_id"]', pubClub.id);
+    await tickGuidelines(page);
     await page.click('button[type="submit"]');
     await page.waitForTimeout(2500);
   }

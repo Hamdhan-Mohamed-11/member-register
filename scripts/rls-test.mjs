@@ -291,15 +291,31 @@ const tokApplicant = await signIn(applicantEmail);
 
 // The single most important check in this file: company clubs are invite-only,
 // and request_club_join is the only path a member has into a club.
-const joinCompany = await rpc(tokApplicant, "request_club_join", { p_club_id: coClub.id });
+const joinCompany = await rpc(tokApplicant, "request_club_join", {
+  p_club_id: coClub.id,
+  p_accepted: true,
+});
 check("member CANNOT apply to a company club",
   joinCompany.status >= 400 && /invite only/i.test(JSON.stringify(joinCompany.body)),
   JSON.stringify(joinCompany));
 
-const joinPublic = await rpc(tokApplicant, "request_club_join", { p_club_id: pubClub.id });
+// p_accepted is the applicant saying they have read the club guidelines. The
+// form ticks them one by one; here it stands for all of them.
+const joinPublic = await rpc(tokApplicant, "request_club_join", {
+  p_club_id: pubClub.id,
+  p_accepted: true,
+});
 check("member CAN apply to a public club", joinPublic.status < 300, JSON.stringify(joinPublic));
 
-const joinTwice = await rpc(tokApplicant, "request_club_join", { p_club_id: pubClub.id });
+const joinTwice = await rpc(tokApplicant, "request_club_join", {
+  p_club_id: pubClub.id,
+  p_accepted: true,
+});
+
+const joinUnticked = await rpc(tokApplicant, "request_club_join", { p_club_id: pubClub.id });
+check("an application without the guidelines ticked is refused",
+  joinUnticked.status >= 400 && /guidelines/i.test(JSON.stringify(joinUnticked.body)),
+  JSON.stringify(joinUnticked));
 check("a second application while one is pending is refused",
   joinTwice.status >= 400, JSON.stringify(joinTwice));
 
