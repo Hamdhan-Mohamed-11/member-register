@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { getSessionMember } from "@/lib/auth/session";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import { JoinForm, type JoinableClub } from "./JoinForm";
-import { getAppTexts } from "@/lib/settings/texts";
+import { getPublicJoinGuidelines } from "@/lib/settings/texts";
 
 export const metadata: Metadata = { title: "Join a club" };
 
@@ -22,7 +22,7 @@ export default async function JoinPage() {
   // clubs under Public Clubs are offered for self-signup; the others are places
   // an admin puts you. request_club_join enforces the same rule server-side, so
   // a hand-posted club id gets refused rather than quietly queued.
-  const texts = await getAppTexts();
+  const guidelines = await getPublicJoinGuidelines();
   const supabase = await getServerComponentSupabase();
   const { data } = await supabase
     .from("clubs")
@@ -52,7 +52,7 @@ export default async function JoinPage() {
         subtitle="Pick a club, and the club will confirm your place."
       >
         {clubs.length ? (
-          <JoinForm clubs={clubs} guidelines={texts.joinGuidelines} />
+          <JoinForm clubs={clubs} guidelines={guidelines} />
         ) : (
           <EmptyState
             title="No clubs are open for applications"

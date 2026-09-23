@@ -2123,6 +2123,7 @@ export type Database = {
           width: number
         }[]
       }
+      public_join_guidelines: { Args: never; Returns: string }
       public_stats: {
         Args: never
         Returns: {

@@ -22,9 +22,8 @@ export function guidelineLines(raw: string | null | undefined): string[] {
 /**
  * The written settings: the collection place and the join guidelines.
  *
- * app_settings is readable by anyone signed in and by the anon key, which is
- * what lets /join -- a page for people with no account yet -- show the
- * guidelines they are about to agree to.
+ * Needs a session -- app_settings is readable by authenticated only. For the
+ * signed-out join page use getPublicJoinGuidelines instead.
  */
 export async function getAppTexts(): Promise<AppTexts> {
   const supabase = await getServerComponentSupabase();
@@ -39,4 +38,18 @@ export async function getAppTexts(): Promise<AppTexts> {
     joinGuidelines: guidelineLines(data?.join_guidelines),
     joinGuidelinesRaw: data?.join_guidelines ?? "",
   };
+}
+
+/**
+ * Just the guidelines, for a page nobody is signed in to.
+ *
+ * /join is where someone agrees to these and it is signed out, so the text
+ * comes through a SECURITY DEFINER function that hands out this one column
+ * rather than by opening app_settings -- fees and targets included -- to anon.
+ */
+export async function getPublicJoinGuidelines(): Promise<string[]> {
+  const supabase = await getServerComponentSupabase();
+  const { data, error } = await supabase.rpc("public_join_guidelines");
+  if (error) console.error("[settings] join guidelines:", error.message);
+  return guidelineLines(data);
 }
