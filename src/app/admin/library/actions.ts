@@ -84,7 +84,10 @@ async function tellTheMember(
 
     const member = (request as { profiles?: { first_name: string; email: string } | null } | null)
       ?.profiles;
-    if (!request || !member?.email) return;
+    if (!request || !member?.email) {
+      console.error("[library] approved request has no member email:", requestId);
+      return;
+    }
 
     await sendMail(
       borrowApprovedEmail({
@@ -97,6 +100,10 @@ async function tellTheMember(
         link: `${getSiteUrl()}/library`,
       }),
     );
+    // Logged on success as well as failure: the only other trace of this mail
+    // is on the SMTP server, so without it "did they get told?" is unanswerable
+    // from here.
+    console.log(`[library] told ${member.email} that ${request.title} is ready`);
   } catch (error) {
     console.error("[library] borrow approval email:", error);
   }
