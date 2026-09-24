@@ -58,7 +58,12 @@ export async function CreatorShell({
       {showNav ? <CreatorNav {...navProps} /> : null}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar variant="admin" member={member} unreadNotifications={unread} />
+        <TopBar
+          variant="admin"
+          badge={registered ? (navProps.kind === "publisher" ? "Publisher" : "Author") : undefined}
+          member={member}
+          unreadNotifications={unread}
+        />
         {showNav ? <CreatorMobileNav {...navProps} /> : null}
 
         <main className="mx-auto w-full min-w-0 max-w-5xl flex-1 px-4 py-5 pb-12 sm:px-6 lg:px-8 lg:py-7">

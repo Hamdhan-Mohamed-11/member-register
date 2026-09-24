@@ -38,6 +38,7 @@ export function TopBar({
   unreadNotifications = 0,
   cartCount = 0,
   variant = "member",
+  badge,
 }: {
   member: TopBarMember | null;
   unreadNotifications?: number;
@@ -47,6 +48,8 @@ export function TopBar({
    * and borrowing -- and marks the bar so it is obvious which side you are on.
    */
   variant?: "member" | "admin";
+  /** What the pill says. "Admin" unless someone else owns this frame. */
+  badge?: string;
 }) {
   const pathname = usePathname();
 
@@ -74,16 +77,22 @@ export function TopBar({
       <div className="flex h-16 items-center gap-3 px-4 sm:px-6 lg:px-8">
         {/* The logo only where there is no sidebar to carry it. */}
         <Link
-          href={variant === "admin" ? "/admin" : "/feed"}
+          href={member?.isCreator ? "/creator" : variant === "admin" ? "/admin" : "/feed"}
           className="shrink-0 rounded-lg py-1 lg:hidden"
-          aria-label={variant === "admin" ? "Admin dashboard" : "Pick a Book — home"}
+          aria-label={
+            member?.isCreator
+              ? "My books"
+              : variant === "admin"
+                ? "Admin dashboard"
+                : "Pick a Book — home"
+          }
         >
           <Logo className="h-9 w-auto" preload />
         </Link>
 
         {variant === "admin" ? (
           <span className="rounded-full border border-brand-200 bg-brand-50 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-700">
-            Admin
+            {badge ?? "Admin"}
           </span>
         ) : null}
 
