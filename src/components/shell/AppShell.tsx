@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { CreatorShell } from "@/components/creator/CreatorShell";
 import { BottomNav } from "./BottomNav";
 import { MemberSidebar } from "./MemberSidebar";
 import { SectionTabs } from "./SectionTabs";
@@ -70,7 +71,16 @@ export async function AppShell({
   // Authors and publishers have their own portal. They are not members, so a
   // member page would show them a feed they cannot post to and a points total
   // that will always be zero.
-  if (session && isCreator(session)) redirect("/creator");
+  //
+  // The pages that opt in with allowStaff are the ones that belong to whoever
+  // is signed in rather than to a club -- their notifications, their own
+  // profile, a book they were linked to -- so a creator gets those inside
+  // their own frame. Without this branch the sidebar's own Notifications and
+  // Edit profile links bounced straight back to /creator.
+  if (session && isCreator(session)) {
+    if (!allowStaff) redirect("/creator");
+    return <CreatorShell>{children}</CreatorShell>;
+  }
 
   // Only an ACTIVE member gets member chrome. A pending or suspended account
   // has a session but nothing the nav points at.
