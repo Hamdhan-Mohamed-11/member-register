@@ -62,16 +62,29 @@ export type BookSales = {
 export async function getCreatorAccount(): Promise<CreatorAccount | null> {
   const supabase = await getServerComponentSupabase();
 
+  // Addressed by id rather than by "the row I can see": every APPROVED author
+  // is visible to every member -- their name is on a book in the shop -- so a
+  // bare select here came back with the whole shelf and matched nobody.
+  const [{ data: publisherId }, { data: authorId }] = await Promise.all([
+    supabase.rpc("my_publisher_id"),
+    supabase.rpc("my_author_id"),
+  ]);
+
   const [{ data: publisher }, { data: author }] = await Promise.all([
-    supabase
-      .from("publishers")
-      .select("id, name, about, website, status, decline_reason")
-      .maybeSingle(),
-    supabase
-      .from("authors")
-      .select("id, name, bio, status, decline_reason, owner_id")
-      .not("owner_id", "is", null)
-      .maybeSingle(),
+    publisherId
+      ? supabase
+          .from("publishers")
+          .select("id, name, about, website, status, decline_reason")
+          .eq("id", publisherId)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+    authorId
+      ? supabase
+          .from("authors")
+          .select("id, name, bio, status, decline_reason, owner_id")
+          .eq("id", authorId)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
 
   if (publisher) {
@@ -115,9 +128,10 @@ export async function listMyAuthors(): Promise<CreatorAuthor[]> {
     .select("id, name, bio, status, decline_reason, owner_id, created_at, publishers ( name )")
     .order("name");
 
-  query = publisherId
-    ? query.eq("publisher_id", publisherId)
-    : query.not("owner_id", "is", null);
+  const { data: authorId } = await supabase.rpc("my_author_id");
+  if (publisherId) query = query.eq("publisher_id", publisherId);
+  else if (authorId) query = query.eq("id", authorId);
+  else return [];
 
   const { data, error } = await query;
   if (error) console.error("[creators] authors:", error.message);
