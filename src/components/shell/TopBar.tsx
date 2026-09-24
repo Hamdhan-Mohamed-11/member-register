@@ -17,6 +17,8 @@ export type TopBarMember = {
   isAdmin: boolean;
   /** A secretary looking at their club as a member. */
   memberView?: boolean;
+  /** An author or a publisher: a different portal, a different menu. */
+  isCreator?: boolean;
 };
 
 /**

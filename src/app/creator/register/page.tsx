@@ -18,7 +18,7 @@ export default async function CreatorRegisterPage() {
   if (session && isAdmin(session)) redirect("/admin");
 
   return (
-    <CreatorShell tabs={false}>
+    <CreatorShell nav={false}>
       <div className="mx-auto max-w-2xl">
         <div className="mb-4">
           <h1 className="page-title font-display text-2xl text-ink sm:text-3xl">

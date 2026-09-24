@@ -9,6 +9,9 @@ export type AppTexts = {
   joinGuidelines: string[];
   /** The same guidelines as the admin edits them: one block of text. */
   joinGuidelinesRaw: string;
+  /** The club's own wording for the borrow approval email, if they wrote it. */
+  borrowEmailSubject: string;
+  borrowEmailBody: string;
 };
 
 /** Splits the stored block into the lines the checklist shows. */
@@ -29,7 +32,7 @@ export async function getAppTexts(): Promise<AppTexts> {
   const supabase = await getServerComponentSupabase();
   const { data } = await supabase
     .from("app_settings")
-    .select("library_collect_at, join_guidelines")
+    .select("library_collect_at, join_guidelines, borrow_email_subject, borrow_email_body")
     .eq("id", 1)
     .maybeSingle();
 
@@ -37,6 +40,8 @@ export async function getAppTexts(): Promise<AppTexts> {
     libraryCollectAt: data?.library_collect_at?.trim() || "the Pick a Book office",
     joinGuidelines: guidelineLines(data?.join_guidelines),
     joinGuidelinesRaw: data?.join_guidelines ?? "",
+    borrowEmailSubject: data?.borrow_email_subject ?? "",
+    borrowEmailBody: data?.borrow_email_body ?? "",
   };
 }
 

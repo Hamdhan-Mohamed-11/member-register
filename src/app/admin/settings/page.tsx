@@ -87,6 +87,8 @@ export default async function SettingsPage() {
             texts={{
               libraryCollectAt: texts.libraryCollectAt,
               joinGuidelines: texts.joinGuidelinesRaw,
+              borrowEmailSubject: texts.borrowEmailSubject,
+              borrowEmailBody: texts.borrowEmailBody,
             }}
           />
         </Card>

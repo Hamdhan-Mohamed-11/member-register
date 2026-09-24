@@ -147,6 +147,37 @@ export function passwordResetCodeEmail(args: {
  * come to the office for it, so the message has to say what, where and by
  * when, and say it in the email rather than only behind a login.
  */
+/** The placeholders a club may use in the borrow email, and what they mean. */
+export const BORROW_EMAIL_PLACEHOLDERS: { token: string; means: string }[] = [
+  { token: "{name}", means: "the member's first name" },
+  { token: "{book}", means: "the book, with its author" },
+  { token: "{title}", means: "just the book's title" },
+  { token: "{place}", means: "where books are collected" },
+  { token: "{due}", means: "the date it is due back, or blank" },
+  { token: "{due_line}", means: "a whole sentence about the due date, or nothing" },
+  { token: "{link}", means: "a link to the member's borrowing page" },
+];
+
+/** Fills the placeholders in one line of a club's own wording. */
+function fill(template: string, values: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (whole, key: string) =>
+    key in values ? values[key] : whole,
+  );
+}
+
+/**
+ * The book is ready to collect.
+ *
+ * Sent when an admin approves a borrow request: the member is expected to
+ * come to the office for it, so the message has to say what, where and by
+ * when, and say it in the email rather than only behind a login.
+ *
+ * The words come from Settings when the club has written their own; the text
+ * below is the fallback, and is also what a club gets back by clearing the
+ * box. Placeholders are filled here rather than by the admin typing details
+ * in by hand -- a subject line with last week's book in it is worse than a
+ * plain one.
+ */
 export function borrowApprovedEmail(args: {
   to: string;
   firstName: string;
@@ -155,6 +186,9 @@ export function borrowApprovedEmail(args: {
   dueOn?: string | null;
   collectAt?: string | null;
   link: string;
+  /** The club's own subject and body, when they have written them. */
+  subjectTemplate?: string | null;
+  bodyTemplate?: string | null;
 }): Mail {
   const book = args.bookAuthor
     ? `${args.bookTitle} by ${args.bookAuthor}`
@@ -166,35 +200,62 @@ export function borrowApprovedEmail(args: {
         month: "long",
         year: "numeric",
       })
-    : null;
-  const hello = args.firstName?.trim() ? `Hello ${args.firstName.trim()},` : "Hello,";
+    : "";
+  const name = args.firstName?.trim() || "there";
+
+  const values: Record<string, string> = {
+    name,
+    book,
+    title: args.bookTitle,
+    place: where,
+    due,
+    due_line: due ? `Please return it by ${due}.` : "",
+    link: args.link,
+  };
+
+  const subject = fill(
+    args.subjectTemplate?.trim() || "{book} is ready to collect",
+    { ...values, book: args.bookTitle },
+  );
+
+  const body = fill(
+    args.bodyTemplate?.trim() ||
+      [
+        "Hello {name},",
+        "",
+        "Your borrow request for {book} has been approved.",
+        "",
+        "Come to {place} to pick it up, and bring your member details.",
+        "",
+        "{due_line}",
+        "",
+        "If you no longer need it, cancel from your borrowing page so someone else can take it.",
+      ].join("\n"),
+    values,
+  );
+
+  // Blank lines separate paragraphs, the way the person writing it in the
+  // settings box expects them to.
+  const paragraphs = body
+    .split(/\n\s*\n/)
+    .map((block) => block.trim())
+    .filter(Boolean);
 
   return {
     to: args.to,
-    subject: `${args.bookTitle} is ready to collect`,
-    text: [
-      hello,
-      "",
-      `Your borrow request for ${book} has been approved.`,
-      `Come to ${where} to pick it up, and bring your member details.`,
-      due ? `Please return it by ${due}.` : "",
-      "",
-      `You can see your borrowing here: ${args.link}`,
-      "",
-      "See you soon.",
-    ]
-      .filter(Boolean)
-      .join("\n"),
+    subject,
+    text: [...paragraphs, `See your borrowing: ${args.link}`].join("\n\n"),
     html: layout(
-      `${escapeHtml(args.bookTitle)} is ready to collect`,
-      `<p style="margin:0 0 16px;font-size:15px;line-height:1.6;">${escapeHtml(hello)}</p>
-      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Your borrow request for <strong>${escapeHtml(book)}</strong> has been approved.</p>
-      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Come to <strong>${escapeHtml(where)}</strong> to pick it up, and bring your member details.</p>
-      ${due ? `<p style="margin:0 0 20px;font-size:15px;line-height:1.6;">Please return it by <strong>${escapeHtml(due)}</strong>.</p>` : ""}
-      <p style="margin:0 0 20px;">
+      escapeHtml(subject),
+      [
+        ...paragraphs.map(
+          (block) =>
+            `<p style="margin:0 0 16px;font-size:15px;line-height:1.6;">${escapeHtml(block).replace(/\n/g, "<br>")}</p>`,
+        ),
+        `<p style="margin:20px 0 0;">
         <a href="${escapeHtml(args.link)}" style="display:inline-block;background:#1f3a5f;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:8px;font-size:15px;font-weight:600;">See my borrowing</a>
-      </p>
-      <p style="margin:0;font-size:13px;line-height:1.6;color:#6f6a60;">If you no longer need it, cancel from that page so someone else can take it.</p>`,
+      </p>`,
+      ].join("\n      "),
     ),
   };
 }

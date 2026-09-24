@@ -14,6 +14,7 @@ export type AccountMenuMember = {
   pointsBalance: number;
   isAdmin: boolean;
   memberView?: boolean;
+  isCreator?: boolean;
 };
 
 /**
@@ -63,7 +64,7 @@ export function AccountMenu({ member }: { member: AccountMenuMember }) {
   }, [open]);
 
   const name = `${member.firstName} ${member.lastName}`.trim() || "Your account";
-  const items = accountItemsFor(member.isAdmin, member.memberView);
+  const items = accountItemsFor(member.isAdmin, member.memberView, member.isCreator);
 
   return (
     <div ref={wrapRef} className="relative shrink-0">

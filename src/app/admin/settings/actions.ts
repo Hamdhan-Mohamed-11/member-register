@@ -98,6 +98,8 @@ export async function updatePointsRule(formData: FormData): Promise<ActionResult
 const textsSchema = z.object({
   libraryCollectAt: z.string().trim().max(200),
   joinGuidelines: z.string().trim().max(4000),
+  borrowEmailSubject: z.string().trim().max(200),
+  borrowEmailBody: z.string().trim().max(4000),
 });
 
 /**
@@ -113,6 +115,8 @@ export async function updateAppTexts(formData: FormData): Promise<ActionResult> 
   const parsed = textsSchema.safeParse({
     libraryCollectAt: formData.get("libraryCollectAt") ?? "",
     joinGuidelines: formData.get("joinGuidelines") ?? "",
+    borrowEmailSubject: formData.get("borrowEmailSubject") ?? "",
+    borrowEmailBody: formData.get("borrowEmailBody") ?? "",
   });
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid text." };
@@ -122,6 +126,8 @@ export async function updateAppTexts(formData: FormData): Promise<ActionResult> 
   const { error } = await supabase.rpc("update_app_texts", {
     p_library_collect_at: parsed.data.libraryCollectAt,
     p_join_guidelines: parsed.data.joinGuidelines,
+    p_borrow_email_subject: parsed.data.borrowEmailSubject,
+    p_borrow_email_body: parsed.data.borrowEmailBody,
   });
   if (error) return { ok: false, error: error.message };
 

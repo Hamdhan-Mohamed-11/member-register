@@ -20,6 +20,8 @@ import {
   type FlyerImage,
   type PhotoBox,
   type PhotoPos,
+  type SponsorBox,
+  type SponsorPos,
 } from "@/lib/flyers/templates";
 import { clearFlyer, saveFlyer, saveFlyerAssets } from "./actions";
 
@@ -135,7 +137,9 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
   const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const boxRef = useRef<PhotoBox | null>(null);
+  const sponsorBoxRef = useRef<SponsorBox | null>(null);
   const dragRef = useRef<{ px: number; py: number; pos: PhotoPos } | null>(null);
+  const sponsorDragRef = useRef<{ px: number; py: number; pos: SponsorPos } | null>(null);
 
   const [templateId, setTemplateId] = useState(
     FLYER_TEMPLATES.some((t) => t.id === session.flyerTemplate)
@@ -150,6 +154,10 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
   const [bookCover, setBookCover] = useState<FlyerImage | null>(null);
   const [sponsor, setSponsor] = useState<FlyerImage | null>(null);
   const [sponsorName, setSponsorName] = useState(session.sponsorName);
+  // Null means "wherever this template puts it". It only becomes a position
+  // once someone moves or resizes it, so switching template still lands the
+  // sponsor in the spot that template leaves clear.
+  const [sponsorPos, setSponsorPos] = useState<SponsorPos | null>(null);
   const [assetsSaved, setAssetsSaved] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -220,8 +228,12 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
     bookCover,
     sponsor,
     sponsorName,
+    sponsorPos,
     onPhotoBox: (box) => {
       boxRef.current = box;
+    },
+    onSponsorBox: (box) => {
+      sponsorBoxRef.current = box;
     },
   };
 
@@ -231,12 +243,24 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     boxRef.current = null;
+    sponsorBoxRef.current = null;
     ctx.clearRect(0, 0, FLYER_W, FLYER_H);
     templateById(templateId).draw(ctx, fields);
     // fields is rebuilt every render from props and state; listing it as a
     // dependency would redraw on every render forever.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [templateId, photo, photoPos, logo, bookCover, sponsor, sponsorName, fontsReady, session]);
+  }, [
+    templateId,
+    photo,
+    photoPos,
+    logo,
+    bookCover,
+    sponsor,
+    sponsorName,
+    sponsorPos,
+    fontsReady,
+    session,
+  ]);
 
   useEffect(() => {
     draw();
@@ -249,6 +273,7 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
     (fontsReady ? 4 : 0) +
     (bookCover ? 8 : 0) +
     (sponsor ? 16 : 0) +
+    (sponsorPos ? 64 : 0) +
     sponsorName.length * 32;
 
   /**
@@ -348,6 +373,14 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
 
   // --- dragging -------------------------------------------------------------
 
+  function inBox(p: { x: number; y: number }, b: { x: number; y: number; w: number; h: number }) {
+    return p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h;
+  }
+
+  function clamp01(v: number, lo: number, hi: number) {
+    return Math.min(hi, Math.max(lo, v));
+  }
+
   /** A pointer position in flyer pixels, whatever size the preview is shown. */
   function toFlyer(event: React.PointerEvent<HTMLCanvasElement>) {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -358,17 +391,50 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
   }
 
   function onPointerDown(event: React.PointerEvent<HTMLCanvasElement>) {
+    const p = toFlyer(event);
+
+    // The sponsor is tested FIRST, and it is usually the smaller target: on
+    // the templates where it sits over the photo, testing the photo first
+    // would mean the sponsor could never be picked up.
+    const sBox = sponsorBoxRef.current;
+    if (sBox && inBox(p, sBox)) {
+      event.currentTarget.setPointerCapture(event.pointerId);
+      sponsorDragRef.current = {
+        px: p.x,
+        py: p.y,
+        pos: sponsorPos ?? {
+          x: (sBox.x + sBox.w / 2) / FLYER_W,
+          y: (sBox.y + sBox.h / 2) / FLYER_H,
+          scale: 1,
+        },
+      };
+      setDragging(true);
+      return;
+    }
+
     const box = boxRef.current;
     if (!canDrag || !box) return;
-    const p = toFlyer(event);
     // Only a press on the photo itself starts a drag.
-    if (p.x < box.x || p.x > box.x + box.w || p.y < box.y || p.y > box.y + box.h) return;
+    if (!inBox(p, box)) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     dragRef.current = { px: p.x, py: p.y, pos: photoPos };
     setDragging(true);
   }
 
   function onPointerMove(event: React.PointerEvent<HTMLCanvasElement>) {
+    const sponsorDrag = sponsorDragRef.current;
+    if (sponsorDrag) {
+      const p = toFlyer(event);
+      // Kept a little inside the edges: a sponsor dragged off the flyer is
+      // gone until someone thinks to press Re-place.
+      setSponsorPos({
+        scale: sponsorDrag.pos.scale,
+        x: clamp01(sponsorDrag.pos.x + (p.x - sponsorDrag.px) / FLYER_W, 0.08, 0.92),
+        y: clamp01(sponsorDrag.pos.y + (p.y - sponsorDrag.py) / FLYER_H, 0.05, 0.95),
+      });
+      return;
+    }
+
     const drag = dragRef.current;
     const box = boxRef.current;
     if (!drag || !box) return;
@@ -385,8 +451,9 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
   }
 
   function endDrag(event: React.PointerEvent<HTMLCanvasElement>) {
-    if (!dragRef.current) return;
+    if (!dragRef.current && !sponsorDragRef.current) return;
     dragRef.current = null;
+    sponsorDragRef.current = null;
     setDragging(false);
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
@@ -633,10 +700,54 @@ export function FlyerDesigner({ session }: { session: FlyerSession }) {
                 />
               </label>
               <p className="text-xs text-ink-muted">
-                Printed small at the foot of the flyer, as &ldquo;In association with&rdquo;.
+                Printed as &ldquo;In association with&rdquo;. Drag it on the preview
+                to move it.
               </p>
             </div>
           </div>
+          {sponsor || sponsorName ? (
+            <div className="mt-3 space-y-2 border-t border-line pt-3">
+              <label
+                htmlFor="sponsor-size"
+                className="flex items-center justify-between text-xs text-ink-muted"
+              >
+                <span>Sponsor size</span>
+                <span className="tabular-nums">
+                  {Math.round((sponsorPos?.scale ?? 1) * 100)}%
+                </span>
+              </label>
+              <input
+                id="sponsor-size"
+                type="range"
+                min={0.5}
+                max={2.5}
+                step={0.05}
+                value={sponsorPos?.scale ?? 1}
+                onChange={(e) =>
+                  setSponsorPos((prev) => {
+                    const box = sponsorBoxRef.current;
+                    const base =
+                      prev ??
+                      (box
+                        ? {
+                            x: (box.x + box.w / 2) / FLYER_W,
+                            y: (box.y + box.h / 2) / FLYER_H,
+                            scale: 1,
+                          }
+                        : { x: 0.5, y: 0.94, scale: 1 });
+                    return { ...base, scale: Number(e.target.value) };
+                  })
+                }
+                className="w-full accent-brand-600"
+              />
+              {sponsorPos ? (
+                <Button size="sm" variant="ghost" onClick={() => setSponsorPos(null)}>
+                  Re-place
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
+
           {assetsSaved ? (
             <p className="mt-2 text-xs text-success-600">Saved to this session.</p>
           ) : null}

@@ -257,7 +257,39 @@ export function PointsRulesForm({ rules }: { rules: PointsRule[] }) {
   );
 }
 
-export type AppTextsValue = { libraryCollectAt: string; joinGuidelines: string };
+export type AppTextsValue = {
+  libraryCollectAt: string;
+  joinGuidelines: string;
+  borrowEmailSubject: string;
+  borrowEmailBody: string;
+};
+
+/** What each placeholder stands for, shown under the email boxes. */
+const EMAIL_TOKENS: [string, string][] = [
+  ["{name}", "the member's first name"],
+  ["{book}", "the book and its author"],
+  ["{title}", "just the title"],
+  ["{place}", "where books are collected"],
+  ["{due}", "the date it is due back"],
+  ["{due_line}", "a whole sentence about the due date"],
+  ["{link}", "a link to their borrowing page"],
+];
+
+/** The same substitution the mailer does, for the preview. */
+function fillPreview(text: string, collectAt: string): string {
+  const values: Record<string, string> = {
+    name: "Nimali",
+    book: "The Book Thief by Markus Zusak",
+    title: "The Book Thief",
+    place: collectAt.trim() || "the Pick a Book office",
+    due: "8 October 2026",
+    due_line: "Please return it by 8 October 2026.",
+    link: "https://member.pickabook.lk/library",
+  };
+  return text.replace(/\{(\w+)\}/g, (whole, key: string) =>
+    key in values ? values[key] : whole,
+  );
+}
 
 /**
  * The club's own writing: the collection place and the join guidelines.
@@ -272,6 +304,9 @@ export function AppTextsForm({ texts }: { texts: AppTextsValue }) {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [guidelines, setGuidelines] = useState(texts.joinGuidelines);
+  const [collectAt, setCollectAt] = useState(texts.libraryCollectAt);
+  const [subject, setSubject] = useState(texts.borrowEmailSubject);
+  const [body, setBody] = useState(texts.borrowEmailBody);
 
   const count = guidelines.split("\n").filter((line) => line.trim()).length;
 
@@ -300,10 +335,79 @@ export function AppTextsForm({ texts }: { texts: AppTextsValue }) {
       <Field
         label="Where books are collected"
         name="libraryCollectAt"
-        defaultValue={texts.libraryCollectAt}
+        value={collectAt}
+        onChange={(e) => setCollectAt(e.target.value)}
         maxLength={200}
         hint="Named in the email a member gets when their borrow request is approved."
       />
+
+      <div className="rounded-xl border border-line bg-canvas p-3 sm:p-4">
+        <p className="text-sm font-medium text-ink">
+          The email when a borrow request is approved
+        </p>
+        <p className="mb-3 mt-0.5 text-xs text-ink-muted">
+          Leave a box empty to go back to the wording Pick a Book ships with.
+        </p>
+
+        <div className="space-y-3">
+          <Field
+            label="Subject"
+            name="borrowEmailSubject"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            maxLength={200}
+          />
+
+          <div>
+            <label
+              htmlFor="borrowEmailBody"
+              className="mb-1.5 block text-sm font-medium text-ink"
+            >
+              Message
+            </label>
+            <textarea
+              id="borrowEmailBody"
+              name="borrowEmailBody"
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              rows={9}
+              maxLength={4000}
+              className={`${controlClassName} min-h-44 leading-relaxed`}
+            />
+            <p className="mt-1 text-xs text-ink-muted">
+              A blank line starts a new paragraph. The link to their borrowing
+              page is added at the end as a button.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-x-4 gap-y-1">
+            {EMAIL_TOKENS.map(([token, means]) => (
+              <p key={token} className="text-xs text-ink-muted">
+                <code className="rounded bg-surface px-1 py-0.5 font-mono text-[11px] text-brand-700">
+                  {token}
+                </code>{" "}
+                {means}
+              </p>
+            ))}
+          </div>
+
+          <details className="rounded-lg border border-line bg-surface p-3">
+            <summary className="cursor-pointer text-sm font-medium text-ink">
+              Preview
+            </summary>
+            <p className="mt-2 text-sm font-medium text-ink">
+              {fillPreview(subject || "{book} is ready to collect", collectAt)}
+            </p>
+            <p className="mt-1 whitespace-pre-wrap text-sm text-ink-muted">
+              {fillPreview(
+                body ||
+                  "Hello {name},\n\nYour borrow request for {book} has been approved.\n\nCome to {place} to pick it up, and bring your member details.\n\n{due_line}",
+                collectAt,
+              )}
+            </p>
+          </details>
+        </div>
+      </div>
 
       <div>
         <label

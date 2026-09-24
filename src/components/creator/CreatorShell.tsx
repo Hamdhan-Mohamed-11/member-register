@@ -1,77 +1,70 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { TopBar } from "@/components/shell/TopBar";
 import { getSessionMember, isCreator } from "@/lib/auth/session";
 import { avatarUrl } from "@/lib/members/queries";
 import { getUnreadNotificationCount } from "@/lib/notifications/queries";
+import { getCreatorAccount } from "@/lib/creators/queries";
+import { CreatorMobileNav, CreatorNav } from "./CreatorNav";
 
 /**
  * The chrome for everything under /creator.
  *
- * An author's portal is a short list: their books, what those have sold, and
- * -- for a publisher -- the authors on their list. That is too little for the
- * admin sidebar and nothing like a member's week, so it gets its own frame
- * with a row of tabs and no bottom bar.
+ * The same navy frame as the admin area, not the member one: an author works
+ * in the portal without belonging to a club, so a member's bottom bar of
+ * feed, sessions and points would point at five places they cannot go. The
+ * sidebar carries their own short list instead.
+ *
+ * Signed out is allowed, with no sidebar: /creator/register is where an author
+ * with no account starts, and bouncing them to /login would send them to a
+ * club signup they cannot complete.
  */
 export async function CreatorShell({
   children,
-  tabs = true,
+  /** Off for the pages that are about becoming a creator in the first place. */
+  nav = true,
 }: {
   children: ReactNode;
-  /** Off for the pages that are about becoming a creator in the first place. */
-  tabs?: boolean;
+  nav?: boolean;
 }) {
-  // Signed out is allowed: /creator/register is where an author who has no
-  // account yet starts, and bouncing them to /login would send them to a club
-  // signup they cannot complete.
   const session = await getSessionMember();
-  const unread = session && isCreator(session) ? await getUnreadNotificationCount() : 0;
+  const registered = session != null && isCreator(session);
+
+  const [unread, account] = await Promise.all([
+    registered ? getUnreadNotificationCount() : Promise.resolve(0),
+    registered ? getCreatorAccount() : Promise.resolve(null),
+  ]);
+
+  const showNav = nav && registered;
+  const navProps = {
+    kind: (session?.role === "publisher" ? "publisher" : "author") as "author" | "publisher",
+    name: account?.name ?? null,
+    status: account?.status ?? null,
+  };
+
+  const member = session
+    ? {
+        firstName: session.firstName,
+        lastName: session.lastName,
+        email: session.email,
+        avatarUrl: avatarUrl(session.userId, session.avatarPath),
+        pointsBalance: 0,
+        isAdmin: false,
+        isCreator: registered,
+      }
+    : null;
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <TopBar
-        variant="admin"
-        member={
-          session
-            ? {
-                firstName: session.firstName,
-                lastName: session.lastName,
-                email: session.email,
-                avatarUrl: avatarUrl(session.userId, session.avatarPath),
-                pointsBalance: 0,
-                isAdmin: false,
-              }
-            : null
-        }
-        unreadNotifications={unread}
-      />
+    <div className="flex min-h-screen">
+      {showNav ? <CreatorNav {...navProps} /> : null}
 
-      {tabs && session ? (
-        <nav className="border-b border-line bg-surface">
-          <div className="mx-auto flex w-full max-w-5xl gap-1 overflow-x-auto px-4 sm:px-6">
-            <Tab href="/creator">My books</Tab>
-            {session?.role === "publisher" ? (
-              <Tab href="/creator/authors">My authors</Tab>
-            ) : null}
-            <Tab href="/creator/books/new">Submit a book</Tab>
-          </div>
-        </nav>
-      ) : null}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <TopBar variant="admin" member={member} unreadNotifications={unread} />
+        {showNav ? <CreatorMobileNav {...navProps} /> : null}
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-5 pb-12 sm:px-6 lg:py-7">
-        {children}
-      </main>
+        <main className="mx-auto w-full min-w-0 max-w-5xl flex-1 px-4 py-5 pb-12 sm:px-6 lg:px-8 lg:py-7">
+          {children}
+        </main>
+      </div>
     </div>
-  );
-}
-
-function Tab({ href, children }: { href: string; children: string }) {
-  return (
-    <Link
-      href={href}
-      className="press -mb-px whitespace-nowrap border-b-2 border-transparent px-3 py-3 text-sm font-medium text-ink-muted hover:border-line-strong hover:text-ink"
-    >
-      {children}
-    </Link>
   );
 }

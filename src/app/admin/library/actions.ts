@@ -79,7 +79,11 @@ async function tellTheMember(
         )
         .eq("id", requestId)
         .maybeSingle(),
-      supabase.from("app_settings").select("library_collect_at").eq("id", 1).maybeSingle(),
+      supabase
+        .from("app_settings")
+        .select("library_collect_at, borrow_email_subject, borrow_email_body")
+        .eq("id", 1)
+        .maybeSingle(),
     ]);
 
     const member = (request as { profiles?: { first_name: string; email: string } | null } | null)
@@ -97,6 +101,8 @@ async function tellTheMember(
         bookAuthor: request.author,
         dueOn: dueOn ?? request.due_on,
         collectAt: settings?.library_collect_at ?? null,
+        subjectTemplate: settings?.borrow_email_subject ?? null,
+        bodyTemplate: settings?.borrow_email_body ?? null,
         link: `${getSiteUrl()}/library`,
       }),
     );

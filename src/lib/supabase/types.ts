@@ -63,6 +63,8 @@ export type Database = {
       app_settings: {
         Row: {
           book_discount_percent: number
+          borrow_email_body: string | null
+          borrow_email_subject: string | null
           currency: string
           expiring_soon_days: number
           id: number
@@ -82,6 +84,8 @@ export type Database = {
         }
         Insert: {
           book_discount_percent?: number
+          borrow_email_body?: string | null
+          borrow_email_subject?: string | null
           currency?: string
           expiring_soon_days?: number
           id?: number
@@ -101,6 +105,8 @@ export type Database = {
         }
         Update: {
           book_discount_percent?: number
+          borrow_email_body?: string | null
+          borrow_email_subject?: string | null
           currency?: string
           expiring_soon_days?: number
           id?: number
@@ -2708,7 +2714,12 @@ export type Database = {
         Returns: undefined
       }
       update_app_texts: {
-        Args: { p_join_guidelines: string; p_library_collect_at: string }
+        Args: {
+          p_borrow_email_body?: string
+          p_borrow_email_subject?: string
+          p_join_guidelines: string
+          p_library_collect_at: string
+        }
         Returns: undefined
       }
       update_club: {

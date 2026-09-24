@@ -36,6 +36,19 @@ export type PhotoPos = { x: number; y: number; zoom: number };
 /** The frame a photo was drawn into, and how big it was drawn -- for dragging. */
 export type PhotoBox = { x: number; y: number; w: number; h: number; dw: number; dh: number };
 
+/**
+ * Where the sponsor sits, and how big.
+ *
+ * x and y are the CENTRE of the sponsor block as fractions of the flyer, so a
+ * position survives a change of template -- and `scale` multiplies the logo,
+ * because sponsors hand over marks of wildly different proportions and a
+ * fixed height makes a wide wordmark unreadable next to a square badge.
+ */
+export type SponsorPos = { x: number; y: number; scale: number };
+
+/** Where the sponsor block landed, so the designer can drag it. */
+export type SponsorBox = { x: number; y: number; w: number; h: number };
+
 export type FlyerFields = {
   clubName: string;
   title: string;
@@ -58,8 +71,17 @@ export type FlyerFields = {
   /** An optional sponsor's logo, and the name printed beside it. */
   sponsor: FlyerImage | null;
   sponsorName: string;
+  /**
+   * Where the sponsor has been dragged to, or null to leave it where this
+   * template puts it. Null rather than a default object so switching template
+   * moves the sponsor to the new template's own spot, which is the one its
+   * layout leaves clear.
+   */
+  sponsorPos: SponsorPos | null;
   /** Told where the photo landed, so the designer can map a drag onto it. */
   onPhotoBox?: (box: PhotoBox) => void;
+  /** Told where the sponsor landed, for the same reason. */
+  onSponsorBox?: (box: SponsorBox) => void;
 };
 
 export type FlyerTemplate = {
@@ -76,6 +98,9 @@ export const FLYER_W = 1080;
 export const FLYER_H = 1350;
 
 export const CENTRED: PhotoPos = { x: 0.5, y: 0.5, zoom: 1 };
+
+/** The sponsor's logo height at scale 1. Everything else scales with it. */
+const SPONSOR_LOGO_H = 74;
 
 // Straight from the brand guideline. #293896 and #00AEEF are the primary
 // pair; gold is an accent, cream the paper.
@@ -436,74 +461,93 @@ function bookCover(
  * "In association with <sponsor>", with their logo. Drawn only when a sponsor
  * was added, so a flyer without one has no empty strip.
  */
-function sponsorStrip(
-  ctx: CanvasRenderingContext2D,
-  f: FlyerFields,
-  y: number,
-  onDark: boolean,
-) {
-  if (!f.sponsor && !f.sponsorName) return;
-  const muted = onDark ? "rgba(255,255,255,0.7)" : MUTED;
-  const strong = onDark ? "#ffffff" : INK;
-
-  spaced(ctx, "In association with", FLYER_W / 2, y, muted, 18, 4, "center");
-
-  const logoH = 54;
-  const logoW = f.sponsor ? (logoH * f.sponsor.width) / f.sponsor.height : 0;
-  ctx.font = `600 30px ${BODY}`;
-  const nameW = f.sponsorName ? ctx.measureText(f.sponsorName).width : 0;
-  const gap = f.sponsor && f.sponsorName ? 18 : 0;
-  let cursor = FLYER_W / 2 - (logoW + gap + nameW) / 2;
-
-  if (f.sponsor) {
-    ctx.drawImage(f.sponsor, cursor, y + 16, logoW, logoH);
-    cursor += logoW + gap;
-  }
-  if (f.sponsorName) {
-    ctx.fillStyle = strong;
-    ctx.textAlign = "left";
-    ctx.fillText(f.sponsorName, cursor, y + 16 + logoH * 0.68);
-  }
+/** "Title by Author", or just the title. */
+function bookLine(f: FlyerFields): string {
+  if (!f.bookTitle) return "";
+  return f.bookAuthor ? `${f.bookTitle} by ${f.bookAuthor}` : f.bookTitle;
 }
 
 /**
- * The sponsor on one line -- logo then name -- anchored to a corner. For
- * layouts whose foot is already carrying a date tile or a venue line.
+ * The sponsor: "In association with", their mark, and their name.
+ *
+ * One renderer for every template, drawn around a CENTRE point so it can be
+ * dragged anywhere without the block growing out of one side. Each template
+ * passes the spot its own layout leaves clear; a secretary who disagrees
+ * drags it, and that position wins from then on.
+ *
+ * The logo is deliberately large -- it was 40px high, which on a 1080-wide
+ * flyer printed a sponsor's mark smaller than the body text beside it, and a
+ * sponsor whose logo cannot be read has not been thanked.
  */
-function sponsorCorner(
+function sponsorBlock(
   ctx: CanvasRenderingContext2D,
   f: FlyerFields,
-  x: number,
-  y: number,
+  defaultX: number,
+  defaultY: number,
   onDark: boolean,
-  align: "left" | "right" = "right",
 ) {
   if (!f.sponsor && !f.sponsorName) return;
-  const logoH = 40;
+
+  const pos = f.sponsorPos;
+  const cx = (pos ? pos.x : defaultX / FLYER_W) * FLYER_W;
+  const cy = (pos ? pos.y : defaultY / FLYER_H) * FLYER_H;
+  const scale = Math.min(2.5, Math.max(0.5, pos ? pos.scale : 1));
+
+  const logoH = SPONSOR_LOGO_H * scale;
   const logoW = f.sponsor ? (logoH * f.sponsor.width) / f.sponsor.height : 0;
-  ctx.font = `600 24px ${BODY}`;
+  const labelSize = Math.round(17 * Math.min(1.4, scale));
+  const nameSize = Math.round(32 * scale);
+  const gap = f.sponsor && f.sponsorName ? 18 * scale : 0;
+
+  ctx.font = `600 ${nameSize}px ${BODY}`;
   const nameW = f.sponsorName ? ctx.measureText(f.sponsorName).width : 0;
-  const gap = f.sponsor && f.sponsorName ? 12 : 0;
-  const total = logoW + gap + nameW;
-  let cursor = align === "right" ? x - total : x;
+  const rowW = logoW + gap + nameW;
+  const blockH = labelSize + 12 + logoH;
 
-  spaced(ctx, "In association with", align === "right" ? x : x, y - 14,
-    onDark ? "rgba(255,255,255,0.65)" : MUTED, 15, 3, align);
+  // Clamped to the page. A wide sponsor name anchored near an edge used to
+  // run off it, and the half that fell off was usually the name.
+  const margin = 40;
+  const left = Math.min(
+    Math.max(cx - rowW / 2, margin),
+    Math.max(margin, FLYER_W - margin - rowW),
+  );
+  const top = Math.min(
+    Math.max(cy - blockH / 2, margin / 2),
+    Math.max(margin / 2, FLYER_H - margin / 2 - blockH),
+  );
 
+  spaced(
+    ctx,
+    "In association with",
+    cx,
+    top + labelSize,
+    onDark ? "rgba(255,255,255,0.72)" : MUTED,
+    labelSize,
+    3,
+    "center",
+  );
+
+  let cursor = left;
+  const rowTop = top + labelSize + 12;
   if (f.sponsor) {
-    ctx.drawImage(f.sponsor, cursor, y, logoW, logoH);
+    ctx.drawImage(f.sponsor, cursor, rowTop, logoW, logoH);
     cursor += logoW + gap;
   }
   if (f.sponsorName) {
     ctx.fillStyle = onDark ? "#ffffff" : INK;
     ctx.textAlign = "left";
-    ctx.fillText(f.sponsorName, cursor, y + logoH * 0.7);
+    ctx.font = `600 ${nameSize}px ${BODY}`;
+    ctx.fillText(f.sponsorName, cursor, rowTop + logoH * 0.68);
   }
-}
+  ctx.textAlign = "left";
 
-function bookLine(f: FlyerFields): string {
-  if (!f.bookTitle) return "";
-  return f.bookAuthor ? `${f.bookTitle} by ${f.bookAuthor}` : f.bookTitle;
+  // A little padding, so grabbing it does not demand pixel accuracy.
+  f.onSponsorBox?.({
+    x: left - 20,
+    y: top - 10,
+    w: rowW + 40,
+    h: blockH + 20,
+  });
 }
 
 /**
@@ -627,8 +671,8 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       }
 
       ctx.fillStyle = GOLD;
-      ctx.fillRect(FLYER_W / 2 - 60, FLYER_H - 268, 120, 3);
-      if (f.sponsor || f.sponsorName) sponsorStrip(ctx, f, FLYER_H - 86, false);
+      ctx.fillRect(FLYER_W / 2 - 60, FLYER_H - 285, 120, 3);
+      sponsorBlock(ctx, f, FLYER_W / 2, FLYER_H - 66, false);
       details(
         ctx,
         [
@@ -637,7 +681,7 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
           ["Presented by", f.presenter],
         ],
         90,
-        FLYER_H - 218,
+        FLYER_H - 250,
         FLYER_W - 180,
         GOLD,
         INK,
@@ -703,7 +747,7 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       ctx.font = `500 30px ${BODY}`;
       const bits = [f.location, f.presenter ? `with ${f.presenter}` : ""].filter(Boolean);
       wrap(ctx, bits.join("  ·  "), 80, FLYER_H - 120, FLYER_W - 420, 40, 2);
-      if (f.sponsor || f.sponsorName) sponsorCorner(ctx, f, FLYER_W - 80, FLYER_H - 150, true);
+      sponsorBlock(ctx, f, FLYER_W - 260, FLYER_H - 214, true);
     },
   },
   {
@@ -735,20 +779,24 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       }
 
       const mid = FLYER_W / 2;
+      const hasSponsor = Boolean(f.sponsor || f.sponsorName);
+      // The sponsor takes the foot of the card, so everything above it comes
+      // up by the height of that row.
+      const lift = hasSponsor ? 60 : 0;
       logo(ctx, f, mid, 120, 250, "#ffffff", "center");
 
       ctx.textAlign = "center";
       ctx.fillStyle = GOLD_LIGHT;
       ctx.font = `italic 500 42px ${DISPLAY}`;
-      ctx.fillText("You're invited to", mid, 300);
+      ctx.fillText("You're invited to", mid, 292 - lift);
 
       // The book, centred under the invitation line.
-      const coverW = bookCover(ctx, f, mid - 90, 330, 250);
+      const coverW = bookCover(ctx, f, mid - 90, 340 - lift, 250);
       void coverW;
 
       ctx.fillStyle = "#ffffff";
       const size = fitSize(ctx, f.title, (s) => `700 ${s}px ${DISPLAY}`, 860, 76, 48, 3);
-      let y = wrap(ctx, f.title, mid, 660 + size, 860, size * 1.1, 3);
+      let y = wrap(ctx, f.title, mid, 660 - lift + size, 860, size * 1.1, 3);
 
       // Divider: rules either side of a diamond.
       y += 10;
@@ -774,7 +822,7 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
           ["Venue", f.location],
         ],
         120,
-        FLYER_H - 284,
+        FLYER_H - 300,
         FLYER_W - 240,
         GOLD_LIGHT,
         "#ffffff",
@@ -785,10 +833,10 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       if (f.presenter) {
         ctx.fillStyle = BRAND_LIGHT;
         ctx.font = `500 28px ${BODY}`;
-        ctx.fillText(`Presented by ${f.presenter}`, mid, FLYER_H - 138);
+        ctx.fillText(`Presented by ${f.presenter}`, mid, FLYER_H - 164);
       }
-      spaced(ctx, f.clubName, mid, FLYER_H - 102, GOLD, 20, 5, "center");
-      if (f.sponsor || f.sponsorName) sponsorCorner(ctx, f, mid - 90, FLYER_H - 78, true, "left");
+      spaced(ctx, f.clubName, mid, FLYER_H - 130, GOLD, 20, 5, "center");
+      sponsorBlock(ctx, f, mid, FLYER_H - 72, true);
       ctx.textAlign = "left";
     },
   },
@@ -817,9 +865,16 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       logo(ctx, f, 80, 64, 210);
       spaced(ctx, f.clubName, FLYER_W - 80, 104, BRAND, 20, 4, "right");
 
+      // A sponsor gets its own row in the band, and everything above lifts by
+      // the same amount -- a sponsor dropped on top of the portrait or into
+      // the details is the one thing a sponsor will notice.
+      const hasSponsor = Boolean(f.sponsor || f.sponsorName);
+      const bandH = hasSponsor ? 300 : 200;
+      const lift = hasSponsor ? 74 : 0;
+
       // Portrait with a gold ring.
       const cx = FLYER_W / 2;
-      const cy = 470;
+      const cy = 470 - lift;
       const r = 240;
       ctx.fillStyle = "#ffffff";
       ctx.beginPath();
@@ -845,7 +900,7 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       }
 
       ctx.textAlign = "center";
-      let y = 800;
+      let y = 800 - lift;
       if (f.presenter) {
         spaced(ctx, "Presented by", cx, y, BRAND_LIGHT, 20, 5, "center");
         ctx.fillStyle = INK;
@@ -866,13 +921,13 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       }
 
       // The book, propped at the top left beside the portrait.
-      bookCover(ctx, f, 56, 236, 250, -7);
+      bookCover(ctx, f, 56, 236 - lift, 250, -7);
 
       // Navy band with the details.
       ctx.fillStyle = BRAND;
-      ctx.fillRect(0, FLYER_H - 200, FLYER_W, 200);
+      ctx.fillRect(0, FLYER_H - bandH, FLYER_W, bandH);
       ctx.fillStyle = GOLD;
-      ctx.fillRect(0, FLYER_H - 200, FLYER_W, 6);
+      ctx.fillRect(0, FLYER_H - bandH, FLYER_W, 6);
       details(
         ctx,
         [
@@ -881,13 +936,13 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
           ["Venue", f.location],
         ],
         80,
-        FLYER_H - 130,
+        FLYER_H - bandH + 70,
         FLYER_W - 160,
         GOLD_LIGHT,
         "#ffffff",
         "center",
       );
-      if (f.sponsor || f.sponsorName) sponsorCorner(ctx, f, FLYER_W - 70, FLYER_H - 262, false);
+      sponsorBlock(ctx, f, FLYER_W / 2, FLYER_H - 76, true);
       ctx.textAlign = "left";
     },
   },
@@ -944,14 +999,14 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
 
       ctx.fillStyle = INK;
       ctx.font = `500 30px ${BODY}`;
-      let by = FLYER_H - 250;
+      let by = FLYER_H - 226;
       if (f.location) by = wrap(ctx, f.location, 80, by, 560, 40, 2);
       if (f.presenter) {
         ctx.fillStyle = MUTED;
         ctx.fillText(`Presented by ${f.presenter}`, 80, by + 4);
       }
       logo(ctx, f, 80, FLYER_H - 130, 210);
-      if (f.sponsor || f.sponsorName) sponsorCorner(ctx, f, FLYER_W - 80, FLYER_H - 120, false);
+      sponsorBlock(ctx, f, 340, FLYER_H - 332, false);
     },
   },
   {
@@ -1031,7 +1086,7 @@ export const FLYER_TEMPLATES: FlyerTemplate[] = [
       ctx.font = `400 28px ${BODY}`;
       const rest = [f.location, f.presenter ? `with ${f.presenter}` : ""].filter(Boolean);
       wrap(ctx, rest.join("  ·  "), tx + 164, ty + 88, FLYER_W - tx - 164 - 80, 36, 2);
-      if (f.sponsor || f.sponsorName) sponsorCorner(ctx, f, FLYER_W - 80, 150, true);
+      sponsorBlock(ctx, f, FLYER_W - 260, 150, true);
     },
   },
 ];

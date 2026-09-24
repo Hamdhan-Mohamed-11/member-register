@@ -46,7 +46,24 @@ export const STAFF_ITEMS: AccountItem[] = [
   { href: "/me/edit", label: "Edit profile", icon: "pencil" },
 ];
 
-export function accountItemsFor(isAdmin: boolean, memberView = false): AccountItem[] {
+/**
+ * And what an author or a publisher sees. They are not members: points,
+ * badges, the leaderboard and the reading list are all things they cannot
+ * have, and every member page would bounce them back to /creator anyway.
+ */
+export const CREATOR_ITEMS: AccountItem[] = [
+  { href: "/creator", label: "My books", icon: "book" },
+  { href: "/creator/books/new", label: "Submit a book", icon: "pencil" },
+  { href: "/notifications", label: "Notifications", icon: "bell" },
+  { href: "/me/edit", label: "Edit profile", icon: "pencil" },
+];
+
+export function accountItemsFor(
+  isAdmin: boolean,
+  memberView = false,
+  isCreator = false,
+): AccountItem[] {
+  if (isCreator) return CREATOR_ITEMS;
   const memberItems = ACCOUNT_ITEMS.filter((item) => !item.adminOnly);
   // A secretary in member view gets the member's list, plus the way back.
   if (isAdmin && memberView) {
