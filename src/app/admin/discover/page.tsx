@@ -145,7 +145,7 @@ export default async function AdminDiscoverPage() {
       <PageHeader
         className="mt-1"
         title="Discover"
-        description="Photos and video from your club's events. Every member can see them."
+        description="Photos and video from your club's events. Every member sees them unless you pick the clubs it is for."
       />
 
       {/* Uploader on the left, how the posts are doing on the right -- the
