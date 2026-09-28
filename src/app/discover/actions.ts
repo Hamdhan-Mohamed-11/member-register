@@ -123,6 +123,8 @@ export async function createPost(input: {
   width?: number;
   height?: number;
   durationS?: number;
+  /** Clubs this post is for. Empty or absent means every member. */
+  audienceClubIds?: string[];
 }): Promise<ActionResult<{ id: string }>> {
   await requireStaff();
 
@@ -145,8 +147,52 @@ export async function createPost(input: {
   });
   if (error) return { ok: false, error: error.message };
 
+  const postId = data as unknown as string;
+
+  // The audience is set in a second call rather than as another argument to
+  // create_discover_post, so an older client that knows nothing about it
+  // still posts -- to everyone, which is what it meant.
+  const audience = (input.audienceClubIds ?? []).filter((id) =>
+    z.string().uuid().safeParse(id).success,
+  );
+  if (audience.length > 0) {
+    const { error: audienceError } = await supabase.rpc("set_discover_post_clubs", {
+      p_post_id: postId,
+      p_club_ids: audience,
+    });
+    // The post exists either way; saying so is better than pretending it
+    // failed, but an admin has to know it went out wider than they meant.
+    if (audienceError) {
+      revalidate();
+      return {
+        ok: false,
+        error: `Posted, but it is showing to everyone: ${audienceError.message}`,
+      };
+    }
+  }
+
   revalidate();
-  return { ok: true, data: { id: data as unknown as string } };
+  return { ok: true, data: { id: postId } };
+}
+
+/** Changes who an existing post is for. Empty means everyone. */
+export async function setPostAudience(
+  postId: string,
+  clubIds: string[],
+): Promise<ActionResult> {
+  await requireStaff();
+  if (!idSchema.safeParse(postId).success) return { ok: false, error: "Unknown post." };
+
+  const clean = clubIds.filter((id) => z.string().uuid().safeParse(id).success);
+  const supabase = await getActionSupabase();
+  const { error } = await supabase.rpc("set_discover_post_clubs", {
+    p_post_id: postId,
+    p_club_ids: clean,
+  });
+  if (error) return { ok: false, error: error.message };
+
+  revalidate();
+  return { ok: true };
 }
 
 export async function deletePost(postId: string): Promise<ActionResult> {

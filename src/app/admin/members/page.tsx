@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { ExportButton } from "@/components/admin/ExportButton";
 import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
@@ -73,13 +74,16 @@ export default async function AdminMembersPage({
 
   return (
     <AdminShell>
-      <div className="mb-4">
-        <BackLink href="/admin">Admin</BackLink>
-        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Members</h1>
-        <p className="text-sm text-ink-muted">
-          {members.length} {members.length === 1 ? "account" : "accounts"}
-          {staff.role === "super_admin" ? "" : ` in ${staff.staffClubName ?? "your club"}`}.
-        </p>
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <BackLink href="/admin">Admin</BackLink>
+          <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Members</h1>
+          <p className="text-sm text-ink-muted">
+            {members.length} {members.length === 1 ? "account" : "accounts"}
+            {staff.role === "super_admin" ? "" : ` in ${staff.staffClubName ?? "your club"}`}.
+          </p>
+        </div>
+        <ExportButton kind="members" />
       </div>
 
       {/* A plain GET form: search survives a refresh, is linkable, and needs no

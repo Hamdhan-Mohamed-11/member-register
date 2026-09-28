@@ -7,6 +7,7 @@ import { Notice } from "@/components/ui/Field";
 import { requireSuperAdmin } from "@/lib/auth/session";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import { CreateCompanyForm, InviteEmployeesForm } from "./CompanyForms";
+import { CsvImport } from "./CsvImport";
 
 export const metadata: Metadata = { title: "Companies" };
 
@@ -161,8 +162,21 @@ export default async function CompaniesPage() {
                 ) : null}
 
                 {club ? (
-                  <div className="border-t border-line pt-3">
+                  <div className="space-y-4 border-t border-line pt-3">
                     <InviteEmployeesForm clubId={club.id} clubName={club.name} />
+
+                    {/* The same invites, from a spreadsheet. Folded away so a
+                        company with three employees is not asked to think
+                        about file formats. */}
+                    <details className="group">
+                      <summary className="cursor-pointer select-none list-none text-sm font-medium text-brand-600 hover:text-brand-700">
+                        <span className="group-open:hidden">Import a list of employees</span>
+                        <span className="hidden group-open:inline">Hide the importer</span>
+                      </summary>
+                      <div className="mt-3">
+                        <CsvImport clubId={club.id} clubName={club.name} />
+                      </div>
+                    </details>
                   </div>
                 ) : null}
               </Card>

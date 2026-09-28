@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { ExportButton } from "@/components/admin/ExportButton";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -37,9 +38,12 @@ export default async function AdminSessionsPage() {
               : "Create sessions and record attendance as they happen."}
           </p>
         </div>
-        <Link href="/admin/sessions/new" className={buttonClassName("primary", "sm")}>
-          New session
-        </Link>
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+          {member.role === "secretary" ? null : <ExportButton kind="sessions" />}
+          <Link href="/admin/sessions/new" className={buttonClassName("primary", "sm")}>
+            New session
+          </Link>
+        </div>
       </div>
 
       {sessions.length === 0 ? (

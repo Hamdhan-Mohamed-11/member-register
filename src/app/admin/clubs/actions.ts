@@ -101,6 +101,20 @@ const clubSchema = z.object({
   openJoin: z.boolean(),
 });
 
+/**
+ * Announces every public club that is open for applications and has not been
+ * announced yet.
+ *
+ * Swallowed on failure: the club was saved, and telling an admin the save
+ * failed would have them save it again. The sweep runs on the next save.
+ */
+async function announceOpenClubs(
+  supabase: Awaited<ReturnType<typeof getActionSupabase>>,
+): Promise<void> {
+  const { error } = await supabase.rpc("announce_pending_clubs");
+  if (error) console.error("[clubs] announcing:", error.message);
+}
+
 export async function createClub(formData: FormData): Promise<ActionResult> {
   await requireSuperAdmin();
 
@@ -129,7 +143,13 @@ export async function createClub(formData: FormData): Promise<ActionResult> {
   });
   if (error) return { ok: false, error: error.message };
 
+  // A club members can apply to is news. The sweep is idempotent per club,
+  // so saving the same club again tells nobody twice, and a club opened
+  // later is announced then -- which is the moment it is true.
+  await announceOpenClubs(supabase);
+
   revalidatePath("/admin/clubs");
+  revalidatePath("/feed");
   revalidatePath("/join");
   return { ok: true };
 }
@@ -175,7 +195,13 @@ export async function updateClub(formData: FormData): Promise<ActionResult> {
   });
   if (error) return { ok: false, error: error.message };
 
+  // A club members can apply to is news. The sweep is idempotent per club,
+  // so saving the same club again tells nobody twice, and a club opened
+  // later is announced then -- which is the moment it is true.
+  await announceOpenClubs(supabase);
+
   revalidatePath("/admin/clubs");
+  revalidatePath("/feed");
   revalidatePath("/join");
   return { ok: true };
 }

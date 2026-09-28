@@ -9,6 +9,7 @@ import { SessionCard } from "@/components/sessions/SessionCard";
 import { BookCover } from "@/components/books/BookCover";
 import { EventStrip } from "@/components/home/EventStrip";
 import { PopularBooks } from "@/components/home/PopularBooks";
+import { NewClubs, type NewClub } from "@/components/home/NewClubs";
 import {
   activeMemberships,
   isAdmin,
@@ -64,6 +65,25 @@ export default async function FeedPage() {
   const state = membershipState(renewal);
   const myClubIds = new Set(clubs.map((c) => c.clubId));
   const supabase = await getServerComponentSupabase();
+
+  // Clubs that opened recently and would take this member. The RPC leaves out
+  // the ones they are already in, so nobody is invited to their own club.
+  const { data: newClubRows } = await supabase.rpc("new_clubs_for_me", { p_days: 30 });
+  const newClubs: NewClub[] = (
+    (newClubRows ?? []) as unknown as {
+      id: string;
+      name: string;
+      description: string | null;
+      membership_fee_lkr: number | null;
+      type_name: string | null;
+    }[]
+  ).map((c) => ({
+    id: c.id,
+    name: c.name,
+    description: c.description,
+    typeName: c.type_name,
+    feeLkr: c.membership_fee_lkr == null ? null : Number(c.membership_fee_lkr),
+  }));
 
   const HEAD = { count: "exact" as const, head: true };
   const [
@@ -214,6 +234,8 @@ export default async function FeedPage() {
             ) : null}
           </div>
         </section>
+
+        <NewClubs clubs={newClubs} />
 
         {state === "expired" || state === "expiring_soon" ? (
           <Card tone={state === "expired" ? "danger" : "warning"}>

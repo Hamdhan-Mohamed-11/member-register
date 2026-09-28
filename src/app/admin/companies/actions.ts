@@ -129,3 +129,70 @@ export async function inviteEmployees(formData: FormData): Promise<ActionResult<
   revalidatePath("/admin/companies");
   return { ok: true, data: { invited, failed } };
 }
+
+export type EmailState = "new" | "invited" | "member";
+
+/**
+ * What the club already knows about a list of addresses.
+ *
+ * The CSV preview needs to say "already a member" before anything is sent,
+ * and only the server can answer that. Returns one entry per address asked
+ * about, in no particular order.
+ */
+export async function checkEmployeeEmails(
+  clubId: string,
+  emails: string[],
+): Promise<ActionResult<{ email: string; state: EmailState }[]>> {
+  await requireSuperAdmin();
+  if (!z.string().uuid().safeParse(clubId).success) {
+    return { ok: false, error: "Unknown club." };
+  }
+
+  const wanted = [...new Set(emails.map((e) => e.trim().toLowerCase()).filter(Boolean))].slice(
+    0,
+    500,
+  );
+  if (wanted.length === 0) return { ok: true, data: [] };
+
+  const supabase = await getActionSupabase();
+
+  const [{ data: invites }, { data: profiles }] = await Promise.all([
+    supabase
+      .from("invites")
+      .select("email")
+      .eq("club_id", clubId)
+      .eq("status", "pending")
+      .in("email", wanted),
+    supabase.from("profiles").select("id, email").in("email", wanted),
+  ]);
+
+  const invited = new Set(
+    ((invites ?? []) as { email: string }[]).map((i) => i.email.toLowerCase()),
+  );
+
+  // Having an account is not the same as being in this club -- someone can
+  // be a member of another club entirely, and they still need an invite.
+  const accounts = (profiles ?? []) as { id: string; email: string }[];
+  let inClub = new Set<string>();
+  if (accounts.length > 0) {
+    const { data: memberships } = await supabase
+      .from("club_memberships")
+      .select("member_id")
+      .eq("club_id", clubId)
+      .in("status", ["active", "pending"])
+      .in(
+        "member_id",
+        accounts.map((a) => a.id),
+      );
+    const ids = new Set(((memberships ?? []) as { member_id: string }[]).map((m) => m.member_id));
+    inClub = new Set(accounts.filter((a) => ids.has(a.id)).map((a) => a.email.toLowerCase()));
+  }
+
+  return {
+    ok: true,
+    data: wanted.map((email) => ({
+      email,
+      state: inClub.has(email) ? "member" : invited.has(email) ? "invited" : "new",
+    })),
+  };
+}

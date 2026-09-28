@@ -110,6 +110,9 @@ export function DiscoverUploader({
   const fileRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [clubId, setClubId] = useState(clubs[0]?.id ?? "");
+  // Who it goes to. Empty is everyone, which is what every post did before
+  // this existed and what most posts still want.
+  const [audience, setAudience] = useState<string[]>([]);
   const [sessionId, setSessionId] = useState("");
   const [caption, setCaption] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -245,6 +248,7 @@ export function DiscoverUploader({
         width,
         height,
         durationS,
+        audienceClubIds: audience,
       });
       setBusy(false);
       if (!result.ok) {
@@ -256,6 +260,7 @@ export function DiscoverUploader({
       setThumbnail("auto", null);
       setCaption("");
       setSessionId("");
+      setAudience([]);
       if (fileRef.current) fileRef.current.value = "";
       setDone(true);
       router.refresh();
@@ -288,7 +293,7 @@ export function DiscoverUploader({
           label="Club"
           name="clubId"
           value={clubId}
-          hint="Who it's from. Every member sees Discover, whichever club you pick."
+          hint="Who it's from. Who sees it is the next question."
           onChange={(e) => {
             setClubId(e.target.value);
             setSessionId("");
@@ -300,6 +305,62 @@ export function DiscoverUploader({
             </option>
           ))}
         </SelectField>
+
+        <div>
+          <p className="mb-1.5 text-sm font-medium text-ink">Who sees it</p>
+          <div className="space-y-2 rounded-xl border border-line bg-canvas p-3">
+            <label className="flex cursor-pointer items-start gap-2.5 text-sm text-ink">
+              <input
+                type="radio"
+                name="audience"
+                checked={audience.length === 0}
+                onChange={() => setAudience([])}
+                className="mt-0.5 size-4 shrink-0 accent-brand-600"
+              />
+              <span>
+                Every member
+                <span className="block text-xs text-ink-muted">
+                  Whichever club they are in.
+                </span>
+              </span>
+            </label>
+
+            <label className="flex cursor-pointer items-start gap-2.5 text-sm text-ink">
+              <input
+                type="radio"
+                name="audience"
+                checked={audience.length > 0}
+                onChange={() => setAudience(clubId ? [clubId] : [])}
+                className="mt-0.5 size-4 shrink-0 accent-brand-600"
+              />
+              <span>Only these clubs</span>
+            </label>
+
+            {audience.length > 0 ? (
+              <ul className="space-y-1.5 border-t border-line pt-2 pl-6">
+                {clubs.map((c) => (
+                  <li key={c.id}>
+                    <label className="flex cursor-pointer items-center gap-2.5 text-sm text-ink-muted">
+                      <input
+                        type="checkbox"
+                        checked={audience.includes(c.id)}
+                        onChange={(e) =>
+                          setAudience((prev) =>
+                            e.target.checked
+                              ? [...prev, c.id]
+                              : prev.filter((id) => id !== c.id),
+                          )
+                        }
+                        className="size-4 shrink-0 rounded border-line-strong accent-brand-600"
+                      />
+                      {c.name}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        </div>
 
         <SelectField
           label="Session"

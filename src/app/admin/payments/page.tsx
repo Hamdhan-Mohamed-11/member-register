@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CLUB_TZ } from "@/lib/time";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { ExportButton } from "@/components/admin/ExportButton";
 import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader } from "@/components/ui/Card";
@@ -81,14 +82,17 @@ export default async function PaymentsPage() {
 
   return (
     <AdminShell>
-      <div className="mb-4">
-        <BackLink href="/admin">Admin</BackLink>
-        <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Payments</h1>
-        <p className="text-sm text-ink-muted">
-          {configured
-            ? `PayHere is connected in ${getPayHereMode()} mode.`
-            : "PayHere is not configured yet."}
-        </p>
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <BackLink href="/admin">Admin</BackLink>
+          <h1 className="font-display text-2xl sm:text-3xl text-ink mt-1 page-title">Payments</h1>
+          <p className="text-sm text-ink-muted">
+            {configured
+              ? `PayHere is connected in ${getPayHereMode()} mode.`
+              : "PayHere is not configured yet."}
+          </p>
+        </div>
+        <ExportButton kind="payments" />
       </div>
 
       <div className="space-y-4">

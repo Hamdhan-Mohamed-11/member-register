@@ -127,6 +127,73 @@
     text-wrap: pretty;
   }
 
+  /*
+    The scrollbar, in the portal's own colours.
+
+    The platform default is a wide grey slab on Windows and a dark one in the
+    browsers that follow the system theme -- on a cream page it reads as a
+    piece of the operating system left lying on top of the design. This is the
+    same bar, narrower, in brand ink, and it still behaves like a scrollbar:
+    the track stays visible so the thumb has somewhere to sit, and it is wide
+    enough (10px, 14px of hit area) to grab with a mouse.
+
+    `color-scheme: light` is what stops the browser painting its dark-theme
+    scrollbar inside our light page in the first place; the rules below are
+    for the engines that ignore `scrollbar-color`.
+  */
+  html {
+    color-scheme: light;
+    scrollbar-color: var(--color-brand-500) var(--color-canvas-deep);
+    scrollbar-width: thin;
+  }
+
+  ::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-canvas-deep);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    /* Inset by its own border so the thumb reads as a floating pill rather
+       than as a bar welded to the edge of the window. */
+    background-color: var(--color-brand-500);
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-brand-600);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: var(--color-canvas-deep);
+  }
+
+  /* On the navy sidebar the same bar has to go the other way, or it is a
+     pale slab down the side of a dark panel. */
+  .on-navy {
+    scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+  }
+
+  .on-navy ::-webkit-scrollbar-track,
+  .on-navy::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .on-navy ::-webkit-scrollbar-thumb,
+  .on-navy::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.28);
+  }
+
+  .on-navy ::-webkit-scrollbar-thumb:hover,
+  .on-navy::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.45);
+  }
+
   /* One visible focus ring everywhere. Never remove it — keyboard users have
      nothing else to go on. */
   :focus-visible {
