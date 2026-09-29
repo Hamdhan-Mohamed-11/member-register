@@ -14,8 +14,10 @@ import {
 } from "@/lib/library/queries";
 import { getCartBookIds } from "@/lib/orders/queries";
 import { getBook } from "@/lib/legacy/books";
+import { isStoreBookId } from "@/lib/store/books";
+import { getBuyableBook } from "@/lib/shop/catalogue";
 import { getClubAuthorBook, isAuthorBookId } from "@/lib/creators/shop";
-import { formatLkrCents, priceLine } from "@/lib/pricing";
+import { formatLkrCents, priceLine, toCents } from "@/lib/pricing";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 
 // Was `revalidate = 300`. The page now shows per-member state -- what this
@@ -33,7 +35,7 @@ export async function generateMetadata({
     const book = await getClubAuthorBook(Number(id));
     return { title: book ? book.title : "Book" };
   }
-  const result = await getBook(Number(id));
+  const result = await getBuyableBook(Number(id));
   return { title: result.ok && result.data ? result.data.title : "Book" };
 }
 
@@ -54,7 +56,11 @@ export default async function BookPage({
     supabase.from("app_settings").select("book_discount_percent").eq("id", 1).maybeSingle(),
     isAuthorBookId(bookId)
       ? getClubAuthorBook(bookId).then((data) => ({ ok: true as const, data }))
-      : getBook(bookId),
+      : isStoreBookId(bookId)
+        ? getBuyableBook(bookId)
+        : // Not a store book and not one of ours: the old catalogue, which is
+          // where every borrowable book and every past order's book lives.
+          getBook(bookId),
     getWishlistedIds(),
     getOpenBorrowBookIds(),
     getLibraryAccess(member.userId),
@@ -76,6 +82,16 @@ export default async function BookPage({
 
   const book = result.data;
   if (!book) notFound();
+
+  // A store book carries the price the store itself advertises. Members pay
+  // the club's price, which is lower again, so both are shown: one is what
+  // they pay, the other is what it is worth.
+  const fromStore = isStoreBookId(bookId);
+  const marketPrice =
+    fromStore && "marketPriceLkr" in book
+      ? ((book as { marketPriceLkr: string | null }).marketPriceLkr ?? null)
+      : null;
+  const soldOut = fromStore && !book.inStock;
 
   const { listCents, memberCents, savedCents } = priceLine(book.priceLkr, discount);
 
@@ -127,9 +143,19 @@ export default async function BookPage({
                 <p className="text-3xl font-semibold text-ink">{formatLkrCents(listCents)}</p>
               )}
 
+              {marketPrice && Number(marketPrice) > Number(book.priceLkr) ? (
+                <p className="mt-1 text-xs text-ink-faint">
+                  Market price {formatLkrCents(toCents(marketPrice))}
+                </p>
+              ) : null}
+
               <p className="text-sm mt-2">
                 {book.inStock ? (
                   <span className="text-success-600 font-medium">In stock</span>
+                ) : soldOut ? (
+                  <span className="text-ink-muted font-medium">
+                    Sold out — ask the club and they will tell you when it is back
+                  </span>
                 ) : (
                   <span className="text-warning-600 font-medium">
                     Pre-order — the club orders it in for you
@@ -151,6 +177,7 @@ export default async function BookPage({
               <AddToCartButton
                 book={{ id: book.id, title: book.title, author: book.author }}
                 inCart={cartIds.has(book.id)}
+                soldOut={soldOut}
               />
               <WishlistButton
                 book={{ id: book.id, title: book.title, author: book.author }}

@@ -22,7 +22,7 @@ import { getReadRiseTotals } from "@/lib/orders/queries";
 import { ReadRiseCard } from "@/components/books/ReadRiseCard";
 import { getDiscoverFeed } from "@/lib/discover/queries";
 import { getPopularBooks } from "@/lib/home/queries";
-import { listCategories } from "@/lib/legacy/books";
+import { listBuyableCategories } from "@/lib/shop/catalogue";
 import { getLeaderboard } from "@/lib/leaderboard/queries";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 
@@ -101,7 +101,7 @@ export default async function FeedPage() {
     getReadRiseTotals(),
     getDiscoverFeed({ limit: 5 }),
     getPopularBooks(4),
-    listCategories(),
+    listBuyableCategories(),
     getLeaderboard("all"),
     supabase
       .from("reading_items")

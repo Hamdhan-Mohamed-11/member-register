@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getBookSnapshots } from "@/lib/legacy/books";
+import { getShopSnapshots } from "@/lib/shop/snapshots";
 
 const DAY_SECONDS = 60 * 60 * 24;
 
@@ -22,8 +22,11 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const snapshots = await getBookSnapshots([id]);
-  const source = snapshots.ok ? snapshots.data.get(id)?.imageUrl : null;
+  // Whichever catalogue the id belongs to -- the store, the club's own
+  // authors, or the old shop. The flyer maker searches the store now, so a
+  // legacy-only lookup would have found nothing for the cover it just chose.
+  const snapshots = await getShopSnapshots([id]);
+  const source = snapshots.get(id)?.imageUrl ?? null;
   if (!source) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   try {

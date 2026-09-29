@@ -35,6 +35,24 @@ const VIDEO_FRAME_ORIGINS =
 const BOOK_IMAGE_ORIGINS =
   "https://www.pickabook.lk https://pickabook.lk https://m.media-amazon.com";
 
+/**
+ * The PaB Store's own origin, for the covers it serves.
+ *
+ * Derived from PAB_STORE_URL rather than written out, so moving the store or
+ * running it on a staging domain does not silently break every cover with no
+ * error anywhere but the browser console.
+ */
+function storeOrigin(): string | null {
+  const raw = process.env.PAB_STORE_URL?.trim();
+  if (!raw) return null;
+  try {
+    return new URL(raw).origin;
+  } catch {
+    console.error("[csp] PAB_STORE_URL is not a URL:", raw.slice(0, 80));
+    return null;
+  }
+}
+
 export function buildCsp(isDev: boolean): string {
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],
@@ -58,7 +76,8 @@ export function buildCsp(isDev: boolean): string {
       "blob:",
       SUPABASE_ORIGIN,
       ...BOOK_IMAGE_ORIGINS.split(" "),
-    ].filter(Boolean),
+      storeOrigin(),
+    ].filter(Boolean) as string[],
 
     "font-src": ["'self'", "data:"],
 

@@ -2,6 +2,7 @@ import "server-only";
 
 import { getBookSnapshots } from "@/lib/legacy/books";
 import { getAuthorBookSnapshots, isAuthorBookId } from "@/lib/creators/shop";
+import { getStoreSnapshots, isStoreBookId } from "@/lib/store/books";
 import type { BookSnapshot } from "@/lib/legacy/books";
 
 /**
@@ -21,16 +22,18 @@ import type { BookSnapshot } from "@/lib/legacy/books";
 export async function getShopSnapshots(
   ids: number[],
 ): Promise<Map<number, BookSnapshot>> {
-  const legacyIds = ids.filter((id) => !isAuthorBookId(id));
+  const legacyIds = ids.filter((id) => !isAuthorBookId(id) && !isStoreBookId(id));
 
-  const [legacy, authored] = await Promise.all([
+  const [legacy, authored, fromStore] = await Promise.all([
     legacyIds.length ? getBookSnapshots(legacyIds) : null,
     getAuthorBookSnapshots(ids),
+    getStoreSnapshots(ids),
   ]);
 
   const merged = new Map<number, BookSnapshot>(
     legacy && legacy.ok ? legacy.data : [],
   );
+  for (const [id, snap] of fromStore) merged.set(id, snap);
   for (const [id, snap] of authored) merged.set(id, snap);
   return merged;
 }

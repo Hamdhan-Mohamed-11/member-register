@@ -10,7 +10,8 @@ import { CatalogueUnavailable } from "@/components/books/CatalogueUnavailable";
 import { WishlistButton } from "@/components/books/BookActions";
 import { AddToCartButton } from "@/app/cart/CartClient";
 import { requireActiveMember } from "@/lib/auth/session";
-import { listBooks, listCategories, memberPriceToShopPrice } from "@/lib/legacy/books";
+import { memberPriceToShopPrice } from "@/lib/legacy/books";
+import { listBuyableBooks, listBuyableCategories } from "@/lib/shop/catalogue";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import { getWishlistedIds } from "@/lib/library/queries";
 import { getCartBookIds } from "@/lib/orders/queries";
@@ -82,8 +83,8 @@ export default async function BooksPage({
   };
 
   const [result, categoriesResult, wishlisted, cartIds, authorBooks] = await Promise.all([
-    listBooks(query),
-    listCategories(),
+    listBuyableBooks(query),
+    listBuyableCategories(),
     getWishlistedIds(),
     getCartBookIds(),
     listClubAuthorBooks(sp.q),
@@ -189,11 +190,15 @@ export default async function BooksPage({
                   book={book}
                   discountPercent={discount}
                   href={`/books/${book.id}`}
+                  // The store's stock, not the old catalogue's: no copies
+                  // means sold out, not "we will order it in".
+                  outOfStockLabel="Sold out"
                   actions={
                     <>
                       <AddToCartButton
                         book={{ id: book.id, title: book.title, author: book.author }}
                         inCart={cartIds.has(book.id)}
+                        soldOut={!book.inStock}
                       />
                       <WishlistButton
                         book={{ id: book.id, title: book.title, author: book.author }}

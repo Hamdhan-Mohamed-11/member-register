@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { canAdminClub, requireStaff } from "@/lib/auth/session";
 import { getSession } from "@/lib/sessions/queries";
 import { flyerUrl } from "@/lib/flyers/url";
-import { listBooks } from "@/lib/legacy/books";
+import { listBuyableBooks } from "@/lib/shop/catalogue";
 import { FlyerDesigner } from "./FlyerDesigner";
 
 export const metadata: Metadata = { title: "Flyer" };
@@ -55,7 +55,7 @@ export default async function FlyerPage({
   // (saved on the session) wins, because someone chose it deliberately.
   let catalogueBookId: number | null = null;
   if (!session.bookImagePath && session.bookTitle.trim()) {
-    const found = await listBooks({ search: session.bookTitle.trim(), page: 1 });
+    const found = await listBuyableBooks({ search: session.bookTitle.trim(), page: 1 });
     if (found.ok) {
       const match = found.data.books.find((b) => b.imageUrl);
       catalogueBookId = match ? match.id : null;

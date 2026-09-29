@@ -10,9 +10,16 @@ import { addToCart, placeOrder, setCartQuantity } from "./actions";
 export function AddToCartButton({
   book,
   inCart,
+  soldOut = false,
 }: {
   book: { id: number; title: string; author: string };
   inCart: boolean;
+  /**
+   * The store has no copies. The button stays visible and says so rather than
+   * disappearing: a member looking for the book needs to learn its fate, and
+   * a missing button teaches them nothing.
+   */
+  soldOut?: boolean;
 }) {
   const router = useRouter();
   const [added, setAdded] = useState(inCart);
@@ -37,6 +44,14 @@ export function AddToCartButton({
       // (review item 7) -- a member who taps Buy wants to see it there.
       router.push("/cart?added=1");
     });
+  }
+
+  if (soldOut && !added) {
+    return (
+      <span className="inline-flex min-h-9 items-center rounded-lg bg-canvas-deep px-3 text-xs font-medium text-ink-muted">
+        Sold out
+      </span>
+    );
   }
 
   return (

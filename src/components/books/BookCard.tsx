@@ -17,6 +17,7 @@ export function BookCard({
   discountPercent,
   href,
   hidePrice = false,
+  outOfStockLabel = "Pre-order",
   actions,
 }: {
   book: LegacyBook;
@@ -24,6 +25,14 @@ export function BookCard({
   href: string;
   /** The borrowing catalogue shows no price -- there is nothing to pay. */
   hidePrice?: boolean;
+  /**
+   * What the corner flag says when the book is not in stock.
+   *
+   * The old catalogue's "not in stock" means the club will order it in, so it
+   * says Pre-order. The store's means there are no copies, so it says Sold
+   * out -- and the caller withholds the Buy button to match.
+   */
+  outOfStockLabel?: string;
   /**
    * Buttons rendered BELOW the link, never inside it.
    *
@@ -69,7 +78,7 @@ export function BookCard({
 
           {!book.inStock ? (
             <Badge tone="warning" className="absolute top-2 left-2 shadow-card">
-              Pre-order
+              {outOfStockLabel}
             </Badge>
           ) : null}
 
