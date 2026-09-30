@@ -38,8 +38,20 @@ $out = [];
 foreach ($books as $b) {
     // Covers are served from this site. An absolute URL saves the portal
     // having to know how the store lays its folders out.
+    //
+    // book_cover() is the storefront's own helper, so a cover looks the same
+    // in the portal as it does here -- including whatever it does about
+    // missing files and absolute URLs. The manual path is the fallback for an
+    // install that does not have it.
     $cover = null;
-    if (!empty($b['image']) && is_file(__DIR__ . '/images/' . $b['image'])) {
+    if (function_exists('book_cover')) {
+        $c = book_cover($b);
+        if ($c) {
+            $cover = preg_match('~^https?://~i', $c)
+                ? $c
+                : rtrim(base_url(), '/') . '/' . ltrim($c, '/');
+        }
+    } elseif (!empty($b['image']) && is_file(__DIR__ . '/images/' . $b['image'])) {
         $cover = rtrim(base_url(), '/') . '/images/' . rawurlencode($b['image']);
     }
 
