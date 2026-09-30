@@ -8,10 +8,15 @@ import { PAGE_SIZE } from "@/lib/legacy/types";
  * The PaB Store: the catalogue members buy from.
  *
  * The shop used to read the old HostGator database directly. Buying now comes
- * from the store site instead, over one JSON endpoint it serves (see
- * store-endpoint/books.json.php). BORROWING still reads the old catalogue --
- * that is the club's own shelf and has nothing to do with what the store
- * sells.
+ * from the store site instead, over the catalogue file it already publishes
+ * at data/books.json -- the same file its own load_books() reads, so the two
+ * can never disagree about what is for sale. BORROWING does not come through
+ * here at all; the club lends its own books from its own shelf.
+ *
+ * Two shapes are accepted: that raw file, and the normalised one from
+ * store-endpoint/books.json.php for an install that would rather not publish
+ * its catalogue. Reading both is a dozen lines and means the portal does not
+ * care which is in front of it.
  *
  * The whole catalogue arrives in one request and is cached in this process,
  * so searching, filtering and paging happen here rather than as a round trip
@@ -56,17 +61,23 @@ export type StoreBook = LegacyBook & {
 
 type RawBook = {
   id: number;
-  title: string;
-  author: string;
-  isbn: string | null;
-  category: string | null;
-  description: string | null;
-  price: number;
-  marketPrice: number | null;
-  stock: number;
-  featured: boolean;
-  coverUrl: string | null;
-  url: string | null;
+  title?: string;
+  author?: string;
+  isbn?: string | null;
+  category?: string | null;
+  description?: string | null;
+  tagline?: string | null;
+  price?: number | string;
+  /** The endpoint spells it one way, the store's own file the other. */
+  marketPrice?: number | string | null;
+  market_price?: number | string | null;
+  stock?: number | string;
+  active?: boolean;
+  featured?: boolean;
+  /** A bare filename in the store's images folder. */
+  image?: string | null;
+  coverUrl?: string | null;
+  url?: string | null;
 };
 
 const CACHE_KEY = "store:books";
@@ -94,10 +105,15 @@ export function isStoreConfigured(): boolean {
   return Boolean(process.env.PAB_STORE_URL?.trim());
 }
 
+function storeBase(): string {
+  return (process.env.PAB_STORE_URL ?? "").trim().replace(/\/+$/, "");
+}
+
 function endpoint(): string {
-  const base = (process.env.PAB_STORE_URL ?? "").trim().replace(/\/+$/, "");
-  const path = (process.env.PAB_STORE_BOOKS_PATH ?? "books.json.php").replace(/^\/+/, "");
-  return `${base}/${path}`;
+  // The store already publishes its catalogue here; the PHP endpoint is for
+  // an install that would rather it were not public.
+  const path = (process.env.PAB_STORE_BOOKS_PATH ?? "data/books.json").replace(/^\/+/, "");
+  return `${storeBase()}/${path}`;
 }
 
 /** Rupees as a string. A float through JS and back comes out a cent short. */
@@ -106,28 +122,41 @@ function money(value: number | null | undefined): string {
   return value.toFixed(2);
 }
 
+/** A cover: an absolute URL as given, or a filename under the store's images. */
+function coverFor(raw: RawBook): string | null {
+  if (raw.coverUrl) return raw.coverUrl;
+  const file = raw.image?.trim();
+  if (!file) return null;
+  if (/^https?:\/\//i.test(file)) return file;
+  return `${storeBase()}/images/${encodeURI(file.replace(/^\/+/, ""))}`;
+}
+
 function toBook(raw: RawBook): StoreBook {
+  const market = raw.marketPrice ?? raw.market_price ?? null;
   return {
     id: toStoreId(Number(raw.id)),
     title: raw.title || "Untitled",
     author: raw.author ?? "",
     bookBy: "",
-    priceLkr: money(raw.price),
-    description: raw.description,
-    isbn: raw.isbn,
+    priceLkr: money(Number(raw.price ?? 0)),
+    // The store keeps a one-line tagline as well as a blurb, and most books
+    // have one or the other rather than both.
+    description: raw.description?.trim() || raw.tagline?.trim() || null,
+    isbn: raw.isbn ?? null,
     edition: null,
-    imageUrl: raw.coverUrl,
-    categoryLabel: raw.category,
+    imageUrl: coverFor(raw),
+    categoryLabel: raw.category ?? null,
     // The store's own word for it. A book with no copies still appears --
     // members were told about it somewhere -- but cannot be added to a cart.
     inStock: Number(raw.stock) > 0,
     // Nothing in the store is lendable: the club lends from its own shelf,
     // which is the other catalogue.
     lendable: false,
-    marketPriceLkr: raw.marketPrice == null ? null : money(raw.marketPrice),
+    marketPriceLkr: market == null ? null : money(Number(market)),
     stock: Number(raw.stock) || 0,
     featured: Boolean(raw.featured),
-    storeUrl: raw.url,
+    // Straight to the book on the store, for anyone who wants the original.
+    storeUrl: raw.url ?? `${storeBase()}/book.php?id=${Number(raw.id)}`,
   };
 }
 
@@ -155,8 +184,13 @@ async function allBooks(): Promise<StoreBook[] | null> {
     });
     if (!response.ok) throw new Error(`store responded ${response.status}`);
 
-    const payload = (await response.json()) as { books?: RawBook[] };
-    const books = (payload.books ?? []).map(toBook);
+    const payload = (await response.json()) as RawBook[] | { books?: RawBook[] };
+    const rows = Array.isArray(payload) ? payload : (payload.books ?? []);
+    // `active` is the store's own word for "on sale". The endpoint filters
+    // them out already; the raw file does not, so it is filtered here.
+    const books = rows
+      .filter((row) => row.active !== false && row.id != null)
+      .map(toBook);
 
     failures = 0;
     cacheSet(CACHE_KEY, books, TTL_MS);
