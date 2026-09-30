@@ -76,6 +76,7 @@ export default async function FeedPage() {
       description: string | null;
       membership_fee_lkr: number | null;
       type_name: string | null;
+      announced_at: string | null;
     }[]
   ).map((c) => ({
     id: c.id,
@@ -83,6 +84,7 @@ export default async function FeedPage() {
     description: c.description,
     typeName: c.type_name,
     feeLkr: c.membership_fee_lkr == null ? null : Number(c.membership_fee_lkr),
+    announcedAt: c.announced_at,
   }));
 
   const HEAD = { count: "exact" as const, head: true };

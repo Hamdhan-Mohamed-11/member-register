@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { BackLink } from "@/components/ui/BackLink";
+import { buttonClassName } from "@/components/ui/Button";
 import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -133,6 +134,11 @@ export default async function AdminLibraryPage() {
         className="mt-1"
         title="Borrow requests"
         description="Approve a request, hand the book over, and take it back."
+        action={
+          <Link href="/admin/library/shelf" className={buttonClassName("secondary", "sm")}>
+            The lending shelf
+          </Link>
+        }
       />
 
       {overdue.length ? (

@@ -699,6 +699,31 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"library_shelf": {
+                  Row: {
+                    "added_by": string | null,"author": string,"category": string | null,"copies": number,"cover_path": string | null,"created_at": string,"description": string | null,"id": number,"is_active": boolean,"isbn": string | null,"shelf_mark": string | null,"title": string,"updated_at": string
+                  }
+                  Insert: {
+                    "added_by"?: string | null,"author"?: string,"category"?: string | null,"copies"?: number,"cover_path"?: string | null,"created_at"?: string,"description"?: string | null,"id"?: number,"is_active"?: boolean,"isbn"?: string | null,"shelf_mark"?: string | null,"title": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "added_by"?: string | null,"author"?: string,"category"?: string | null,"copies"?: number,"cover_path"?: string | null,"created_at"?: string,"description"?: string | null,"id"?: number,"is_active"?: boolean,"isbn"?: string | null,"shelf_mark"?: string | null,"title"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "library_shelf_added_by_fkey"
+      columns: ["added_by"]
+isOneToOne: false
+      referencedRelation: "admin_members"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "library_shelf_added_by_fkey"
+      columns: ["added_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"member_activities": {
                   Row: {
                     "activity_code": string,"id": string,"member_id": string,"points_awarded": number,"recorded_at": string,"recorded_by": string | null,"session_id": string,"updated_at": string,"updated_by": string | null
@@ -1292,6 +1317,11 @@ isOneToOne: false
               "avatar_path": string,"club_name": string,"first_name": string,"is_me": boolean,"last_name": string,"member_id": string,"place": number,"points": number
             }[]
                            },
+"library_shelf_books":
+{ Args: { "p_all"?: boolean,"p_category"?: string,"p_search"?: string }; Returns: {
+              "author": string,"available": number,"category": string,"copies": number,"cover_path": string,"description": string,"id": number,"is_active": boolean,"isbn": string,"out_count": number,"shelf_mark": string,"title": string
+            }[]
+                           },
 "membership_state":
 { Args: { "p_expiring_soon_days"?: number,"p_renewal": string }; Returns: string
                            },
@@ -1381,6 +1411,9 @@ isOneToOne: false
 "reject_join_request":
 { Args: { "p_reason"?: string,"p_request_id": string }; Returns: undefined
                            },
+"remove_library_book":
+{ Args: { "p_id": number }; Returns: string
+                           },
 "request_borrow":
 { Args: { "p_author"?: string,"p_book_id": number,"p_title"?: string }; Returns: string
                            },
@@ -1409,6 +1442,9 @@ isOneToOne: false
                            },
 "runs_club_applied_to":
 { Args: { "p_member_id": string }; Returns: boolean
+                           },
+"save_library_book":
+{ Args: { "p_author"?: string,"p_category"?: string,"p_copies"?: number,"p_cover_path"?: string,"p_description"?: string,"p_id"?: number,"p_is_active"?: boolean,"p_isbn"?: string,"p_shelf_mark"?: string,"p_title"?: string }; Returns: number
                            },
 "secretary_club_id":
 { Args: Record<PropertyKey, never>; Returns: string

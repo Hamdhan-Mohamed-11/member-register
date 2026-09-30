@@ -109,9 +109,15 @@ export function WishlistButton({
 export function BorrowButton({
   book,
   alreadyOpen,
+  unavailable = false,
 }: {
   book: Book;
   alreadyOpen: boolean;
+  /**
+   * Every copy is out. The button stays and says so: a member who wants this
+   * book needs to know it exists and is spoken for, not find no button.
+   */
+  unavailable?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -136,6 +142,14 @@ export function BorrowButton({
       setDone(true);
       router.refresh();
     });
+  }
+
+  if (unavailable && !requested) {
+    return (
+      <span className="inline-flex min-h-9 items-center rounded-lg bg-canvas-deep px-3 text-xs font-medium text-ink-muted">
+        All out
+      </span>
+    );
   }
 
   return (

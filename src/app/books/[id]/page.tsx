@@ -16,6 +16,7 @@ import { getCartBookIds } from "@/lib/orders/queries";
 import { getBook } from "@/lib/legacy/books";
 import { isStoreBookId } from "@/lib/store/books";
 import { getBuyableBook } from "@/lib/shop/catalogue";
+import { getShelfBook, isShelfBookId } from "@/lib/library/shelf";
 import { getClubAuthorBook, isAuthorBookId } from "@/lib/creators/shop";
 import { formatLkrCents, priceLine, toCents } from "@/lib/pricing";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
@@ -33,6 +34,10 @@ export async function generateMetadata({
   const { id } = await params;
   if (isAuthorBookId(Number(id))) {
     const book = await getClubAuthorBook(Number(id));
+    return { title: book ? book.title : "Book" };
+  }
+  if (isShelfBookId(Number(id))) {
+    const book = await getShelfBook(Number(id));
     return { title: book ? book.title : "Book" };
   }
   const result = await getBuyableBook(Number(id));
@@ -54,13 +59,35 @@ export default async function BookPage({
   const [{ data: settings }, result, wishlisted, openBorrows, access, cartIds] =
     await Promise.all([
     supabase.from("app_settings").select("book_discount_percent").eq("id", 1).maybeSingle(),
-    isAuthorBookId(bookId)
-      ? getClubAuthorBook(bookId).then((data) => ({ ok: true as const, data }))
-      : isStoreBookId(bookId)
-        ? getBuyableBook(bookId)
-        : // Not a store book and not one of ours: the old catalogue, which is
-          // where every borrowable book and every past order's book lives.
-          getBook(bookId),
+    isShelfBookId(bookId)
+      ? // The club's own shelf: lendable, never for sale, and priced at
+        // nothing so the buying half of this page stays quiet.
+        getShelfBook(bookId).then((shelf) => ({
+          ok: true as const,
+          data: shelf
+            ? {
+                id: shelf.id,
+                title: shelf.title,
+                author: shelf.author,
+                bookBy: "",
+                priceLkr: "0",
+                description: shelf.description,
+                isbn: shelf.isbn,
+                edition: null,
+                imageUrl: shelf.coverUrl,
+                categoryLabel: shelf.category,
+                inStock: shelf.available > 0,
+                lendable: shelf.isActive,
+              }
+            : null,
+        }))
+      : isAuthorBookId(bookId)
+        ? getClubAuthorBook(bookId).then((data) => ({ ok: true as const, data }))
+        : isStoreBookId(bookId)
+          ? getBuyableBook(bookId)
+          : // Not ours and not the store's: the old catalogue, which is where
+            // every past order's book still lives.
+            getBook(bookId),
     getWishlistedIds(),
     getOpenBorrowBookIds(),
     getLibraryAccess(member.userId),
@@ -86,6 +113,7 @@ export default async function BookPage({
   // A store book carries the price the store itself advertises. Members pay
   // the club's price, which is lower again, so both are shown: one is what
   // they pay, the other is what it is worth.
+  const fromShelf = isShelfBookId(bookId);
   const fromStore = isStoreBookId(bookId);
   const marketPrice =
     fromStore && "marketPriceLkr" in book
@@ -127,7 +155,11 @@ export default async function BookPage({
             {book.author ? <p className="text-sm text-ink-muted mt-0.5">{book.author}</p> : null}
 
             <div className="mt-4">
-              {savedCents > 0 ? (
+              {fromShelf ? (
+                <p className="text-sm font-medium text-brand-600">
+                  On the club&apos;s shelf
+                </p>
+              ) : savedCents > 0 ? (
                 <>
                   <p className="text-2xl font-semibold text-brand-600">
                     {formatLkrCents(memberCents)}
@@ -150,7 +182,17 @@ export default async function BookPage({
               ) : null}
 
               <p className="text-sm mt-2">
-                {book.inStock ? (
+                {fromShelf ? (
+                  book.inStock ? (
+                    <span className="text-success-600 font-medium">
+                      A copy is on the shelf
+                    </span>
+                  ) : (
+                    <span className="text-ink-muted font-medium">
+                      Every copy is out at the moment
+                    </span>
+                  )
+                ) : book.inStock ? (
                   <span className="text-success-600 font-medium">In stock</span>
                 ) : soldOut ? (
                   <span className="text-ink-muted font-medium">
@@ -174,23 +216,30 @@ export default async function BookPage({
               way to sell it -- the pitch lives on /library instead.
             */}
             <div className="mt-4 flex flex-wrap items-start gap-2">
-              <AddToCartButton
-                book={{ id: book.id, title: book.title, author: book.author }}
-                inCart={cartIds.has(book.id)}
-                soldOut={soldOut}
-              />
-              <WishlistButton
-                book={{ id: book.id, title: book.title, author: book.author }}
-                kind="buy"
-                saved={wishlisted.buy.has(book.id)}
-                labels={{ add: "Save to buy", added: "Saved to buy" }}
-              />
+              {/* Nothing on the club's own shelf is for sale, so the buying
+                  half of this page stays out of the way for those books. */}
+              {fromShelf ? null : (
+                <>
+                  <AddToCartButton
+                    book={{ id: book.id, title: book.title, author: book.author }}
+                    inCart={cartIds.has(book.id)}
+                    soldOut={soldOut}
+                  />
+                  <WishlistButton
+                    book={{ id: book.id, title: book.title, author: book.author }}
+                    kind="buy"
+                    saved={wishlisted.buy.has(book.id)}
+                    labels={{ add: "Save to buy", added: "Saved to buy" }}
+                  />
+                </>
+              )}
 
               {book.lendable && access.active ? (
                 <>
                   <BorrowButton
                     book={{ id: book.id, title: book.title, author: book.author }}
                     alreadyOpen={openBorrows.has(book.id)}
+                    unavailable={fromShelf && !book.inStock}
                   />
                   <WishlistButton
                     book={{ id: book.id, title: book.title, author: book.author }}

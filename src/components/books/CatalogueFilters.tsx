@@ -17,6 +17,7 @@ export function CatalogueFilters({
   current,
   showAvailability = true,
   showPrice = true,
+  showLanguage = true,
 }: {
   action: string;
   categories: LegacyCategory[];
@@ -34,6 +35,8 @@ export function CatalogueFilters({
    * members to filter on a number the page never displays.
    */
   showPrice?: boolean;
+  /** The club's own shelf is a few dozen books; a language filter on it is noise. */
+  showLanguage?: boolean;
 }) {
   return (
     <form method="get" action={action} className="space-y-2">
@@ -55,12 +58,14 @@ export function CatalogueFilters({
           ))}
         </select>
 
-        <select name="language" defaultValue={current.language ?? ""} className={selectClassName}>
-          <option value="">All languages</option>
-          <option value="english">English</option>
-          <option value="tamil">Tamil</option>
-          <option value="sinhala">Sinhala</option>
-        </select>
+        {showLanguage ? (
+          <select name="language" defaultValue={current.language ?? ""} className={selectClassName}>
+            <option value="">All languages</option>
+            <option value="english">English</option>
+            <option value="tamil">Tamil</option>
+            <option value="sinhala">Sinhala</option>
+          </select>
+        ) : null}
 
         {showAvailability ? (
           <select

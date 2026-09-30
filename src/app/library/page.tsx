@@ -8,17 +8,15 @@ import { Badge } from "@/components/ui/Badge";
 import { buttonClassName } from "@/components/ui/Button";
 import { BookCard } from "@/components/books/BookCard";
 import { BorrowButton, WishlistButton } from "@/components/books/BookActions";
-import { CatalogueFilters, CataloguePager } from "@/components/books/CatalogueFilters";
-import { CatalogueUnavailable } from "@/components/books/CatalogueUnavailable";
+import { CatalogueFilters } from "@/components/books/CatalogueFilters";
 import { LibraryAddonButton } from "./LibraryAddonButton";
 import { requireActiveMember } from "@/lib/auth/session";
-import { listBooks, listCategories } from "@/lib/legacy/books";
 import {
   getLibraryAccess,
   getOpenBorrowBookIds,
   getWishlistedIds,
 } from "@/lib/library/queries";
-import type { BookQuery } from "@/lib/legacy/types";
+import { listShelf, shelfCategories } from "@/lib/library/shelf";
 
 export const metadata: Metadata = { title: "Library" };
 
@@ -97,25 +95,18 @@ export default async function LibraryPage({
     );
   }
 
-  const query: BookQuery = {
-    search: sp.q,
-    category: sp.category,
-    language:
-      sp.language === "english" || sp.language === "tamil" || sp.language === "sinhala"
-        ? sp.language
-        : undefined,
-    // The whole point of this page: only what can actually be borrowed.
-    lendableOnly: true,
-    page: Number(sp.page) || 1,
-  };
-
-  const [result, categoriesResult, wishlisted, openBorrows] = await Promise.all([
-    listBooks(query),
-    listCategories(),
+  // The club's own shelf, not a shop catalogue. It is a few dozen books, so
+  // it arrives in one query and is filtered in the database rather than paged.
+  const [shelf, wishlisted, openBorrows] = await Promise.all([
+    listShelf({ search: sp.q, category: sp.category }),
     getWishlistedIds(),
     getOpenBorrowBookIds(),
   ]);
-  const categories = categoriesResult.ok ? categoriesResult.data : [];
+
+  // Categories come from the whole shelf, not the filtered view: chips that
+  // disappear as you use them make the filter feel broken.
+  const all = sp.q || sp.category ? await listShelf() : shelf;
+  const categories = shelfCategories(all);
 
   return (
     <AppShell>
@@ -140,36 +131,61 @@ export default async function LibraryPage({
           <CatalogueFilters
             action="/library"
             categories={categories}
-            current={{ search: sp.q, category: sp.category, language: sp.language }}
+            current={{ search: sp.q, category: sp.category }}
             showAvailability={false}
             showPrice={false}
+            showLanguage={false}
           />
         </Card>
 
-        {!result.ok ? (
-          <CatalogueUnavailable reason={result.reason} />
-        ) : result.data.books.length === 0 ? (
+        {shelf.length === 0 ? (
           <Card flush>
             <EmptyState
-              title="Nothing in the library matches that"
-              description="Try a different search, or clear the filters."
+              icon="book"
+              title={
+                all.length === 0
+                  ? "The shelf is empty"
+                  : "Nothing in the library matches that"
+              }
+              description={
+                all.length === 0
+                  ? "Books the club lends will appear here once an admin adds them."
+                  : "Try a different search, or clear the filters."
+              }
             />
           </Card>
         ) : (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {result.data.books.map((book) => (
+              {shelf.map((book) => (
                 <BookCard
                   key={book.id}
-                  book={book}
+                  book={{
+                    id: book.id,
+                    title: book.title,
+                    author: book.author,
+                    bookBy: "",
+                    priceLkr: "0",
+                    description: book.description,
+                    isbn: book.isbn,
+                    edition: null,
+                    imageUrl: book.coverUrl,
+                    categoryLabel: book.category,
+                    // "In stock" on this page means a copy is on the shelf
+                    // rather than out with somebody.
+                    inStock: book.available > 0,
+                    lendable: true,
+                  }}
                   discountPercent={0}
                   hidePrice
+                  outOfStockLabel="All out"
                   href={`/books/${book.id}`}
                   actions={
                     <>
                       <BorrowButton
                         book={{ id: book.id, title: book.title, author: book.author }}
                         alreadyOpen={openBorrows.has(book.id)}
+                        unavailable={book.available <= 0}
                       />
                       <WishlistButton
                         book={{ id: book.id, title: book.title, author: book.author }}
@@ -183,12 +199,10 @@ export default async function LibraryPage({
               ))}
             </div>
 
-            <CataloguePager
-              basePath="/library"
-              params={{ q: sp.q, category: sp.category, language: sp.language }}
-              page={result.data.page}
-              pages={result.data.pages}
-            />
+            <p className="text-xs text-ink-muted">
+              {shelf.length} {shelf.length === 1 ? "book" : "books"} on the shelf
+              {all.length !== shelf.length ? ` of ${all.length}` : ""}.
+            </p>
           </>
         )}
       </div>
