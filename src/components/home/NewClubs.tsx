@@ -93,9 +93,18 @@ export function NewClubs({ clubs }: { clubs: NewClub[] }) {
                 </div>
 
                 <div className="flex flex-1 flex-col px-4 pb-4">
+                  {/*
+                    relative + z-10, or the band above it wins.
+
+                    The band is positioned (it holds the NEW pill) and the
+                    crest was not, and a positioned element paints over a
+                    static one whatever the source order says -- so the top
+                    half of every crest was sliced off by the band it is
+                    meant to overlap.
+                  */}
                   <span
                     aria-hidden
-                    className={`-mt-7 grid size-14 place-items-center rounded-2xl font-display text-xl ring-4 ring-surface shadow-card ${crest.tile}`}
+                    className={`relative z-10 -mt-7 grid size-14 place-items-center rounded-2xl font-display text-xl ring-4 ring-surface shadow-card ${crest.tile}`}
                   >
                     {initials(club.name)}
                   </span>
