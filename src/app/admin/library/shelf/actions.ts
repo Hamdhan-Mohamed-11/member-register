@@ -87,3 +87,46 @@ export async function removeLibraryBook(id: number): Promise<ActionResult<{ what
   revalidatePath("/library");
   return { ok: true, data: { what: String(data) } };
 }
+
+const bulkRowSchema = z.object({
+  title: z.string().trim().min(1).max(300),
+  author: z.string().trim().max(200),
+  isbn: z.string().trim().max(40),
+  category: z.string().trim().max(120),
+  description: z.string().trim().max(4000),
+  shelf_mark: z.string().trim().max(60),
+  copies: z.coerce.number().int().min(0).max(999),
+});
+
+/**
+ * A shelf from a spreadsheet.
+ *
+ * Matched on title and author inside the RPC, so a club that fixes a typo and
+ * re-imports the same sheet updates the shelf instead of doubling it.
+ */
+export async function bulkAddLibraryBooks(
+  rows: unknown[],
+): Promise<ActionResult<{ added: number; updated: number }>> {
+  await requireSuperAdmin();
+
+  const parsed = z.array(bulkRowSchema).max(500).safeParse(rows);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "That file could not be read." };
+  }
+  if (parsed.data.length === 0) return { ok: false, error: "No books in that file." };
+
+  const supabase = await getActionSupabase();
+  const { data, error } = await supabase.rpc("bulk_add_library_books", {
+    p_books: parsed.data,
+  });
+  if (error) return { ok: false, error: error.message };
+
+  const result = (data ?? [])[0] as { added: number; updated: number } | undefined;
+
+  revalidatePath("/admin/library/shelf");
+  revalidatePath("/library");
+  return {
+    ok: true,
+    data: { added: Number(result?.added ?? 0), updated: Number(result?.updated ?? 0) },
+  };
+}

@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/Card";
 import { Field, Notice, TextareaField } from "@/components/ui/Field";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browserClient";
 import { removeLibraryBook, saveLibraryBook } from "./actions";
+import { ShelfCsvImport } from "./ShelfCsvImport";
 
 const MAX_COVER_BYTES = 5 * 1024 * 1024;
 
@@ -296,7 +297,13 @@ export function ShelfManager({
             On the shelf — members can ask for it
           </label>
 
-          <div className="flex flex-wrap gap-2">
+          {/*
+            Stuck to the bottom of the form rather than sitting at the end of
+            it. The form is taller than a phone screen, so saving an edit
+            meant scrolling past every field to find the button -- and on the
+            way past a list of eighty books, losing your place.
+          */}
+          <div className="sticky bottom-0 -mx-4 flex flex-wrap gap-2 border-t border-line bg-surface/95 px-4 py-3 backdrop-blur-sm sm:-mx-5 sm:px-5">
             <Button type="submit" disabled={pending || uploading}>
               {pending ? "Saving…" : editing ? "Save changes" : "Add to the shelf"}
             </Button>
@@ -305,11 +312,19 @@ export function ShelfManager({
                 Cancel
               </Button>
             ) : null}
+            {editing ? (
+              <span className="self-center text-xs text-ink-muted">
+                Editing {draft.title || "a book"}
+              </span>
+            ) : null}
           </div>
         </form>
       </Card>
 
-      <Card flush>
+      <div className="space-y-4">
+        <ShelfCsvImport />
+
+        <Card flush>
         <div className="border-b border-line px-4 py-3 sm:px-5">
           <p className="text-sm font-medium text-ink">
             {books.length} {books.length === 1 ? "book" : "books"} on the shelf
@@ -396,7 +411,8 @@ export function ShelfManager({
             ))}
           </ul>
         )}
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }

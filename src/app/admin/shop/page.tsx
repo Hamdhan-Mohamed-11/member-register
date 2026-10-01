@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card, CardHeader, Stat } from "@/components/ui/Card";
+import { buttonClassName } from "@/components/ui/Button";
 import { Notice } from "@/components/ui/Field";
 import { requireSuperAdmin } from "@/lib/auth/session";
 import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
@@ -116,8 +118,11 @@ export default async function ShopCataloguePage() {
             know what it was for.
           </p>
 
-          <div className="mt-3">
+          <div className="mt-3 flex flex-wrap items-center gap-2">
             <SyncButton />
+            <Link href="/admin/shop/books" className={buttonClassName("secondary", "md")}>
+              Edit books and covers
+            </Link>
           </div>
         </Card>
       </div>

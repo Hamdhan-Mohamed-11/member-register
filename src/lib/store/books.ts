@@ -108,6 +108,13 @@ function toBook(row: Row): StoreBook {
 const COLUMNS =
   "id, store_id, title, author, isbn, category, description, price_lkr, market_price_lkr, stock, featured, cover_url";
 
+/**
+ * shop_books, not store_books: the view that prefers whatever the club wrote
+ * over what the store sent. A cover the club supplied for a book nobody has a
+ * picture of is the whole point of it.
+ */
+const SHOP_TABLE = "shop_books";
+
 export type StoreResult<T> =
   | { ok: true; data: T }
   | { ok: false; reason: "unconfigured" | "unreachable" };
@@ -130,7 +137,7 @@ export async function listStoreBooks(query: BookQuery = {}): Promise<StoreResult
   const supabase = await getServerComponentSupabase();
 
   let rows = supabase
-    .from("store_books")
+    .from(SHOP_TABLE)
     .select(COLUMNS, { count: "exact" })
     .eq("is_active", true);
 
@@ -180,7 +187,7 @@ export async function listStoreBooks(query: BookQuery = {}): Promise<StoreResult
 export async function getStoreBook(id: number): Promise<StoreResult<StoreBook | null>> {
   const supabase = await getServerComponentSupabase();
   const { data, error } = await supabase
-    .from("store_books")
+    .from(SHOP_TABLE)
     .select(COLUMNS)
     .eq("id", id)
     .maybeSingle();
@@ -195,7 +202,7 @@ export async function getStoreBook(id: number): Promise<StoreResult<StoreBook | 
 export async function listStoreCategories(): Promise<StoreResult<LegacyCategory[]>> {
   const supabase = await getServerComponentSupabase();
   const { data, error } = await supabase
-    .from("store_books")
+    .from(SHOP_TABLE)
     .select("category")
     .eq("is_active", true)
     .not("category", "is", null);
@@ -229,7 +236,7 @@ export async function getStoreSnapshots(ids: number[]): Promise<Map<number, Stor
 
   const supabase = await getServerComponentSupabase();
   const { data, error } = await supabase
-    .from("store_books")
+    .from(SHOP_TABLE)
     .select("id, title, author, price_lkr, cover_url")
     .in("id", wanted);
 
