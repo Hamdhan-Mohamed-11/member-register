@@ -1116,13 +1116,13 @@ isOneToOne: false
                   ]
                 },"store_books": {
                   Row: {
-                    "author": string,"author_override": string | null,"category": string | null,"cover_override": string | null,"cover_url": string | null,"description": string | null,"description_override": string | null,"edited_at": string | null,"edited_by": string | null,"featured": boolean,"first_seen_at": string,"id": number,"image": string | null,"is_active": boolean,"isbn": string | null,"market_price_lkr": number | null,"price_lkr": number,"removed_at": string | null,"sort_rank": number,"stock": number,"store_id": number,"synced_at": string,"title": string,"title_override": string | null
+                    "author": string,"author_override": string | null,"category": string | null,"cover_override": string | null,"cover_url": string | null,"description": string | null,"description_override": string | null,"edited_at": string | null,"edited_by": string | null,"featured": boolean,"first_seen_at": string,"id": number,"image": string | null,"is_active": boolean,"isbn": string | null,"market_price_lkr": number | null,"price_lkr": number,"price_override": number | null,"removed_at": string | null,"sort_rank": number,"stock": number,"store_id": number,"synced_at": string,"title": string,"title_override": string | null
                   }
                   Insert: {
-                    "author"?: string,"author_override"?: string | null,"category"?: string | null,"cover_override"?: string | null,"cover_url"?: string | null,"description"?: string | null,"description_override"?: string | null,"edited_at"?: string | null,"edited_by"?: string | null,"featured"?: boolean,"first_seen_at"?: string,"id": number,"image"?: string | null,"is_active"?: boolean,"isbn"?: string | null,"market_price_lkr"?: number | null,"price_lkr"?: number,"removed_at"?: string | null,"sort_rank"?: number,"stock"?: number,"store_id": number,"synced_at"?: string,"title": string,"title_override"?: string | null
+                    "author"?: string,"author_override"?: string | null,"category"?: string | null,"cover_override"?: string | null,"cover_url"?: string | null,"description"?: string | null,"description_override"?: string | null,"edited_at"?: string | null,"edited_by"?: string | null,"featured"?: boolean,"first_seen_at"?: string,"id": number,"image"?: string | null,"is_active"?: boolean,"isbn"?: string | null,"market_price_lkr"?: number | null,"price_lkr"?: number,"price_override"?: number | null,"removed_at"?: string | null,"sort_rank"?: number,"stock"?: number,"store_id": number,"synced_at"?: string,"title": string,"title_override"?: string | null
                   }
                   Update: {
-                    "author"?: string,"author_override"?: string | null,"category"?: string | null,"cover_override"?: string | null,"cover_url"?: string | null,"description"?: string | null,"description_override"?: string | null,"edited_at"?: string | null,"edited_by"?: string | null,"featured"?: boolean,"first_seen_at"?: string,"id"?: number,"image"?: string | null,"is_active"?: boolean,"isbn"?: string | null,"market_price_lkr"?: number | null,"price_lkr"?: number,"removed_at"?: string | null,"sort_rank"?: number,"stock"?: number,"store_id"?: number,"synced_at"?: string,"title"?: string,"title_override"?: string | null
+                    "author"?: string,"author_override"?: string | null,"category"?: string | null,"cover_override"?: string | null,"cover_url"?: string | null,"description"?: string | null,"description_override"?: string | null,"edited_at"?: string | null,"edited_by"?: string | null,"featured"?: boolean,"first_seen_at"?: string,"id"?: number,"image"?: string | null,"is_active"?: boolean,"isbn"?: string | null,"market_price_lkr"?: number | null,"price_lkr"?: number,"price_override"?: number | null,"removed_at"?: string | null,"sort_rank"?: number,"stock"?: number,"store_id"?: number,"synced_at"?: string,"title"?: string,"title_override"?: string | null
                   }
                   Relationships: [
                     {
@@ -1194,13 +1194,13 @@ isOneToOne: false
                   ]
                 },"shop_books": {
                   Row: {
-                    "author": string | null,"category": string | null,"cover_is_ours": boolean | null,"cover_url": string | null,"description": string | null,"edited_at": string | null,"featured": boolean | null,"id": number | null,"is_active": boolean | null,"isbn": string | null,"market_price_lkr": number | null,"price_lkr": number | null,"sort_rank": number | null,"stock": number | null,"store_id": number | null,"synced_at": string | null,"title": string | null
+                    "author": string | null,"category": string | null,"cover_is_ours": boolean | null,"cover_url": string | null,"description": string | null,"edited_at": string | null,"featured": boolean | null,"id": number | null,"is_active": boolean | null,"isbn": string | null,"market_price_lkr": number | null,"price_is_ours": boolean | null,"price_lkr": number | null,"sort_rank": number | null,"stock": number | null,"store_id": number | null,"store_price_lkr": number | null,"synced_at": string | null,"title": string | null
                   }
                   Insert: {
-                           "author"?: never,"category"?: string | null,"cover_is_ours"?: never,"cover_url"?: never,"description"?: never,"edited_at"?: string | null,"featured"?: boolean | null,"id"?: number | null,"is_active"?: boolean | null,"isbn"?: string | null,"market_price_lkr"?: number | null,"price_lkr"?: number | null,"sort_rank"?: never,"stock"?: number | null,"store_id"?: number | null,"synced_at"?: string | null,"title"?: never
+                           "author"?: never,"category"?: string | null,"cover_is_ours"?: never,"cover_url"?: never,"description"?: never,"edited_at"?: string | null,"featured"?: boolean | null,"id"?: number | null,"is_active"?: boolean | null,"isbn"?: string | null,"market_price_lkr"?: number | null,"price_is_ours"?: never,"price_lkr"?: never,"sort_rank"?: never,"stock"?: number | null,"store_id"?: number | null,"store_price_lkr"?: number | null,"synced_at"?: string | null,"title"?: never
                          }
                         Update: {
-                           "author"?: never,"category"?: string | null,"cover_is_ours"?: never,"cover_url"?: never,"description"?: never,"edited_at"?: string | null,"featured"?: boolean | null,"id"?: number | null,"is_active"?: boolean | null,"isbn"?: string | null,"market_price_lkr"?: number | null,"price_lkr"?: number | null,"sort_rank"?: never,"stock"?: number | null,"store_id"?: number | null,"synced_at"?: string | null,"title"?: never
+                           "author"?: never,"category"?: string | null,"cover_is_ours"?: never,"cover_url"?: never,"description"?: never,"edited_at"?: string | null,"featured"?: boolean | null,"id"?: number | null,"is_active"?: boolean | null,"isbn"?: string | null,"market_price_lkr"?: number | null,"price_is_ours"?: never,"price_lkr"?: never,"sort_rank"?: never,"stock"?: number | null,"store_id"?: number | null,"store_price_lkr"?: number | null,"synced_at"?: string | null,"title"?: never
                          }
                         Relationships: [
                     
@@ -1535,7 +1535,7 @@ isOneToOne: false
 { Args: { "p_path"?: string,"p_session_id": string }; Returns: undefined
                            },
 "set_store_book_overrides":
-{ Args: { "p_author"?: string,"p_cover"?: string,"p_description"?: string,"p_id": number,"p_title"?: string }; Returns: undefined
+{ Args: { "p_author"?: string,"p_cover"?: string,"p_description"?: string,"p_id": number,"p_price"?: string,"p_title"?: string }; Returns: undefined
                            },
 "shares_active_club":
 { Args: { "p_member_id": string }; Returns: boolean

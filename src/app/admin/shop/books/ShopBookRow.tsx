@@ -18,6 +18,9 @@ export type ShopBookItem = {
   category: string | null;
   description: string | null;
   priceLkr: string;
+  /** What the store charges, before anything the club set. */
+  storePriceLkr: string;
+  priceIsOurs: boolean;
   stock: number;
   coverUrl: string | null;
   coverIsOurs: boolean;
@@ -36,6 +39,8 @@ export function ShopBookRow({ book, userId }: { book: ShopBookItem; userId: stri
   const [title, setTitle] = useState(book.title);
   const [author, setAuthor] = useState(book.author);
   const [description, setDescription] = useState(book.description ?? "");
+  // Blank means "use the store's price", which is also how it is cleared.
+  const [price, setPrice] = useState(book.priceIsOurs ? book.priceLkr : "");
   const [coverPath, setCoverPath] = useState<string | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(book.coverUrl);
   const [uploading, setUploading] = useState(false);
@@ -88,6 +93,8 @@ export function ShopBookRow({ book, userId }: { book: ShopBookItem; userId: stri
         author: author.trim() === book.author ? undefined : author,
         description:
           description.trim() === (book.description ?? "") ? undefined : description,
+        // Always sent: an empty box is how a club puts the store's price back.
+        price: price.trim(),
       });
       if (!result.ok) {
         setError(result.error);
@@ -121,6 +128,11 @@ export function ShopBookRow({ book, userId }: { book: ShopBookItem; userId: stri
             ) : book.coverIsOurs ? (
               <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-medium text-brand-700">
                 Our cover
+              </span>
+            ) : null}
+            {book.priceIsOurs ? (
+              <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-medium text-brand-700">
+                Our price
               </span>
             ) : null}
             {book.stock === 0 ? (
@@ -157,6 +169,18 @@ export function ShopBookRow({ book, userId }: { book: ShopBookItem; userId: stri
               Used instead of the store&apos;s. Survives every catalogue sync.
             </p>
           </div>
+
+          <Field
+            label="Price (LKR)"
+            name={`price-${book.id}`}
+            type="number"
+            min={0}
+            step="0.01"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            placeholder={book.storePriceLkr}
+            hint={`The store charges LKR ${Number(book.storePriceLkr).toLocaleString("en-LK")}. Leave this blank to use it. Members pay the club's discount off whichever applies.`}
+          />
 
           <div className="grid gap-3 sm:grid-cols-2">
             <Field

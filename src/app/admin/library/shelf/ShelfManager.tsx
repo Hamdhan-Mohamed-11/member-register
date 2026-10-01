@@ -181,11 +181,36 @@ export function ShelfManager({
   return (
     <div className="grid gap-4 lg:grid-cols-[22rem_1fr] lg:items-start">
       <Card className="lg:sticky lg:top-6">
-        <p className="mb-3 text-sm font-medium text-ink">
-          {editing ? "Edit this book" : "Add a book to the shelf"}
-        </p>
+        {/*
+          The buttons sit at the TOP of the form, not the bottom of it.
+          Sticking them to the bottom put them over the last field -- the
+          screenshot that came back had "About the book" sliced in half by
+          the button that was meant to be helping. Up here they are in view
+          the moment Edit is pressed, whatever the form's height, and nothing
+          is ever underneath them.
+        */}
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
+          <p className="text-sm font-medium text-ink">
+            {editing ? `Editing ${draft.title || "a book"}` : "Add a book to the shelf"}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="submit"
+              form="shelf-form"
+              size="sm"
+              disabled={pending || uploading}
+            >
+              {pending ? "Saving…" : editing ? "Save changes" : "Add to the shelf"}
+            </Button>
+            {editing ? (
+              <Button type="button" size="sm" variant="ghost" onClick={() => setDraft(BLANK)}>
+                Cancel
+              </Button>
+            ) : null}
+          </div>
+        </div>
 
-        <form onSubmit={save} className="space-y-3">
+        <form id="shelf-form" onSubmit={save} className="space-y-3">
           {error ? <Notice>{error}</Notice> : null}
           {saved ? <Notice tone="success">{saved}</Notice> : null}
 
@@ -297,13 +322,9 @@ export function ShelfManager({
             On the shelf — members can ask for it
           </label>
 
-          {/*
-            Stuck to the bottom of the form rather than sitting at the end of
-            it. The form is taller than a phone screen, so saving an edit
-            meant scrolling past every field to find the button -- and on the
-            way past a list of eighty books, losing your place.
-          */}
-          <div className="sticky bottom-0 -mx-4 flex flex-wrap gap-2 border-t border-line bg-surface/95 px-4 py-3 backdrop-blur-sm sm:-mx-5 sm:px-5">
+          {/* The same two again at the foot, for anyone who has scrolled
+              to the end of a long form and would rather not go back up. */}
+          <div className="flex flex-wrap gap-2 border-t border-line pt-3">
             <Button type="submit" disabled={pending || uploading}>
               {pending ? "Saving…" : editing ? "Save changes" : "Add to the shelf"}
             </Button>
@@ -311,11 +332,6 @@ export function ShelfManager({
               <Button type="button" variant="ghost" onClick={() => setDraft(BLANK)}>
                 Cancel
               </Button>
-            ) : null}
-            {editing ? (
-              <span className="self-center text-xs text-ink-muted">
-                Editing {draft.title || "a book"}
-              </span>
             ) : null}
           </div>
         </form>

@@ -25,6 +25,8 @@ type Row = {
   category: string | null;
   description: string | null;
   price_lkr: number | string;
+  store_price_lkr: number | string;
+  price_is_ours: boolean;
   stock: number;
   cover_url: string | null;
   cover_is_ours: boolean;
@@ -45,7 +47,7 @@ export default async function ShopBooksPage({
   let query = supabase
     .from("shop_books")
     .select(
-      "id, store_id, title, author, isbn, category, description, price_lkr, stock, cover_url, cover_is_ours, edited_at",
+      "id, store_id, title, author, isbn, category, description, price_lkr, store_price_lkr, price_is_ours, stock, cover_url, cover_is_ours, edited_at",
       { count: "exact" },
     )
     .eq("is_active", true);
@@ -78,6 +80,8 @@ export default async function ShopBooksPage({
     category: b.category,
     description: b.description,
     priceLkr: String(b.price_lkr),
+    storePriceLkr: String(b.store_price_lkr),
+    priceIsOurs: Boolean(b.price_is_ours),
     stock: Number(b.stock),
     coverUrl: b.cover_url,
     coverIsOurs: Boolean(b.cover_is_ours),

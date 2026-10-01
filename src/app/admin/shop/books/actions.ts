@@ -14,6 +14,16 @@ const schema = z.object({
   title: z.string().trim().max(300).optional(),
   author: z.string().trim().max(200).optional(),
   description: z.string().trim().max(4000).optional(),
+  // A string, so that "" can mean "put the store's price back" -- a number
+  // has no way to say that short of a second flag.
+  price: z
+    .string()
+    .trim()
+    .max(20)
+    .refine((v) => v === "" || (Number.isFinite(Number(v)) && Number(v) >= 0), {
+      message: "That price is not a number.",
+    })
+    .optional(),
 });
 
 /**
@@ -30,6 +40,7 @@ export async function saveShopBookOverrides(input: {
   title?: string;
   author?: string;
   description?: string;
+  price?: string;
 }): Promise<ActionResult> {
   await requireSuperAdmin();
 
@@ -54,6 +65,7 @@ export async function saveShopBookOverrides(input: {
     p_title: parsed.data.title,
     p_author: parsed.data.author,
     p_description: parsed.data.description,
+    p_price: parsed.data.price,
   });
   if (error) return { ok: false, error: error.message };
 
