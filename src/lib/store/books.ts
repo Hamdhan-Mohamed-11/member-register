@@ -122,13 +122,30 @@ function money(value: number | null | undefined): string {
   return value.toFixed(2);
 }
 
-/** A cover: an absolute URL as given, or a filename under the store's images. */
+/**
+ * A cover for a store book.
+ *
+ * The store has its own file for about one book in eight and falls back to
+ * Open Library by ISBN for the rest -- which is why The Alchemist had a cover
+ * on the storefront and a grey box here. Same order, same fallback, except
+ * that Open Library is fetched through our own proxy so a member's browser
+ * never talks to it directly.
+ */
 function coverFor(raw: RawBook): string | null {
   if (raw.coverUrl) return raw.coverUrl;
+
   const file = raw.image?.trim();
-  if (!file) return null;
-  if (/^https?:\/\//i.test(file)) return file;
-  return `${storeBase()}/images/${encodeURI(file.replace(/^\/+/, ""))}`;
+  if (file) {
+    return /^https?:\/\//i.test(file)
+      ? file
+      : `${storeBase()}/images/${encodeURI(file.replace(/^\/+/, ""))}`;
+  }
+
+  const isbn = raw.isbn?.replace(/[^0-9Xx]/g, "").toUpperCase() ?? "";
+  if (/^[0-9]{9}[0-9X]$|^[0-9]{13}$/.test(isbn)) {
+    return `/api/covers/isbn/${isbn}`;
+  }
+  return null;
 }
 
 function toBook(raw: RawBook): StoreBook {
