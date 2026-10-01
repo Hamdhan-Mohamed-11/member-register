@@ -1114,6 +1114,19 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"store_books": {
+                  Row: {
+                    "author": string,"category": string | null,"cover_url": string | null,"description": string | null,"featured": boolean,"first_seen_at": string,"id": number,"image": string | null,"is_active": boolean,"isbn": string | null,"market_price_lkr": number | null,"price_lkr": number,"removed_at": string | null,"sort_rank": number,"stock": number,"store_id": number,"synced_at": string,"title": string
+                  }
+                  Insert: {
+                    "author"?: string,"category"?: string | null,"cover_url"?: string | null,"description"?: string | null,"featured"?: boolean,"first_seen_at"?: string,"id": number,"image"?: string | null,"is_active"?: boolean,"isbn"?: string | null,"market_price_lkr"?: number | null,"price_lkr"?: number,"removed_at"?: string | null,"sort_rank"?: number,"stock"?: number,"store_id": number,"synced_at"?: string,"title": string
+                  }
+                  Update: {
+                    "author"?: string,"category"?: string | null,"cover_url"?: string | null,"description"?: string | null,"featured"?: boolean,"first_seen_at"?: string,"id"?: number,"image"?: string | null,"is_active"?: boolean,"isbn"?: string | null,"market_price_lkr"?: number | null,"price_lkr"?: number,"removed_at"?: string | null,"sort_rank"?: number,"stock"?: number,"store_id"?: number,"synced_at"?: string,"title"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"videos": {
                   Row: {
                     "created_at": string,"description": string | null,"external_id": string,"id": string,"provider": string,"review_note": string | null,"reviewed_at": string | null,"reviewed_by": string | null,"session_id": string | null,"source_url": string,"status": string,"submitted_by": string | null,"title": string
@@ -1437,6 +1450,9 @@ isOneToOne: false
 "respond_to_quote":
 { Args: { "p_accept": boolean,"p_order_id": string }; Returns: undefined
                            },
+"retire_unsynced_store_books":
+{ Args: { "p_since": string }; Returns: number
+                           },
 "revoke_invite":
 { Args: { "p_invite_id": string }; Returns: undefined
                            },
@@ -1514,11 +1530,19 @@ isOneToOne: false
               "amount": number,"order_ref": string,"payment_id": string,"session_title": string
             }[]
                            },
+"store_catalogue_status":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "in_stock": number,"last_synced": string,"retired": number,"total": number,"with_cover": number
+            }[]
+                           },
 "submit_author_book":
 { Args: { "p_author_id": string,"p_blurb"?: string,"p_cover_path"?: string,"p_isbn"?: string,"p_price_lkr": number,"p_title": string }; Returns: number
                            },
 "submit_video":
 { Args: { "p_description"?: string,"p_external_id": string,"p_provider": string,"p_session_id"?: string,"p_source_url": string,"p_title": string }; Returns: string
+                           },
+"sync_store_books":
+{ Args: { "p_books": Json }; Returns: number
                            },
 "unique_club_slug":
 { Args: { "p_base": string }; Returns: string
@@ -1672,4 +1696,3 @@ export const Constants = {
           }
         }
 } as const
-

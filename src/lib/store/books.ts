@@ -1,34 +1,27 @@
 import "server-only";
 
-import { cacheGet, cacheSet } from "@/lib/legacy/cache";
+import { getServerComponentSupabase } from "@/lib/supabase/serverComponentClient";
 import type { BookQuery, LegacyBook, LegacyCategory } from "@/lib/legacy/types";
 import { PAGE_SIZE } from "@/lib/legacy/types";
 
 /**
  * The PaB Store: the catalogue members buy from.
  *
- * The shop used to read the old HostGator database directly. Buying now comes
- * from the store site instead, over the catalogue file it already publishes
- * at data/books.json -- the same file its own load_books() reads, so the two
- * can never disagree about what is for sale. BORROWING does not come through
- * here at all; the club lends its own books from its own shelf.
+ * The shop reads the MIRROR of that catalogue in store_books, not the store
+ * itself. The store's file lives on someone else's hosting, and this portal
+ * has already watched one book catalogue be emptied out from under it -- the
+ * lending shelf went blank with it. A sync fills the mirror (see sync.ts);
+ * everything below only ever reads our own database, so a store that is down,
+ * migrated or cleared costs members nothing but freshness.
  *
- * Two shapes are accepted: that raw file, and the normalised one from
- * store-endpoint/books.json.php for an install that would rather not publish
- * its catalogue. Reading both is a dozen lines and means the portal does not
- * care which is in front of it.
- *
- * The whole catalogue arrives in one request and is cached in this process,
- * so searching, filtering and paging happen here rather than as a round trip
- * per keystroke. That is only reasonable while the store is in the low
- * thousands of books; past that this wants a query parameter on the endpoint
- * and paging on the store's side.
+ * BORROWING does not come through here. The club lends its own books from its
+ * own shelf, which is library_shelf.
  */
 
 /**
  * Where a store book's id starts inside the portal.
  *
- * The store numbers its books from 1, and so does the old catalogue, so the
+ * The store numbers its books from 1, and so did the old catalogue, so the
  * two would collide in `cart_items.book_id`, in `book_order_items`, and in
  * every wishlist row already saved. Eight million is clear of the old
  * catalogue's ids (tens of thousands) and below the nine million where the
@@ -59,47 +52,20 @@ export type StoreBook = LegacyBook & {
   storeUrl: string | null;
 };
 
-type RawBook = {
+type Row = {
   id: number;
-  title?: string;
-  author?: string;
-  isbn?: string | null;
-  category?: string | null;
-  description?: string | null;
-  tagline?: string | null;
-  price?: number | string;
-  /** The endpoint spells it one way, the store's own file the other. */
-  marketPrice?: number | string | null;
-  market_price?: number | string | null;
-  stock?: number | string;
-  active?: boolean;
-  featured?: boolean;
-  /** A bare filename in the store's images folder. */
-  image?: string | null;
-  coverUrl?: string | null;
-  url?: string | null;
+  store_id: number;
+  title: string;
+  author: string;
+  isbn: string | null;
+  category: string | null;
+  description: string | null;
+  price_lkr: number | string;
+  market_price_lkr: number | string | null;
+  stock: number;
+  featured: boolean;
+  cover_url: string | null;
 };
-
-const CACHE_KEY = "store:books";
-const TTL_MS = 60_000;
-const TIMEOUT_MS = 8_000;
-
-// One shared breaker, for the same reason the legacy layer has one: without
-// it an unreachable store makes every catalogue page wait the full timeout.
-const FAILURE_THRESHOLD = 3;
-const OPEN_MS = 30_000;
-let failures = 0;
-let openedAt = 0;
-
-function breakerOpen(): boolean {
-  if (openedAt === 0) return false;
-  if (Date.now() - openedAt > OPEN_MS) {
-    openedAt = 0;
-    failures = 0;
-    return false;
-  }
-  return true;
-}
 
 export function isStoreConfigured(): boolean {
   return Boolean(process.env.PAB_STORE_URL?.trim());
@@ -109,125 +75,42 @@ function storeBase(): string {
   return (process.env.PAB_STORE_URL ?? "").trim().replace(/\/+$/, "");
 }
 
-function endpoint(): string {
-  // The store already publishes its catalogue here; the PHP endpoint is for
-  // an install that would rather it were not public.
-  const path = (process.env.PAB_STORE_BOOKS_PATH ?? "data/books.json").replace(/^\/+/, "");
-  return `${storeBase()}/${path}`;
-}
-
 /** Rupees as a string. A float through JS and back comes out a cent short. */
-function money(value: number | null | undefined): string {
-  if (value == null || !Number.isFinite(value)) return "0.00";
-  return value.toFixed(2);
+function money(value: number | string | null | undefined): string {
+  const n = Number(value ?? 0);
+  return Number.isFinite(n) ? n.toFixed(2) : "0.00";
 }
 
-/**
- * A cover for a store book.
- *
- * The store has its own file for about one book in eight and falls back to
- * Open Library by ISBN for the rest -- which is why The Alchemist had a cover
- * on the storefront and a grey box here. Same order, same fallback, except
- * that Open Library is fetched through our own proxy so a member's browser
- * never talks to it directly.
- */
-function coverFor(raw: RawBook): string | null {
-  if (raw.coverUrl) return raw.coverUrl;
-
-  const file = raw.image?.trim();
-  if (file) {
-    return /^https?:\/\//i.test(file)
-      ? file
-      : `${storeBase()}/images/${encodeURI(file.replace(/^\/+/, ""))}`;
-  }
-
-  const isbn = raw.isbn?.replace(/[^0-9Xx]/g, "").toUpperCase() ?? "";
-  if (/^[0-9]{9}[0-9X]$|^[0-9]{13}$/.test(isbn)) {
-    return `/api/covers/isbn/${isbn}`;
-  }
-  return null;
-}
-
-function toBook(raw: RawBook): StoreBook {
-  const market = raw.marketPrice ?? raw.market_price ?? null;
+function toBook(row: Row): StoreBook {
   return {
-    id: toStoreId(Number(raw.id)),
-    title: raw.title || "Untitled",
-    author: raw.author ?? "",
+    id: Number(row.id),
+    title: row.title,
+    author: row.author ?? "",
     bookBy: "",
-    priceLkr: money(Number(raw.price ?? 0)),
-    // The store keeps a one-line tagline as well as a blurb, and most books
-    // have one or the other rather than both.
-    description: raw.description?.trim() || raw.tagline?.trim() || null,
-    isbn: raw.isbn ?? null,
+    priceLkr: money(row.price_lkr),
+    description: row.description,
+    isbn: row.isbn,
     edition: null,
-    imageUrl: coverFor(raw),
-    categoryLabel: raw.category ?? null,
-    // The store's own word for it. A book with no copies still appears --
-    // members were told about it somewhere -- but cannot be added to a cart.
-    inStock: Number(raw.stock) > 0,
-    // Nothing in the store is lendable: the club lends from its own shelf,
-    // which is the other catalogue.
+    imageUrl: row.cover_url,
+    categoryLabel: row.category,
+    // A book with no copies still appears, marked sold out: somebody was told
+    // about it somewhere, and a book that vanishes teaches them nothing.
+    inStock: Number(row.stock) > 0,
+    // Nothing in the store is lendable: the club lends from its own shelf.
     lendable: false,
-    marketPriceLkr: market == null ? null : money(Number(market)),
-    stock: Number(raw.stock) || 0,
-    featured: Boolean(raw.featured),
-    // Straight to the book on the store, for anyone who wants the original.
-    storeUrl: raw.url ?? `${storeBase()}/book.php?id=${Number(raw.id)}`,
+    marketPriceLkr: row.market_price_lkr == null ? null : money(row.market_price_lkr),
+    stock: Number(row.stock) || 0,
+    featured: Boolean(row.featured),
+    storeUrl: storeBase() ? `${storeBase()}/book.php?id=${row.store_id}` : null,
   };
 }
 
-/**
- * Every active book the store sells, cached for a minute.
- *
- * Returns null when the store is unreachable or not configured, so callers
- * can say so rather than showing an empty shop as though it were the truth.
- */
-async function allBooks(): Promise<StoreBook[] | null> {
-  if (!isStoreConfigured()) return null;
+const COLUMNS =
+  "id, store_id, title, author, isbn, category, description, price_lkr, market_price_lkr, stock, featured, cover_url";
 
-  const cached = cacheGet<StoreBook[]>(CACHE_KEY);
-  if (cached) return cached;
-  if (breakerOpen()) return null;
-
-  try {
-    const token = process.env.PAB_STORE_TOKEN?.trim();
-    const response = await fetch(endpoint(), {
-      headers: token ? { "X-PAB-Token": token } : undefined,
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-      // Next would otherwise cache this at the fetch layer too, which would
-      // fight the TTL above and make "why is the shop stale" two mysteries.
-      cache: "no-store",
-    });
-    if (!response.ok) throw new Error(`store responded ${response.status}`);
-
-    const payload = (await response.json()) as RawBook[] | { books?: RawBook[] };
-    const rows = Array.isArray(payload) ? payload : (payload.books ?? []);
-    // `active` is the store's own word for "on sale". The endpoint filters
-    // them out already; the raw file does not, so it is filtered here.
-    const books = rows
-      .filter((row) => row.active !== false && row.id != null)
-      .map(toBook);
-
-    failures = 0;
-    cacheSet(CACHE_KEY, books, TTL_MS);
-    return books;
-  } catch (error) {
-    failures += 1;
-    if (failures >= FAILURE_THRESHOLD) openedAt = Date.now();
-    console.error(
-      "[store] catalogue fetch failed:",
-      error instanceof Error ? error.message.slice(0, 200) : String(error),
-    );
-    return null;
-  }
-}
-
-export type StoreResult<T> = { ok: true; data: T } | { ok: false; reason: "unconfigured" | "unreachable" };
-
-function fail<T>(): StoreResult<T> {
-  return { ok: false, reason: isStoreConfigured() ? "unreachable" : "unconfigured" };
-}
+export type StoreResult<T> =
+  | { ok: true; data: T }
+  | { ok: false; reason: "unconfigured" | "unreachable" };
 
 export type StoreListing = {
   books: StoreBook[];
@@ -236,97 +119,96 @@ export type StoreListing = {
   pages: number;
 };
 
-const NON_FICTION = [
-  "Business & Money",
-  "Self-Help & Psychology",
-  "Science & Technology",
-  "History & Politics",
-  "Biography & Memoir",
-  "Health & Wellness",
-];
-
 /**
- * The store's own default order: featured first, then books with a cover,
- * then non-fiction, then newest.
+ * A page of the shop.
  *
- * Copied deliberately rather than invented. A member who browses the store
- * and then the portal should see the same shelf in the same order; two
- * different "recommended" orders for one shop is a bug that never gets
- * reported, only felt.
+ * Filtered, ordered and paged in the database. sort_rank is the store's own
+ * shelf order -- featured first, then books with a cover, then non-fiction --
+ * worked out once at sync time rather than on every request.
  */
-function defaultRank(book: StoreBook): number[] {
-  return [
-    book.featured ? 1 : 0,
-    book.imageUrl ? 1 : 0,
-    book.categoryLabel && NON_FICTION.includes(book.categoryLabel) ? 1 : 0,
-    fromStoreId(book.id),
-  ];
-}
-
-function compareRanks(a: number[], b: number[]): number {
-  for (let i = 0; i < a.length; i++) {
-    if (a[i] !== b[i]) return b[i] - a[i];
-  }
-  return 0;
-}
-
 export async function listStoreBooks(query: BookQuery = {}): Promise<StoreResult<StoreListing>> {
-  const books = await allBooks();
-  if (!books) return fail();
+  const supabase = await getServerComponentSupabase();
 
-  const search = query.search?.trim().toLowerCase();
-  const filtered = books.filter((book) => {
-    if (query.category && book.categoryLabel !== query.category) return false;
-    if (query.availability === "in_stock" && !book.inStock) return false;
-    if (query.availability === "pre_order" && book.inStock) return false;
+  let rows = supabase
+    .from("store_books")
+    .select(COLUMNS, { count: "exact" })
+    .eq("is_active", true);
 
-    const price = Number(book.priceLkr);
-    if (query.minPriceLkr != null && price < query.minPriceLkr) return false;
-    if (query.maxPriceLkr != null && price > query.maxPriceLkr) return false;
+  if (query.category) rows = rows.eq("category", query.category);
+  if (query.availability === "in_stock") rows = rows.gt("stock", 0);
+  if (query.availability === "pre_order") rows = rows.eq("stock", 0);
+  if (query.minPriceLkr != null) rows = rows.gte("price_lkr", query.minPriceLkr);
+  if (query.maxPriceLkr != null) rows = rows.lte("price_lkr", query.maxPriceLkr);
 
-    if (search) {
-      const hay = `${book.title} ${book.author} ${book.isbn ?? ""}`.toLowerCase();
-      if (!hay.includes(search)) return false;
+  const search = query.search?.trim();
+  if (search) {
+    // Escaped: a comma or a parenthesis in the search box is PostgREST
+    // syntax, and an unescaped one turns a search into a 400.
+    const safe = search.replace(/[%,()]/g, " ").trim();
+    if (safe) {
+      rows = rows.or(
+        `title.ilike.%${safe}%,author.ilike.%${safe}%,isbn.ilike.%${safe}%`,
+      );
     }
-    return true;
-  });
-
-  filtered.sort((a, b) => compareRanks(defaultRank(a), defaultRank(b)));
+  }
 
   const page = Math.max(1, query.page ?? 1);
-  const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const start = (Math.min(page, pages) - 1) * PAGE_SIZE;
+  const from = (page - 1) * PAGE_SIZE;
 
+  const { data, count, error } = await rows
+    .order("sort_rank", { ascending: false })
+    .order("store_id", { ascending: false })
+    .range(from, from + PAGE_SIZE - 1);
+
+  if (error) {
+    console.error("[store] listing:", error.message);
+    return { ok: false, reason: "unreachable" };
+  }
+
+  const total = count ?? 0;
   return {
     ok: true,
     data: {
-      books: filtered.slice(start, start + PAGE_SIZE),
-      total: filtered.length,
-      page: Math.min(page, pages),
-      pages,
+      books: ((data ?? []) as unknown as Row[]).map(toBook),
+      total,
+      page,
+      pages: Math.max(1, Math.ceil(total / PAGE_SIZE)),
     },
   };
 }
 
 export async function getStoreBook(id: number): Promise<StoreResult<StoreBook | null>> {
-  const books = await allBooks();
-  if (!books) return fail();
-  return { ok: true, data: books.find((b) => b.id === id) ?? null };
+  const supabase = await getServerComponentSupabase();
+  const { data, error } = await supabase
+    .from("store_books")
+    .select(COLUMNS)
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("[store] book:", error.message);
+    return { ok: false, reason: "unreachable" };
+  }
+  return { ok: true, data: data ? toBook(data as unknown as Row) : null };
 }
 
 export async function listStoreCategories(): Promise<StoreResult<LegacyCategory[]>> {
-  const books = await allBooks();
-  if (!books) return fail();
+  const supabase = await getServerComponentSupabase();
+  const { data, error } = await supabase
+    .from("store_books")
+    .select("category")
+    .eq("is_active", true)
+    .not("category", "is", null);
 
-  const counts = new Map<string, number>();
-  for (const book of books) {
-    if (!book.categoryLabel) continue;
-    counts.set(book.categoryLabel, (counts.get(book.categoryLabel) ?? 0) + 1);
+  if (error) {
+    console.error("[store] categories:", error.message);
+    return { ok: false, reason: "unreachable" };
   }
 
+  const seen = new Set(((data ?? []) as { category: string }[]).map((r) => r.category));
   return {
     ok: true,
-    data: [...counts.keys()]
+    data: [...seen]
       .sort((a, b) => a.localeCompare(b))
       .map((label) => ({ id: label, label })),
   };
@@ -341,20 +223,33 @@ export type StoreSnapshot = {
 
 /** Titles and prices for cart lines, wishlists and past orders. */
 export async function getStoreSnapshots(ids: number[]): Promise<Map<number, StoreSnapshot>> {
-  const wanted = new Set(ids.filter(isStoreBookId));
-  if (wanted.size === 0) return new Map();
-
-  const books = await allBooks();
+  const wanted = [...new Set(ids.filter(isStoreBookId))];
   const map = new Map<number, StoreSnapshot>();
-  if (!books) return map;
+  if (wanted.length === 0) return map;
 
-  for (const book of books) {
-    if (!wanted.has(book.id)) continue;
-    map.set(book.id, {
-      title: book.title,
-      author: book.author,
-      priceLkr: book.priceLkr,
-      imageUrl: book.imageUrl,
+  const supabase = await getServerComponentSupabase();
+  const { data, error } = await supabase
+    .from("store_books")
+    .select("id, title, author, price_lkr, cover_url")
+    .in("id", wanted);
+
+  if (error) {
+    console.error("[store] snapshots:", error.message);
+    return map;
+  }
+
+  for (const row of (data ?? []) as unknown as {
+    id: number;
+    title: string;
+    author: string;
+    price_lkr: number | string;
+    cover_url: string | null;
+  }[]) {
+    map.set(Number(row.id), {
+      title: row.title,
+      author: row.author ?? "",
+      priceLkr: money(row.price_lkr),
+      imageUrl: row.cover_url,
     });
   }
   return map;
