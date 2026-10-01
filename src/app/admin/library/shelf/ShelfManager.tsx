@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Field, Notice, TextareaField } from "@/components/ui/Field";
+import { Notice } from "@/components/ui/Field";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browserClient";
 import { removeLibraryBook, saveLibraryBook } from "./actions";
 import { ShelfCsvImport } from "./ShelfCsvImport";
+import { BLANK_DRAFT, ShelfForm, ShelfFormActions, type Draft } from "./ShelfForm";
 
 const MAX_COVER_BYTES = 5 * 1024 * 1024;
 
@@ -27,33 +28,6 @@ export type ShelfRow = {
   available: number;
 };
 
-type Draft = {
-  id?: number;
-  title: string;
-  author: string;
-  isbn: string;
-  category: string;
-  description: string;
-  coverPath: string;
-  coverUrl: string | null;
-  copies: string;
-  shelfMark: string;
-  isActive: boolean;
-};
-
-const BLANK: Draft = {
-  title: "",
-  author: "",
-  isbn: "",
-  category: "",
-  description: "",
-  coverPath: "",
-  coverUrl: null,
-  copies: "1",
-  shelfMark: "",
-  isActive: true,
-};
-
 function toDraft(book: ShelfRow): Draft {
   return {
     id: book.id,
@@ -71,11 +45,17 @@ function toDraft(book: ShelfRow): Draft {
 }
 
 /**
- * The club's lending shelf: what is on it, and the form that puts it there.
+ * The club's lending shelf.
  *
- * The form and the list are one component because adding a book and editing
- * one are the same form, and a separate edit page would mean losing your
- * place in a list of eighty books to correct a typo.
+ * Adding a book is a panel across the top rather than a column beside the
+ * list: in a column the form was taller than the screen, so its Save button
+ * sat below the fold and every save meant scrolling past the whole shelf to
+ * find it.
+ *
+ * Editing happens in a dialog over the page, for the same reason in reverse
+ * -- a form that opens where you are reading, saves, and gets out of the way,
+ * instead of sending you to the top of a list of eighty books and losing your
+ * place in it.
  */
 export function ShelfManager({
   books,
@@ -87,17 +67,37 @@ export function ShelfManager({
   userId: string;
 }) {
   const router = useRouter();
-  const [draft, setDraft] = useState<Draft>(BLANK);
+  const [adding, setAdding] = useState<Draft>(BLANK_DRAFT);
+  const [editing, setEditing] = useState<Draft | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [pending, startTransition] = useTransition();
   const [confirming, setConfirming] = useState<number | null>(null);
 
-  const editing = draft.id != null;
+  // Escape closes the dialog, and the page behind it stops scrolling while it
+  // is open: the two things every dialog is expected to do.
+  useEffect(() => {
+    if (!editing) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setEditing(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [editing]);
+
+  const isEditing = editing != null;
+  const draft = editing ?? adding;
 
   function set<K extends keyof Draft>(key: K, value: Draft[K]) {
-    setDraft((d) => ({ ...d, [key]: value }));
+    if (isEditing) setEditing((d) => (d ? { ...d, [key]: value } : d));
+    else setAdding((d) => ({ ...d, [key]: value }));
   }
 
   async function onCover(event: React.ChangeEvent<HTMLInputElement>) {
@@ -126,35 +126,45 @@ export function ShelfManager({
       setError(uploadError.message);
       return;
     }
-    setDraft((d) => ({ ...d, coverPath: key, coverUrl: URL.createObjectURL(file) }));
+    set("coverPath", key);
+    set("coverUrl", URL.createObjectURL(file));
   }
 
   function save(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
-    setSaved(null);
+    setNotice(null);
+    const current = draft;
 
     startTransition(async () => {
       const result = await saveLibraryBook({
-        id: draft.id,
-        title: draft.title,
-        author: draft.author,
-        isbn: draft.isbn,
-        category: draft.category,
-        description: draft.description,
+        id: current.id,
+        title: current.title,
+        author: current.author,
+        isbn: current.isbn,
+        category: current.category,
+        description: current.description,
         // Only send a cover when one was chosen: undefined means "leave the
         // one that is there".
-        coverPath: draft.coverPath || undefined,
-        copies: Number(draft.copies || 0),
-        shelfMark: draft.shelfMark,
-        isActive: draft.isActive,
+        coverPath: current.coverPath || undefined,
+        copies: Number(current.copies || 0),
+        shelfMark: current.shelfMark,
+        isActive: current.isActive,
       });
       if (!result.ok) {
         setError(result.error);
         return;
       }
-      setSaved(editing ? `${draft.title} updated.` : `${draft.title} is on the shelf.`);
-      setDraft(BLANK);
+
+      setNotice(
+        current.id != null ? `${current.title} updated.` : `${current.title} is on the shelf.`,
+      );
+      if (current.id != null) {
+        setEditing(null);
+      } else {
+        setAdding(BLANK_DRAFT);
+        setAddOpen(false);
+      }
       router.refresh();
     });
   }
@@ -168,179 +178,67 @@ export function ShelfManager({
         return;
       }
       setConfirming(null);
-      setSaved(
+      setNotice(
         result.data?.what === "retired"
           ? "Taken off the shelf. It stays on record because it has been borrowed before."
           : "Removed.",
       );
-      if (draft.id === id) setDraft(BLANK);
+      if (editing?.id === id) setEditing(null);
       router.refresh();
     });
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[22rem_1fr] lg:items-start">
-      <Card className="lg:sticky lg:top-6">
-        {/*
-          The buttons sit at the TOP of the form, not the bottom of it.
-          Sticking them to the bottom put them over the last field -- the
-          screenshot that came back had "About the book" sliced in half by
-          the button that was meant to be helping. Up here they are in view
-          the moment Edit is pressed, whatever the form's height, and nothing
-          is ever underneath them.
-        */}
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
-          <p className="text-sm font-medium text-ink">
-            {editing ? `Editing ${draft.title || "a book"}` : "Add a book to the shelf"}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              type="submit"
-              form="shelf-form"
-              size="sm"
-              disabled={pending || uploading}
-            >
-              {pending ? "Saving…" : editing ? "Save changes" : "Add to the shelf"}
-            </Button>
-            {editing ? (
-              <Button type="button" size="sm" variant="ghost" onClick={() => setDraft(BLANK)}>
-                Cancel
-              </Button>
-            ) : null}
+    <div className="space-y-4">
+      {notice && !isEditing ? <Notice tone="success">{notice}</Notice> : null}
+      {error && !isEditing && !addOpen ? <Notice>{error}</Notice> : null}
+
+      <ShelfCsvImport />
+
+      <Card>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium text-ink">Add a book to the shelf</p>
+            <p className="text-xs text-ink-muted">
+              One at a time. For a whole shelf, use the importer above.
+            </p>
           </div>
+          {addOpen ? (
+            <ShelfFormActions
+              editing={false}
+              pending={pending}
+              uploading={uploading}
+              formId="shelf-add"
+              onCancel={() => {
+                setAdding(BLANK_DRAFT);
+                setAddOpen(false);
+                setError(null);
+              }}
+            />
+          ) : (
+            <Button onClick={() => setAddOpen(true)}>Add a book</Button>
+          )}
         </div>
 
-        <form id="shelf-form" onSubmit={save} className="space-y-3">
-          {error ? <Notice>{error}</Notice> : null}
-          {saved ? <Notice tone="success">{saved}</Notice> : null}
-
-          <div className="flex items-start gap-3">
-            <div className="grid h-28 w-20 shrink-0 place-items-center overflow-hidden rounded-md border border-line bg-canvas-deep text-center text-[11px] text-ink-faint">
-              {draft.coverUrl ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={draft.coverUrl} alt="" className="h-full w-full object-cover" />
-              ) : (
-                <span className="px-1">No cover</span>
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <label className="press inline-flex min-h-9 cursor-pointer items-center rounded-lg border border-line-strong bg-surface px-3 text-sm font-medium text-brand-700 hover:bg-canvas">
-                {uploading ? "Uploading…" : draft.coverUrl ? "Replace cover" : "Upload a cover"}
-                <input type="file" accept="image/*" onChange={onCover} className="sr-only" />
-              </label>
-              <p className="mt-1 text-xs text-ink-muted">
-                Shown to members on the library page. Up to 5MB.
-              </p>
-            </div>
-          </div>
-
-          <Field
-            label="Title"
-            name="title"
-            required
-            maxLength={300}
-            value={draft.title}
-            onChange={(e) => set("title", e.target.value)}
-          />
-          <Field
-            label="Author"
-            name="author"
-            maxLength={200}
-            value={draft.author}
-            onChange={(e) => set("author", e.target.value)}
-          />
-
-          <div className="grid grid-cols-2 gap-3">
-            <Field
-              label="Copies"
-              name="copies"
-              type="number"
-              min={0}
-              max={999}
-              required
-              value={draft.copies}
-              onChange={(e) => set("copies", e.target.value)}
-              hint="How many the club owns."
-            />
-            <Field
-              label="Shelf mark"
-              name="shelfMark"
-              maxLength={60}
-              value={draft.shelfMark}
-              onChange={(e) => set("shelfMark", e.target.value)}
-              hint="Where it lives, e.g. B3."
+        {addOpen ? (
+          <div className="mt-4 border-t border-line pt-4">
+            <ShelfForm
+              formId="shelf-add"
+              draft={adding}
+              onChange={set}
+              onSubmit={save}
+              onCover={onCover}
+              categories={categories}
+              uploading={uploading}
+              pending={pending}
+              error={error}
+              notice={null}
             />
           </div>
-
-          <div>
-            <label htmlFor="category" className="mb-1.5 block text-sm font-medium text-ink">
-              Category
-            </label>
-            <input
-              id="category"
-              name="category"
-              list="shelf-categories"
-              maxLength={120}
-              value={draft.category}
-              onChange={(e) => set("category", e.target.value)}
-              className="w-full min-h-11 rounded-lg border border-line-strong bg-surface px-3 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/25"
-              placeholder="Fiction"
-            />
-            {/* The categories already in use, so the shelf does not end up with
-                Fiction, fiction and Ficton. */}
-            <datalist id="shelf-categories">
-              {categories.map((c) => (
-                <option key={c} value={c} />
-              ))}
-            </datalist>
-          </div>
-
-          <Field
-            label="ISBN"
-            name="isbn"
-            maxLength={40}
-            value={draft.isbn}
-            onChange={(e) => set("isbn", e.target.value)}
-          />
-
-          <TextareaField
-            label="About the book"
-            name="description"
-            rows={3}
-            maxLength={4000}
-            value={draft.description}
-            onChange={(e) => set("description", e.target.value)}
-          />
-
-          <label className="flex cursor-pointer items-center gap-2.5 text-sm text-ink">
-            <input
-              type="checkbox"
-              checked={draft.isActive}
-              onChange={(e) => set("isActive", e.target.checked)}
-              className="size-4 rounded border-line-strong accent-brand-600"
-            />
-            On the shelf — members can ask for it
-          </label>
-
-          {/* The same two again at the foot, for anyone who has scrolled
-              to the end of a long form and would rather not go back up. */}
-          <div className="flex flex-wrap gap-2 border-t border-line pt-3">
-            <Button type="submit" disabled={pending || uploading}>
-              {pending ? "Saving…" : editing ? "Save changes" : "Add to the shelf"}
-            </Button>
-            {editing ? (
-              <Button type="button" variant="ghost" onClick={() => setDraft(BLANK)}>
-                Cancel
-              </Button>
-            ) : null}
-          </div>
-        </form>
+        ) : null}
       </Card>
 
-      <div className="space-y-4">
-        <ShelfCsvImport />
-
-        <Card flush>
+      <Card flush>
         <div className="border-b border-line px-4 py-3 sm:px-5">
           <p className="text-sm font-medium text-ink">
             {books.length} {books.length === 1 ? "book" : "books"} on the shelf
@@ -352,7 +250,7 @@ export function ShelfManager({
 
         {books.length === 0 ? (
           <p className="px-4 py-10 text-center text-sm text-ink-muted sm:px-5">
-            Nothing on the shelf yet. Add the first book on the left.
+            Nothing on the shelf yet. Add the first book above, or import a list.
           </p>
         ) : (
           <ul className="divide-y divide-line">
@@ -394,10 +292,9 @@ export function ShelfManager({
                     size="sm"
                     variant="ghost"
                     onClick={() => {
-                      setDraft(toDraft(book));
-                      setSaved(null);
+                      setEditing(toDraft(book));
                       setError(null);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
+                      setNotice(null);
                     }}
                   >
                     Edit
@@ -427,8 +324,76 @@ export function ShelfManager({
             ))}
           </ul>
         )}
-        </Card>
-      </div>
+      </Card>
+
+      {editing ? (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="shelf-edit-title"
+        >
+          <button
+            type="button"
+            aria-label="Close"
+            onClick={() => setEditing(null)}
+            className="reveal-fade absolute inset-0 bg-brand-950/55 backdrop-blur-[2px]"
+          />
+
+          <div className="reveal relative flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-t-panel bg-surface shadow-band sm:rounded-panel">
+            <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3 sm:px-5">
+              <p id="shelf-edit-title" className="truncate font-display text-lg text-ink">
+                {editing.title || "Edit book"}
+              </p>
+              <button
+                type="button"
+                onClick={() => setEditing(null)}
+                aria-label="Close"
+                className="press grid size-9 shrink-0 place-items-center rounded-lg text-ink-muted hover:bg-canvas hover:text-ink"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.8}
+                  strokeLinecap="round"
+                  className="size-5"
+                  aria-hidden
+                >
+                  <path d="m6 6 12 12M18 6 6 18" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5">
+              <ShelfForm
+                formId="shelf-edit"
+                draft={editing}
+                onChange={set}
+                onSubmit={save}
+                onCover={onCover}
+                categories={categories}
+                uploading={uploading}
+                pending={pending}
+                error={error}
+                notice={null}
+              />
+            </div>
+
+            {/* The footer belongs to the dialog, not to the scrolling form, so
+                Save is in the same place however long the blurb is. */}
+            <div className="border-t border-line bg-canvas px-4 py-3 sm:px-5">
+              <ShelfFormActions
+                editing
+                pending={pending}
+                uploading={uploading}
+                formId="shelf-edit"
+                onCancel={() => setEditing(null)}
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
