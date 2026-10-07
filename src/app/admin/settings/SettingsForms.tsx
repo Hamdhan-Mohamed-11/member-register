@@ -284,7 +284,7 @@ function fillPreview(text: string, collectAt: string): string {
     place: collectAt.trim() || "the Pick a Book office",
     due: "8 October 2026",
     due_line: "Please return it by 8 October 2026.",
-    link: "https://member.pickabook.lk/library",
+    link: "https://member.pickabook.club/library",
   };
   return text.replace(/\{(\w+)\}/g, (whole, key: string) =>
     key in values ? values[key] : whole,

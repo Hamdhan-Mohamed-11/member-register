@@ -662,7 +662,7 @@ export function EditPostButton({
             <span className="min-w-0">
               <span className="block text-sm font-medium text-ink">Show on the public homepage</span>
               <span className="block text-xs text-ink-muted">
-                Anyone visiting member.pickabook.lk sees it, signed in or not. Leave it off
+                Anyone visiting member.pickabook.club sees it, signed in or not. Leave it off
                 for anything members wouldn&apos;t want public.
               </span>
             </span>
