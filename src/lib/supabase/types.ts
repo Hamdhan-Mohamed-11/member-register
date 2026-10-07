@@ -1399,6 +1399,11 @@ isOneToOne: false
 "place_book_order":
 { Args: { "p_items": Json,"p_note"?: string }; Returns: string
                            },
+"hero_covers":
+{ Args: { "p_limit"?: number }; Returns: {
+              "cover_url": string,"id": number,"title": string
+            }[]
+                           },
 "popular_books":
 { Args: { "p_limit"?: number }; Returns: {
               "author": string,"book_id": number,"members": number,"title": string
