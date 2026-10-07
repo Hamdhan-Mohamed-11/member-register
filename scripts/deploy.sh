@@ -2,7 +2,7 @@
 #
 # Update a deployed app on the VPS. Run ON the server as root:
 #
-#     /srv/apps/deploy.sh member      # member.pickabook.lk
+#     /srv/apps/deploy.sh member      # member.pickabook.club
 #     /srv/apps/deploy.sh quiz        # quiz.pickabook.lk
 #     /srv/apps/deploy.sh both
 #
@@ -47,10 +47,10 @@ deploy_one() {
 }
 
 case "${1:-both}" in
-  member) deploy_one "member portal" /srv/apps/member-register pab-member member.pickabook.lk ;;
+  member) deploy_one "member portal" /srv/apps/member-register pab-member member.pickabook.club ;;
   quiz)   deploy_one "quiz night"    /srv/apps/web-game        pab-quiz   quiz.pickabook.lk ;;
   both)
-    deploy_one "member portal" /srv/apps/member-register pab-member member.pickabook.lk
+    deploy_one "member portal" /srv/apps/member-register pab-member member.pickabook.club
     deploy_one "quiz night"    /srv/apps/web-game        pab-quiz   quiz.pickabook.lk
     ;;
   *) echo "usage: $0 [member|quiz|both]"; exit 2 ;;
