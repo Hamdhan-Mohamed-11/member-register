@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Member portal | https://member.pickabook.lk |
+| Member portal | https://member.pickabook.club (moved 7 Oct 2026; `member.pickabook.lk` redirects) |
 | Quiz night | https://quiz.pickabook.lk |
 | VPS | InterServer, `162.35.112.114`, Ubuntu 26.04, 2 vCPU / 7.4 GB |
 | Apps | `/srv/apps/member-register` (:3001), `/srv/apps/web-game` (:3000) |
@@ -14,6 +14,32 @@
 
 `pickabook.lk` itself is **untouched** on HostGator (`192.254.185.29`). Only two
 new DNS A records were added; no existing record was changed.
+
+### Why the portal is on pickabook.club
+
+PayHere issues **one merchant secret per approved domain**, under the same
+merchant id, and the app reads only one `PAYHERE_MERCHANT_SECRET`. On 7 Oct 2026
+`pickabook.club` was approved in PayHere and its secret went into `.env.local`,
+so checkout has to start on `.club`; a checkout begun on `.lk` would fail the
+hash. The move touched five places together — change one alone and live
+payments or login links break:
+
+| Where | What |
+|---|---|
+| HostGator DNS, `pickabook.club` zone | `member` A `162.35.112.114` |
+| nginx `pab-member-club` | `member.pickabook.club` → :3001, certbot TLS |
+| nginx `pab-member` | `member.pickabook.lk` 301s to `.club`, **except** `location = /api/payhere/notify`, which still proxies — PayHere posts there for checkouts begun on `.lk`, and a 301 would turn the POST into a body-less GET |
+| `/srv/supabase/member-db/.env` | `SITE_URL=https://member.pickabook.club`; `ADDITIONAL_REDIRECT_URLS` lists both hosts so links already emailed keep working |
+| app `.env.local` | `NEXT_PUBLIC_SITE_URL=https://member.pickabook.club` (rebuild) and the `.club` PayHere secret |
+
+The calendar UID in `AddToCalendar.tsx` keeps `@member.pickabook.lk` on
+purpose: it identifies events already in members' calendars, and changing it
+would duplicate them. If both domains ever need to take payments, the app must
+pick the secret by host first.
+
+`seeker.pickabook.club` also points at the VPS but is **not** configured. SEEKER
+is a separate app (`/srv/apps/seeker-portal`, `pab-seeker`, :3002, its own
+Supabase stack) and is not deployed from this repository.
 
 ### Getting on the box
 
@@ -98,7 +124,12 @@ on the current free-tier setup, and neither is blocked by code.
 
       Still sandbox. Switching `PAYHERE_MODE` to `live` needs a live merchant
       account, which is a separate commercial step.
-- [ ] **Go live on PayHere — the last step, deferred deliberately.** The live
+- [x] **Live on PayHere since 7 Oct 2026**, on `member.pickabook.club` with
+      the `pickabook.club` domain secret (see "Why the portal is on
+      pickabook.club" above). A small real payment went through as expected.
+      The history below is kept for the verification it records.
+
+      The live
       merchant `254745` and its secret are already in `.env.local`, replacing
       the sandbox pair, so **sandbox checkout is broken as of 9 Sep 2026** — a
       live merchant id cannot authenticate against `sandbox.payhere.lk`. That
@@ -122,9 +153,9 @@ on the current free-tier setup, and neither is blocked by code.
       2. One small real payment, on a club whose renewal can be reversed,
          watched through to `outcome = membership_extended`.
 
-      The domain question does not block it: the whitelist is the apex
-      `pickabook.lk`, which covers `member.` beneath it — see the sandbox entry
-      above, where that was confirmed against the real gateway.
+      PayHere rejects subdomains as whitelist entries; an apex covers the
+      subdomains beneath it. Both `pickabook.lk` and `pickabook.club` are now
+      approved, each with its own secret.
 
 A database migration to the VPS is planned separately — see MIGRATION.md.
 
