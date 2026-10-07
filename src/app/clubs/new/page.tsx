@@ -10,7 +10,14 @@ import { NewClubForm } from "./NewClubForm";
 
 export const metadata: Metadata = { title: "Bring your club to Pick a Book" };
 
-export default async function NewClubPage() {
+export default async function NewClubPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ for?: string }>;
+}) {
+  // The landing page sends companies here too: same application, worded for
+  // them. Pick a Book files an approved one under Corporate.
+  const forCompany = (await searchParams).for === "company";
   const session = await getSessionMember();
   // A club admin already runs one; a super admin creates clubs outright.
   if (session && isAdmin(session)) redirect("/admin");
@@ -29,8 +36,12 @@ export default async function NewClubPage() {
   return (
     <AppShell signedOut wide>
       <AuthLayout
-        title="Bring your club to Pick a Book"
-        subtitle="Sessions, points, a member list and the shop — for a club that already meets."
+        title={forCompany ? "Start a reading club at your company" : "Bring your club to Pick a Book"}
+        subtitle={
+          forCompany
+            ? "A private club for your employees — sessions, points, a member list and the shop. Use your company's name as the club name."
+            : "Sessions, points, a member list and the shop — for a club that already meets."
+        }
       >
         {waiting ? (
           <div className="space-y-3">

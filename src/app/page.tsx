@@ -6,6 +6,7 @@ import { getSessionMember } from "@/lib/auth/session";
 import { BookCover } from "@/components/books/BookCover";
 import { EventStrip } from "@/components/home/EventStrip";
 import { PopularBooks } from "@/components/home/PopularBooks";
+import { WayIn } from "@/components/home/WayIn";
 import { getHighlights } from "@/lib/discover/queries";
 import { getPopularBooks, getPublicStats } from "@/lib/home/queries";
 
@@ -170,25 +171,7 @@ export default async function Home() {
               This is where your club, your reading and your progress live.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/join"
-                className="press inline-flex min-h-12 items-center rounded-lg bg-sky-500 px-6 font-medium text-brand-950 shadow-hero transition-colors hover:bg-sky-300"
-              >
-                Join a club
-              </Link>
-              <Link
-                href="/login"
-                className="press inline-flex min-h-12 items-center rounded-lg border border-white/30 px-6 font-medium text-white transition-colors hover:bg-white/10"
-              >
-                Log in
-              </Link>
-            </div>
-
-            <p className="mt-6 text-sm text-on-navy-muted">
-              Invited by your employer? Check your email for a link to set your
-              password.
-            </p>
+            <WayIn />
           </div>
 
           {/* A fanned stack of the books members reach for most. Decorative. */}
