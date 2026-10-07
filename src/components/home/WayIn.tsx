@@ -65,21 +65,22 @@ export function WayIn() {
   const way = WAYS.find((w) => w.id === selected) ?? WAYS[0];
 
   return (
-    <div className="mt-8">
+    <div className="mt-8 max-w-xl rounded-2xl border border-white/15 bg-white/[0.06] p-2 shadow-band backdrop-blur-sm">
       <fieldset>
-        <legend className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-200">
+        <legend className="px-2 pb-2.5 pt-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-200">
           I&apos;m here to…
         </legend>
-        <div className="flex flex-wrap gap-2">
+        {/* Four equal tiles in one row: nothing orphaned on a second line. */}
+        <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
           {WAYS.map((w) => {
             const on = w.id === selected;
             return (
               <label
                 key={w.id}
-                className={`press inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border px-3.5 text-sm font-medium transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-sky-300 ${
+                className={`press flex cursor-pointer flex-col items-center gap-1.5 rounded-xl px-2 py-3 text-center text-[13px] font-medium leading-tight transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-sky-300 ${
                   on
-                    ? "border-sky-300 bg-white text-brand-800"
-                    : "border-white/25 bg-white/10 text-white hover:bg-white/15"
+                    ? "bg-white text-brand-800 shadow-card"
+                    : "text-on-navy-muted hover:bg-white/10 hover:text-white"
                 }`}
               >
                 <input
@@ -90,7 +91,13 @@ export function WayIn() {
                   onChange={() => setSelected(w.id)}
                   className="sr-only"
                 />
-                <Icon name={w.icon} className="size-4" />
+                <span
+                  className={`grid size-8 place-items-center rounded-full ${
+                    on ? "bg-sky-100 text-sky-700" : "bg-white/10"
+                  }`}
+                >
+                  <Icon name={w.icon} className="size-4" />
+                </span>
                 {w.chip}
               </label>
             );
@@ -98,25 +105,26 @@ export function WayIn() {
         </div>
       </fieldset>
 
-      <div className="mt-5 flex flex-wrap items-center gap-3">
-        <Link
-          href={way.href}
-          className="press inline-flex min-h-12 items-center gap-2 rounded-lg bg-sky-500 px-6 font-medium text-brand-950 shadow-hero transition-colors hover:bg-sky-300"
-        >
-          {way.cta}
-          <Icon name="arrow-right" className="size-4" />
-        </Link>
-        <Link
-          href="/login"
-          className="press inline-flex min-h-12 items-center rounded-lg border border-white/30 px-6 font-medium text-white transition-colors hover:bg-white/10"
-        >
-          Log in
-        </Link>
+      <div className="px-3 pb-3 pt-4 sm:px-4">
+        <p aria-live="polite" className="min-h-10 text-sm leading-relaxed text-on-navy-muted">
+          {way.note}
+        </p>
+        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
+          <Link
+            href={way.href}
+            className="press inline-flex min-h-12 items-center gap-2 rounded-lg bg-sky-500 px-6 font-medium text-brand-950 shadow-hero transition-colors hover:bg-sky-300"
+          >
+            {way.cta}
+            <Icon name="arrow-right" className="size-4" />
+          </Link>
+          <p className="text-sm text-on-navy-muted">
+            Already a member?{" "}
+            <Link href="/login" className="font-medium text-white underline-offset-4 hover:underline">
+              Log in
+            </Link>
+          </p>
+        </div>
       </div>
-
-      <p aria-live="polite" className="mt-4 max-w-md text-sm text-on-navy-muted">
-        {way.note}
-      </p>
     </div>
   );
 }

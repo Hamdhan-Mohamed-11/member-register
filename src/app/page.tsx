@@ -8,7 +8,7 @@ import { EventStrip } from "@/components/home/EventStrip";
 import { PopularBooks } from "@/components/home/PopularBooks";
 import { WayIn } from "@/components/home/WayIn";
 import { getHighlights } from "@/lib/discover/queries";
-import { getPopularBooks, getPublicStats } from "@/lib/home/queries";
+import { getHeroCovers, getPopularBooks, getPublicStats } from "@/lib/home/queries";
 
 /**
  * The signed-out landing page.
@@ -130,6 +130,7 @@ export default async function Home() {
     getHighlights(5),
     getPopularBooks(4),
   ]);
+  const covers = await getHeroCovers(popular);
 
   return (
     <AppShell signedOut wide>
@@ -175,11 +176,11 @@ export default async function Home() {
           </div>
 
           {/* A fanned stack of the books members reach for most. Decorative. */}
-          {popular.length >= 3 ? (
+          {covers.length >= 3 ? (
             <div aria-hidden className="relative mr-10 hidden h-64 lg:block">
-              {popular.slice(0, 3).map((book, i) => (
+              {covers.map((book, i) => (
                 <div
-                  key={book.bookId}
+                  key={book.id}
                   className="absolute top-1/2 h-52 w-36 overflow-hidden rounded-md shadow-band ring-1 ring-white/10"
                   style={{
                     left: `${10 + i * 72}px`,
