@@ -8,7 +8,7 @@ import { EventStrip } from "@/components/home/EventStrip";
 import { PopularBooks } from "@/components/home/PopularBooks";
 import { WayIn } from "@/components/home/WayIn";
 import { getHighlights } from "@/lib/discover/queries";
-import { getHeroCovers, getPopularBooks, getPublicStats } from "@/lib/home/queries";
+import { getHeroCovers, getPopularBooks } from "@/lib/home/queries";
 
 /**
  * The signed-out landing page.
@@ -122,11 +122,10 @@ export default async function Home() {
   // A signed-in member has no use for the sales pitch.
   if (await getSessionMember()) redirect("/home");
 
-  // Real numbers and real covers. Highlights are only the Discover posts an
-  // admin marked for the public homepage; with none marked, that section
-  // simply does not appear.
-  const [stats, highlights, popular] = await Promise.all([
-    getPublicStats(),
+  // Real covers. Highlights are only the Discover posts an admin marked for
+  // the public homepage; with none marked, that section simply does not
+  // appear.
+  const [highlights, popular] = await Promise.all([
     getHighlights(5),
     getPopularBooks(4),
   ]);
@@ -195,30 +194,6 @@ export default async function Home() {
           ) : null}
           </div>
         </section>
-
-        {/* ---- The club in numbers ---------------------------------------- */}
-        {stats ? (
-          <section className="stagger grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {[
-              { value: stats.members, label: "Members reading" },
-              { value: stats.clubs, label: "Clubs" },
-              { value: stats.sessionsHeld, label: "Sessions held" },
-              { value: stats.booksFunded, label: "Books sent to schools" },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="rounded-card border border-line bg-surface px-4 py-5 text-center shadow-card"
-              >
-                <p className="font-display text-3xl text-brand-600 tabular-nums sm:text-4xl">
-                  {s.value.toLocaleString("en-LK")}
-                </p>
-                <p className="mt-1 text-xs font-medium uppercase tracking-wider text-ink-muted">
-                  {s.label}
-                </p>
-              </div>
-            ))}
-          </section>
-        ) : null}
 
         {/* ---- Recent evenings -------------------------------------------- */}
         {highlights.length ? (

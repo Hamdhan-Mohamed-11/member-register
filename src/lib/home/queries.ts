@@ -57,28 +57,3 @@ export async function getHeroCovers(
   const { data } = await supabase.rpc("hero_covers", { p_limit: 3 });
   return (data ?? []).map((b) => ({ id: Number(b.id), title: b.title, imageUrl: b.cover_url }));
 }
-
-export type PublicStats = {
-  members: number;
-  clubs: number;
-  sessionsHeld: number;
-  booksFunded: number;
-};
-
-export async function getPublicStats(): Promise<PublicStats | null> {
-  const supabase = await getServerComponentSupabase();
-  const { data } = await supabase.rpc("public_stats");
-  const row = ((data ?? []) as unknown as {
-    members: number | string;
-    clubs: number | string;
-    sessions_held: number | string;
-    books_funded: number | null;
-  }[])[0];
-  if (!row) return null;
-  return {
-    members: Number(row.members),
-    clubs: Number(row.clubs),
-    sessionsHeld: Number(row.sessions_held),
-    booksFunded: Number(row.books_funded ?? 0),
-  };
-}
