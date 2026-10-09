@@ -7,7 +7,12 @@ import { RegisterForm } from "./RegisterForm";
 
 export const metadata: Metadata = { title: "Register as an author or publisher" };
 
-export default async function CreatorRegisterPage() {
+export default async function CreatorRegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ as?: string }>;
+}) {
+  const initialKind = (await searchParams).as === "publisher" ? "publisher" : "author";
   // Signed out is fine: the form creates the account and registers it in one
   // go. An author has no club to join, so /join is not their way in.
   const session = await getSessionMember();
@@ -31,7 +36,7 @@ export default async function CreatorRegisterPage() {
         </div>
 
         <Card>
-          <RegisterForm signedIn={session != null} />
+          <RegisterForm signedIn={session != null} initialKind={initialKind} />
         </Card>
       </div>
     </CreatorShell>

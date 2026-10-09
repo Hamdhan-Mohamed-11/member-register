@@ -10,8 +10,17 @@ import { getPublicJoinGuidelines } from "@/lib/settings/texts";
 
 export const metadata: Metadata = { title: "Join a club" };
 
-export default async function JoinPage() {
+export default async function JoinPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ club?: string; type?: string }>;
+}) {
   if (await getSessionMember()) redirect("/feed");
+
+  // pickabook.club's enrol buttons link here as ?type=public (show only that
+  // type's clubs) or ?club=kids-club (preselect one club). Both are slugs, and
+  // an unknown one falls back to the full list rather than an empty picker.
+  const sp = await searchParams;
 
   // Read as anon. The clubs_select_public_anon policy limits this to active
   // public clubs, so company clubs cannot leak into the picker even if this
@@ -26,17 +35,21 @@ export default async function JoinPage() {
   const supabase = await getServerComponentSupabase();
   const { data } = await supabase
     .from("clubs")
-    .select("id, name, description, club_types ( name, sort_order )")
+    .select("id, name, slug, description, club_types ( name, slug, sort_order )")
     .eq("kind", "public")
     .eq("is_active", true)
     .eq("is_open_join", true)
     .order("name");
 
   type Raw = JoinableClub & {
-    club_types: { name: string; sort_order: number } | null;
+    slug: string;
+    club_types: { name: string; slug: string; sort_order: number } | null;
   };
 
-  const rows = (data ?? []) as unknown as Raw[];
+  const all = (data ?? []) as unknown as Raw[];
+  const ofType = sp.type ? all.filter((c) => c.club_types?.slug === sp.type) : [];
+  const rows = (ofType.length ? ofType : all).sort((a, b) => dayRank(a.name) - dayRank(b.name));
+  const preselect = rows.find((c) => c.slug === sp.club)?.id;
   const clubs: JoinableClub[] = rows.map((c) => ({
     id: c.id,
     name: c.name,
@@ -52,7 +65,7 @@ export default async function JoinPage() {
         subtitle="Pick a club, and the club will confirm your place."
       >
         {clubs.length ? (
-          <JoinForm clubs={clubs} guidelines={guidelines} />
+          <JoinForm clubs={clubs} guidelines={guidelines} preselect={preselect} />
         ) : (
           <EmptyState
             title="No clubs are open for applications"
@@ -62,4 +75,13 @@ export default async function JoinPage() {
       </AuthLayout>
     </AppShell>
   );
+}
+
+// Public Clubs are named for the day they meet. Alphabetical puts Friday
+// first, so day-named clubs sort Monday to Weekend; every other name keeps
+// the alphabetical order the query returned (Array.sort is stable).
+const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "weekend"];
+function dayRank(name: string): number {
+  const i = DAYS.indexOf(name.trim().split(/\s+/)[0].toLowerCase());
+  return i === -1 ? DAYS.length : i;
 }

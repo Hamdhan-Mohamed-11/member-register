@@ -47,9 +47,12 @@ type Pending = {
 export function JoinForm({
   clubs,
   guidelines,
+  preselect,
 }: {
   clubs: JoinableClub[];
   guidelines: string[];
+  /** Club id chosen by the link that brought them here, if any. */
+  preselect?: string;
 }) {
   const groups = groupByType(clubs);
   const router = useRouter();
@@ -178,15 +181,15 @@ export function JoinForm({
           id="club_id"
           name="club_id"
           required
-          defaultValue={clubs.length === 1 ? clubs[0].id : ""}
+          defaultValue={preselect ?? (clubs.length === 1 ? clubs[0].id : "")}
           className={selectClassName}
         >
           <option value="" disabled>
             Choose a club…
           </option>
           {/*
-            Grouped by type when there is more than one, so "Arcane" and
-            "Aureate" read as two Public clubs rather than as an undifferentiated
+            Grouped by type when there is more than one, so "Monday Club"
+            and "Weekend Club" read as two Public clubs rather than as an undifferentiated
             list. A single group renders flat -- an <optgroup> of one is noise.
           */}
           {groups.map(({ typeName, items }) =>

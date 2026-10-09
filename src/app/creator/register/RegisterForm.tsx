@@ -27,9 +27,16 @@ type Pending = {
  * it, an author gets only their own name -- and that is worth more than one
  * line of a dropdown.
  */
-export function RegisterForm({ signedIn }: { signedIn: boolean }) {
+export function RegisterForm({
+  signedIn,
+  initialKind = "author",
+}: {
+  signedIn: boolean;
+  /** Preselected from ?as= so pickabook.club's publisher button lands on the right card. */
+  initialKind?: "author" | "publisher";
+}) {
   const router = useRouter();
-  const [kind, setKind] = useState<"author" | "publisher">("author");
+  const [kind, setKind] = useState<"author" | "publisher">(initialKind);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [awaiting, setAwaiting] = useState<Pending | null>(null);
